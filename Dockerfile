@@ -29,5 +29,9 @@ RUN pip install --no-cache-dir requests python-dotenv
 # --- Fichier log cron ---
 RUN touch /var/log/cron.log
 
+# Healthcheck pour vérifier que le container fonctionne
+HEALTHCHECK --interval=1h --timeout=10s --start-period=30s --retries=3 \
+    CMD test -f /app/data/sent_ids.json || exit 1
+
 # --- Commande par défaut ---
 CMD ["cron", "-f"]

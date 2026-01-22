@@ -29,9 +29,16 @@ RUN pip install --no-cache-dir requests python-dotenv
 # --- Fichier log cron ---
 RUN touch /var/log/cron.log
 
+# Copier le script de démarrage
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+# Utiliser start.sh comme point d'entrée
+CMD ["/app/start.sh"]
+
+
 # Healthcheck pour vérifier que le container fonctionne
 HEALTHCHECK --interval=1h --timeout=10s --start-period=30s --retries=3 \
     CMD test -f /app/data/sent_ids.json || exit 1
 
-# --- Commande par défaut ---
-CMD ["cron", "-f"]
+

@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+LICENSE
+*.md
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Données et logs (on les monte en volumes)
+data/
+logs/
+*.log
+
+# Environnement
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore

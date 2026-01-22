@@ -41,4 +41,5 @@ logs/
 Thumbs.db
 
 # Docker
-docker-compose.yml
+.dockerignore
+# Note: Ne pas exclure Dockerfile et docker-compose.yml car Docker en a besoin pour le build

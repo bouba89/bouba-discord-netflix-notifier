@@ -34,6 +34,9 @@ bouba-discord-netflix-notifier
 
 Docker
  installé
+ 
+ Python 3.11
+ installé
 
 Docker Compose
  installé
@@ -77,30 +80,13 @@ docker exec -it netflix_bot python /app/netflix_bot.py
 
 6 - Vérifie que le bot est bien connecté à ton serveur Discord.
 
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY src/ ./src
-COPY appsettings.json ./
-
-RUN pip install --no-cache-dir -r src/requirements.txt
-
-CMD ["python", "src/main.py"]
 
 🔧 Dockerfile & Docker Compose
 
 Dockerfile :
-
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY src/ ./src
-COPY appsettings.json ./
-
-RUN pip install --no-cache-dir -r src/requirements.txt
-
-CMD ["python", "src/main.py"]
-
+Il gere toute les dependances requises 
+Fichier 
+- requirements.txt
 
 docker-compose.yml :
 

@@ -1,179 +1,237 @@
-🎬 Bouba Discord Netflix Notifier
+# 🎬 Bouba Discord Netflix Notifier
 
-Un bot Discord en python deployable via un containeur docker  qui t’informe automatiquement des nouveautés Netflix directement dans ton serveur Au jour le jour !
+[![Release](https://img.shields.io/github/v/release/bouba89/bouba-discord-netflix-notifier)](https://github.com/bouba89/bouba-discord-netflix-notifier/releases)
+[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://www.docker.com/)
+[![Python](https://img.shields.io/badge/python-3.11-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-Open--Source-green)](LICENSE)
 
-✨ Fonctionnalités
+Un bot Discord automatisé qui vous notifie quotidiennement des nouvelles sorties Netflix directement dans votre serveur Discord ! 🍿
 
-Notifications automatiques des nouveaux films et séries Netflix. Toute les jours à 9h ( sortie FR VOD Netflix )
+## ✨ Fonctionnalités
 
-Suivi par catégorie Netflix (Action, Comédie, Documentaire…).
+- 🔔 **Notifications automatiques** des nouveaux films et séries Netflix chaque jour à 9h
+- 🎯 **Suivi par catégorie** (Action, Comédie, Documentaire, etc.)
+- 🌍 **Multi-pays** : Configurez les pays que vous souhaitez suivre (FR, US, CA, etc.)
+- 🚫 **Anti-doublons** : Ne notifie jamais le même contenu deux fois
+- 🐳 **Déployable facilement** avec Docker et Docker Compose
+- 📊 **Healthcheck intégré** pour monitorer l'état du container
+- 💾 **Persistence des données** avec volumes Docker
 
-Compatible avec UNOGS API et TMDB API pour récupérer les contenus.
+## 📋 Prérequis
 
-Déployable facilement avec Docker et Docker Compose.
-Crontab Mise automatiquement au build 
+- [Docker](https://docs.docker.com/get-docker/) installé
+- [Docker Compose](https://docs.docker.com/compose/install/) installé
+- Un webhook Discord (voir [Comment créer un webhook Discord](https://support.discord.com/hc/en-us/articles/228383668))
+- Clé API [UNOGS via RapidAPI](https://rapidapi.com/unogs/api/unogs)
+- Clé API [TMDB](https://www.themoviedb.org/settings/api)
 
-Fonction  Anti-doublons
+## 🚀 Installation rapide
 
-- Ne genere pas la meme serie ou film par jour 
-- Stockage dans /app/data/sent_ids.json
-- Sauvegarde dans dossier data
-  MEMORY_FILE = "/app/data/sent_ids.json"
+### 1. Cloner le projet
 
-🗂️ Architecture du projet
-bouba-discord-netflix-notifier 
-├─ Data
-├─ Dockerfile
-├─ docker-compose.yml
-|_ netflix-bot.py
-|_ crontab.txt
-├─ README.md
-└─ LICENSE
-
-⚙️ Prérequis
-
-Docker
- installé
- 
- Python 3.11
- installé
-
-Docker Compose
- installé
-
-Token Discord pour ton bot
-
-Abonnement à l’API UNOGS via RapidAPI
-
-Clé API TMDB pour récupérer les informations détaillées des films/séries
-
-Connexion Internet
-
-Installation & Lancement
-
-Clone le projet :
-
+```bash
 git clone https://github.com/bouba89/bouba-discord-netflix-notifier.git
 cd bouba-discord-netflix-notifier
+```
 
-2 - Creez un fichier .env a la base du projet :
+### 2. Configurer les variables d'environnement
+
+Créez un fichier `.env` à la racine du projet :
+
+```bash
 touch .env
+```
 
-3 - Dans ton fichier .env 
+Remplissez-le avec vos clés API :
 
-Remplis tes id token et API
+```env
+# API Keys
+RAPIDAPI_KEY=votre_cle_rapidapi
+TMDB_API_KEY=votre_cle_tmdb
 
-RAPIDAPI_KEY= 
-TMDB_API_KEY=
-DISCORD_WEBHOOK=URL_WEBHOOK-DISCORD 
-COUNTRIES=FR,US,CA etc..  ( Pays souhaiter )
+# Discord
+DISCORD_WEBHOOK=https://discord.com/api/webhooks/VOTRE_WEBHOOK_URL
 
+# Configuration
+COUNTRIES=FR,US,CA
+```
 
-4 - Construis et lance le bot avec Docker Compose :
+### 3. Lancer le bot
 
-docker-compose up --build -d
-docker-compose up -d 
+```bash
+# Build et démarrage en arrière-plan
+docker-compose up -d
 
-5 - Execute une demo
+# Vérifier les logs
+docker-compose logs -f
+```
 
-docker exec -it netflix_bot python /app/netflix_bot.py
+### 4. Tester manuellement (optionnel)
 
-6 - Vérifie que le bot est bien connecté à ton serveur Discord.
+```bash
+docker exec -it bouba_discord_netflix_notifier python /app/netflix_bot.py
+```
 
+## 🗂️ Architecture du projet
 
-🔧 Dockerfile & Docker Compose
+```
+bouba-discord-netflix-notifier/
+├── data/                      # Données persistantes (anti-doublons)
+├── logs/                      # Fichiers de logs
+├── .dockerignore              # Fichiers exclus du build Docker
+├── .env                       # Variables d'environnement (à créer)
+├── .gitignore                 # Fichiers exclus de Git
+├── crontab.txt                # Configuration du cron (9h chaque jour)
+├── docker-compose.yml         # Configuration Docker Compose
+├── Dockerfile                 # Image Docker multi-stage optimisée
+├── netflix_bot.py             # Script principal du bot
+├── requirements.txt           # Dépendances Python
+├── start.sh                   # Script d'initialisation du container
+├── README.md                  # Documentation
+└── LICENSE                    # Licence open-source
+```
 
-Dockerfile :
-Il gere toute les dependances requises 
-Fichier 
-- requirements.txt
+## 📦 Dépendances
 
-docker-compose.yml :
+- **Python 3.11**
+- **requests 2.31.0** - Pour les appels API
+- **python-dotenv 1.0.0** - Pour la gestion des variables d'environnement
 
-version: '3.9'
-services:
-  netflix-notifier:
-    build: .
-    container_name: bouba_discord_netflix_notifier
-    volumes:
-      - ./appsettings.json:/app/appsettings.json
-    restart: unless-stopped
+## 🔧 Commandes utiles
 
-@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+```bash
+# Démarrer le bot
+docker-compose up -d
 
-build: ## Build l'image Docker
-	docker-compose build --no-cache
+# Arrêter le bot
+docker-compose down
 
-up: ## Démarre le container en arrière-plan
-	docker-compose up -d
+# Voir les logs en temps réel
+docker-compose logs -f
 
-down: ## Arrête et supprime le container
-	docker-compose down
+# Redémarrer le bot
+docker-compose restart
 
-restart: ## Redémarre le container
-	docker-compose restart
+# Rebuild complet
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
 
-logs: ## Affiche les logs du container
-	docker-compose logs -f
+# Vérifier le statut du healthcheck
+docker inspect bouba_discord_netflix_notifier | grep -A 10 Health
 
-logs-app: ## Affiche les logs applicatifs
-	docker exec -it $(CONTAINER_NAME) tail -f /app/logs/netflix_bot.log
+# Voir les statistiques du container
+docker stats bouba_discord_netflix_notifier --no-stream
 
-shell: ## Ouvre un shell dans le container
-	docker exec -it $(CONTAINER_NAME) /bin/bash
+# Accéder au shell du container
+docker exec -it bouba_discord_netflix_notifier /bin/bash
+```
 
-test: ## Exécute le bot manuellement pour tester
-	docker exec -it $(CONTAINER_NAME) python /app/netflix_bot.py
+## ⚙️ Configuration avancée
 
-status: ## Affiche le status du container
-	docker-compose ps
+### Modifier l'heure d'exécution
 
-inspect: ## Inspecte le container
-	docker inspect $(CONTAINER_NAME)
+Éditez le fichier `crontab.txt` :
 
-clean: ## Nettoie les volumes et images inutilisés
-	docker-compose down -v
-	docker system prune -f
+```bash
+# Format: minute heure jour mois jour_semaine commande
+0 9 * * * /usr/local/bin/python /app/netflix_bot.py >> /app/logs/netflix_bot.log 2>&1
+```
 
-prune: ## Nettoie tout Docker (ATTENTION: supprime toutes les images non utilisées)
-	docker system prune -a -f --volumes
+Exemples :
+- `0 9 * * *` → Tous les jours à 9h00
+- `0 12 * * *` → Tous les jours à 12h00
+- `0 9 * * 1` → Tous les lundis à 9h00
 
-backup: ## Backup des données
-	@mkdir -p backups
-	@tar -czf backups/netflix-bot-data-$(shell date +%Y%m%d-%H%M%S).tar.gz data/
-	@echo "Backup créé dans backups/"
+### Ajouter des pays
 
-restore: ## Restaure le dernier backup (usage: make restore FILE=backup.tar.gz)
-	@if [ -z "$(FILE)" ]; then \
-		echo "Usage: make restore FILE=backups/netflix-bot-data-YYYYMMDD-HHMMSS.tar.gz"; \
-		exit 1; \
-	fi
-	tar -xzf $(FILE) -C .
+Dans votre `.env`, modifiez la variable `COUNTRIES` :
 
-rebuild: down build up ## Rebuild complet (down + build + up)
+```env
+COUNTRIES=FR,US,CA,GB,ES,DE
+```
 
-health: ## Vérifie le health du container
-	docker inspect --format='{{.State.Health.Status}}' $(CONTAINER_NAME)
+## 🛡️ Sécurité
 
-stats: ## Affiche les stats du container
-	docker stats $(CONTAINER_NAME) --no-stream
+- ✅ Le fichier `.env` n'est **jamais** copié dans l'image Docker
+- ✅ Les secrets sont passés via variables d'environnement au runtime
+- ✅ Image Docker optimisée avec multi-stage build
+- ✅ Mise à jour automatique des packages système avec `apt-get`
 
+## 📊 Monitoring
 
-🤝 Contribution
+Le bot inclut un **healthcheck** qui vérifie toutes les heures :
+- Que le fichier de données existe (`sent_ids.json`)
+- Que le container fonctionne correctement
 
-Les contributions sont bienvenues !
+```bash
+# Vérifier la santé du container
+docker ps
+```
 
-Ouvre une issue pour signaler un bug ou proposer une idée.
+Le status peut être :
+- `healthy` ✅ - Le bot fonctionne correctement
+- `unhealthy` ❌ - Problème détecté
+- `starting` ⏳ - En cours de démarrage (30s)
 
-Envoie un pull request pour améliorer le projet.
+## 🐛 Dépannage
 
+### Le bot ne démarre pas
 
-Les contributions sont bienvenues !
+```bash
+# Vérifier les logs
+docker-compose logs
 
-Ouvre une issue pour signaler un bug ou proposer une idée.
+# Vérifier que les variables d'environnement sont correctes
+docker exec -it bouba_discord_netflix_notifier printenv | grep -E "RAPIDAPI|TMDB|DISCORD"
+```
 
-Envoie un pull request pour améliorer le projet.
+### Les notifications ne s'affichent pas
 
-📄 Licence
+1. Vérifiez que votre webhook Discord est valide
+2. Testez manuellement le bot :
+   ```bash
+   docker exec -it bouba_discord_netflix_notifier python /app/netflix_bot.py
+   ```
+3. Vérifiez les logs : `docker-compose logs -f`
 
-License Open-Source.
+### Le container est "unhealthy"
+
+```bash
+# Vérifier si le fichier de données existe
+docker exec -it bouba_discord_netflix_notifier ls -la /app/data/
+
+# Redémarrer le container
+docker-compose restart
+```
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! 
+
+1. Fork le projet
+2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/ma-feature`)
+3. Committez vos changements (`git commit -m 'Ajout de ma feature'`)
+4. Pushez vers la branche (`git push origin feature/ma-feature`)
+5. Ouvrez une Pull Request
+
+## 📄 Licence
+
+Ce projet est sous licence Open-Source. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+## 👤 Auteur
+
+**bouba89**
+
+- GitHub: [@bouba89](https://github.com/bouba89)
+- Projet: [bouba-discord-netflix-notifier](https://github.com/bouba89/bouba-discord-netflix-notifier)
+
+## 🙏 Remerciements
+
+- [UNOGS API](https://rapidapi.com/unogs/api/unogs) pour les données Netflix
+- [TMDB API](https://www.themoviedb.org/) pour les informations détaillées des films/séries
+- La communauté Docker pour les bonnes pratiques
+
+---
+
+⭐ Si ce projet vous est utile, n'hésitez pas à lui donner une étoile sur GitHub !

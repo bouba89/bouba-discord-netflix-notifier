@@ -116,5 +116,4 @@ Envoie un pull request pour améliorer le projet.
 
 📄 Licence
 
-MIT License – voir LICENSE
- pour plus de détails.
+License Open-Source.

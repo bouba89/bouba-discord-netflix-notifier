@@ -1,4 +1,5 @@
-# Dans start.sh
+FROM python:3.11-slim
+
 printenv | grep -v "no_proxy" >> /etc/environment
 
 # --- Installer cron et utilitaires ---

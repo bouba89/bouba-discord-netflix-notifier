@@ -1,5 +1,3 @@
-FROM python:3.11-slim
-
 # Dans start.sh
 printenv | grep -v "no_proxy" >> /etc/environment
 
@@ -22,9 +20,8 @@ RUN crontab /etc/cron.d/netflix-cron
 RUN crontab crontab.txt && \
     chmod 0644 crontab.txt
     
-
-# --- Installer dépendances Python ---
-RUN pip install --no-cache-dir requests python-dotenv
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # --- Fichier log cron ---
 RUN touch /var/log/cron.log

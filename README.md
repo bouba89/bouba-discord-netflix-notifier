@@ -15,11 +15,10 @@ Crontab Mise automatiquement au build
 
 Fonction  Anti-doublons
 
-Ne genere pas la meme serie ou film par jour 
-Stockage dans /app/data/sent_ids.json
-
-# --- Sauvegarde dans un dossier data
-MEMORY_FILE = "/app/data/sent_ids.json"
+- Ne genere pas la meme serie ou film par jour 
+- Stockage dans /app/data/sent_ids.json
+- Sauvegarde dans dossier data
+  MEMORY_FILE = "/app/data/sent_ids.json"
 
 🗂️ Architecture du projet
 bouba-discord-netflix-notifier 

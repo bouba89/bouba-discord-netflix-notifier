@@ -32,8 +32,5 @@ echo "✅ Cron started successfully"
 echo "📊 Watching logs at /app/logs/netflix_bot.log"
 echo "----------------------------------------"
 
-# Créer le fichier de log s'il n'existe pas
-touch /app/logs/netflix_bot.log
-
-# Suivre les logs
-tail -f /app/logs/netflix_bot.log
+# Suivre les logs (créé automatiquement le fichier si nécessaire)
+tail -f /app/logs/netflix_bot.log 2>/dev/null || (touch /app/logs/netflix_bot.log && tail -f /app/logs/netflix_bot.log)

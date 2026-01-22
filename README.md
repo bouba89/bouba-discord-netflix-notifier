@@ -50,31 +50,29 @@ Clone le projet :
 git clone https://github.com/bouba89/bouba-discord-netflix-notifier.git
 cd bouba-discord-netflix-notifier
 
-2 - Copie le fichier de configuration :
+2 - Creez un fichier .env a la base du projet :
+touch .env
 
-cp appsettings.example.json appsettings.json
+3 - Dans ton fichier .env 
 
+Remplis tes id token et API
 
-3 - Remplis appsettings.json avec tes clés et informations :
+RAPIDAPI_KEY= 
+TMDB_API_KEY=
+DISCORD_WEBHOOK=URL_WEBHOOK-DISCORD 
+COUNTRIES=FR,US,CA etc..  ( Pays souhaiter )
 
-{
-  "DiscordToken": "TON_TOKEN_DISCORD",
-  "ChannelId": "ID_DU_CHANNEL",
-  "NetflixCategories": ["Action", "Comédie", "Documentaire"],
-  "UNOGS": {
-    "X-RapidAPI-Key": "TA_CLE_RAPIDAPI",
-    "X-RapidAPI-Host": "unogsng.p.rapidapi.com"
-  },
-  "TMDB": {
-    "ApiKey": "TA_CLE_TMDB"
-  }
-}
 
 4 - Construis et lance le bot avec Docker Compose :
 
 docker-compose up --build -d
+docker-compose up -d 
 
-5 - Vérifie que le bot est bien connecté à ton serveur Discord.
+5 - Execute une demo
+
+docker exec -it netflix_bot python /app/netflix_bot.py
+
+6 - Vérifie que le bot est bien connecté à ton serveur Discord.
 
 FROM python:3.11-slim
 

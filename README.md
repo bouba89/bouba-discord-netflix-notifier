@@ -1,6 +1,6 @@
 🎬 Bouba Discord Netflix Notifier
 
-Un bot Discord qui t’informe automatiquement des nouveautés Netflix directement dans ton serveur !
+Un bot Discord en python deployable via un containeur docker  qui t’informe automatiquement des nouveautés Netflix directement dans ton serveur !
 
 ✨ Fonctionnalités
 
@@ -15,15 +15,10 @@ Compatible avec UNOGS API et TMDB API pour récupérer les contenus.
 Déployable facilement avec Docker et Docker Compose.
 
 🗂️ Architecture du projet
-bouba-discord-netflix-notifier/
-├─ src/                  # Code source principal
-│  ├─ Bot/               # Gestion du bot Discord
-│  ├─ Services/          # Services Netflix, UNOGS, TMDB
-│  ├─ Models/            # Modèles de données
-│  └─ main.py            # Point d'entrée du bot (exemple)
-├─ appsettings.example.json # Fichier de configuration exemple
+bouba-discord-netflix-notifier                  
 ├─ Dockerfile
 ├─ docker-compose.yml
+|_ netflix-bot.py
 ├─ README.md
 └─ LICENSE
 

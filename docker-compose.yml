@@ -1,0 +1,11 @@
+services:
+  netflix-bot:
+    build: .
+    container_name: netflix_bot
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./netflix_bot.py:/app/netflix_bot.py
+      - ./logs:/var/log
+    restart: unless-stopped

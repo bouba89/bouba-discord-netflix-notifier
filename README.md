@@ -99,6 +99,66 @@ services:
       - ./appsettings.json:/app/appsettings.json
     restart: unless-stopped
 
+@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+build: ## Build l'image Docker
+	docker-compose build --no-cache
+
+up: ## Démarre le container en arrière-plan
+	docker-compose up -d
+
+down: ## Arrête et supprime le container
+	docker-compose down
+
+restart: ## Redémarre le container
+	docker-compose restart
+
+logs: ## Affiche les logs du container
+	docker-compose logs -f
+
+logs-app: ## Affiche les logs applicatifs
+	docker exec -it $(CONTAINER_NAME) tail -f /app/logs/netflix_bot.log
+
+shell: ## Ouvre un shell dans le container
+	docker exec -it $(CONTAINER_NAME) /bin/bash
+
+test: ## Exécute le bot manuellement pour tester
+	docker exec -it $(CONTAINER_NAME) python /app/netflix_bot.py
+
+status: ## Affiche le status du container
+	docker-compose ps
+
+inspect: ## Inspecte le container
+	docker inspect $(CONTAINER_NAME)
+
+clean: ## Nettoie les volumes et images inutilisés
+	docker-compose down -v
+	docker system prune -f
+
+prune: ## Nettoie tout Docker (ATTENTION: supprime toutes les images non utilisées)
+	docker system prune -a -f --volumes
+
+backup: ## Backup des données
+	@mkdir -p backups
+	@tar -czf backups/netflix-bot-data-$(shell date +%Y%m%d-%H%M%S).tar.gz data/
+	@echo "Backup créé dans backups/"
+
+restore: ## Restaure le dernier backup (usage: make restore FILE=backup.tar.gz)
+	@if [ -z "$(FILE)" ]; then \
+		echo "Usage: make restore FILE=backups/netflix-bot-data-YYYYMMDD-HHMMSS.tar.gz"; \
+		exit 1; \
+	fi
+	tar -xzf $(FILE) -C .
+
+rebuild: down build up ## Rebuild complet (down + build + up)
+
+health: ## Vérifie le health du container
+	docker inspect --format='{{.State.Health.Status}}' $(CONTAINER_NAME)
+
+stats: ## Affiche les stats du container
+	docker stats $(CONTAINER_NAME) --no-stream
+
+
 🤝 Contribution
 
 Les contributions sont bienvenues !

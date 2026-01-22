@@ -32,5 +32,8 @@ echo "✅ Cron started successfully"
 echo "📊 Watching logs at /app/logs/netflix_bot.log"
 echo "----------------------------------------"
 
-# Suivre les logs (garde le container actif)
+# Créer le fichier de log s'il n'existe pas
+touch /app/logs/netflix_bot.log
+
+# Suivre les logs
 tail -f /app/logs/netflix_bot.log

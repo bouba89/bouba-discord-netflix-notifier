@@ -1,2 +1,1 @@
-0 9 * * * python /app/netflix_bot.py >> /var/log/cron.log 2>&1
-
+0 9 * * * python3 /app/netflix_bot.py >> /app/logs/netflix_bot.log 2>&1

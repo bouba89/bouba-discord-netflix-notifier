@@ -8,13 +8,11 @@ API_KEY = os.environ.get("RAPIDAPI_KEY")
 TMDB_API_KEY = os.environ.get("TMDB_API_KEY")
 WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK")
 COUNTRIES = os.environ.get("COUNTRIES", "FR,US,CA").split(",")
-MEMORY_FILE = "/app/sent_ids.json"
+MEMORY_FILE = "/app/data/sent_ids.json"
 API_HOST = "unogsng.p.rapidapi.com"
 
 # --- Dates ---
-today = datetime.utcnow().date()
-yesterday = today - timedelta(days=1)
-
+today = datetime.utcnow().date()  # Version finale pour production
 
 # --- Anti-doublons ---
 # S'assurer que le répertoire existe
@@ -28,6 +26,9 @@ if not os.path.isfile(MEMORY_FILE):
 # Charger les nfid déjà envoyés
 with open(MEMORY_FILE, "r") as f:
     sent_ids = json.load(f)
+
+print(f"📋 {len(sent_ids)} contenus déjà envoyés chargés depuis {MEMORY_FILE}")
+
 # --- Fonction fetch titres uNoGS ---
 def fetch_titles():
     url = f"https://{API_HOST}/search"
@@ -36,17 +37,17 @@ def fetch_titles():
         "X-RapidAPI-Host": API_HOST
     }
     params = {
-        "limit": 100,  # récupérer plus pour filtrer
+        "limit": 100,
         "orderby": "date_added"
     }
     try:
         r = requests.get(url, headers=headers, params=params, timeout=30)
         r.raise_for_status()
         results = r.json().get("results", [])
-        print(f"Total titres récupérés: {len(results)}")
+        print(f"✅ Total titres récupérés: {len(results)}")
         return results
     except Exception as e:
-        print(f"Erreur API uNoGS: {e}")
+        print(f"❌ Erreur API uNoGS: {e}")
         return []
 
 # --- Vérifier disponibilité par pays ---
@@ -58,7 +59,7 @@ def is_available_in_country(title, country_code):
         clist_dict = json.loads(clist_str)
         return country_code in clist_dict
     except Exception as e:
-        print(f"Erreur parsing clist: {e} / {title['title']}")
+        print(f"⚠️  Erreur parsing clist: {e} / {title['title']}")
         return False
 
 # --- Enrichir via TMDB ---
@@ -86,12 +87,12 @@ def enrich_with_tmdb(title, year, vtype="movie"):
         overview = tmdb_data.get("overview", "")
         return poster, overview
     except Exception as e:
-        print(f"Erreur TMDB pour {title}: {e}")
+        print(f"⚠️  Erreur TMDB pour {title}: {e}")
         return "", ""
 
 def send_discord(movies, series, country):
     if not movies and not series:
-        print(f"Aucune nouvelle sortie Netflix détectée pour {country}.")
+        print(f"ℹ️  Aucune nouvelle sortie Netflix détectée pour {country}.")
         return
 
     embeds = []
@@ -147,35 +148,67 @@ def send_discord(movies, series, country):
             r = requests.post(WEBHOOK_URL, json={"embeds": chunk}, timeout=10)
             r.raise_for_status()
         except Exception as e:
-            print(f"Erreur envoi Discord: {e}")
+            print(f"❌ Erreur envoi Discord: {e}")
 
-    print(f"Message Discord envoyé pour {country}.")
+    print(f"✅ Message Discord envoyé pour {country}.")
 
 
 # --- Script principal ---
+print("\n" + "="*60)
+print(f"🎬 Netflix Bot - {datetime.now()}")
+print("="*60)
+
 all_titles = fetch_titles()
+total_new = 0  # Compteur de nouveautés
 
 for country_code in COUNTRIES:
     country_code = country_code.strip()
+    print(f"\n🌍 Traitement du pays: {country_code}")
+    
     # Filtrer par pays
     titles_country = [t for t in all_titles if is_available_in_country(t, country_code)]
-    # Filtrer last 24h
+    print(f"  📺 {len(titles_country)} titres disponibles")
+    
+    # Filtrer les contenus du jour même (depuis minuit UTC)
     titles_recent = []
     for t in titles_country:
         try:
             title_date = datetime.strptime(t['titledate'], "%Y-%m-%d").date()
-            if title_date >= yesterday:
+            if title_date == today:  # Seulement aujourd'hui
                 titles_recent.append(t)
         except Exception as e:
-            print(f"Erreur parsing date: {e} / {t.get('title','')}")
+            print(f"⚠️  Erreur parsing date: {e} / {t.get('title','')}")
+    
+    print(f"  🆕 {len(titles_recent)} titres ajoutés aujourd'hui ({today})")
+    
     # Filtrer anti-doublons
     new_titles = [t for t in titles_recent if t['nfid'] not in sent_ids]
-    sent_ids.extend([t['nfid'] for t in new_titles])
-    # Séparer films / séries
-    movies = [t for t in new_titles if t.get('vtype') == 'movie']
-    series = [t for t in new_titles if t.get('vtype') == 'series']
-    # Envoyer Discord
-    send_discord(movies, series, country_code)
+    print(f"  ✨ {len(new_titles)} nouveaux titres (non envoyés)")
+    
+    if new_titles:
+        # Ajouter les IDs
+        new_ids = [t['nfid'] for t in new_titles]
+        sent_ids.extend(new_ids)
+        total_new += len(new_titles)
+        
+        # Séparer films / séries
+        movies = [t for t in new_titles if t.get('vtype') == 'movie']
+        series = [t for t in new_titles if t.get('vtype') == 'series']
+        
+        print(f"  🎥 Films: {len(movies)} | 📺 Séries: {len(series)}")
+        
+        # Envoyer Discord
+        send_discord(movies, series, country_code)
 
-# --- Sauvegarder mémoire ---
-MEMORY_FILE = "/app/data/sent_ids.json"
+# ✅ CRITIQUE: SAUVEGARDER LA MÉMOIRE (après la boucle, sans indentation)
+try:
+    with open(MEMORY_FILE, "w") as f:
+        json.dump(sent_ids, f, indent=2)
+    print(f"\n💾 {len(sent_ids)} IDs sauvegardés dans {MEMORY_FILE}")
+    print(f"✨ {total_new} nouveaux contenus envoyés ce run")
+except Exception as e:
+    print(f"\n❌ ERREUR CRITIQUE lors de la sauvegarde: {e}")
+
+print("\n" + "="*60)
+print("🏁 Terminé")
+print("="*60)

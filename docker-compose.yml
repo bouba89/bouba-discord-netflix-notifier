@@ -6,9 +6,11 @@ services:
     # Variables d'environnement depuis le fichier .env
     env_file:
       - .env
-    
+ # Définir le fuseau horaire
+    environment:
+      - TZ=Europe/Paris    
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-    
+      - /etc/localtime:/etc/localtime:ro  # Synchroniser avec l'hôte (optionnel)    
     restart: unless-stopped

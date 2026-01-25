@@ -1,1 +1,5 @@
-0 9 * * * python3 /app/netflix_bot.py >> /app/logs/netflix_bot.log 2>&1
+# Netflix Bot - Exécution quotidienne à 9h00 UTC
+# CORRECTION: Charge les variables d'environnement avant l'exécution
+
+# Charger les variables d'environnement puis exécuter le bot
+0 8 * * * . /app/.env_for_cron && /app/run_netflix.sh >> /app/logs/cron.log 2>&1

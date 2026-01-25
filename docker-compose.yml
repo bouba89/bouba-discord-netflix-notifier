@@ -1,0 +1,14 @@
+services:
+  netflix-notifier:
+    build: .
+    container_name: bouba_discord_netflix_notifier
+    
+    # Variables d'environnement depuis le fichier .env
+    env_file:
+      - .env
+    
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    
+    restart: unless-stopped

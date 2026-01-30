@@ -12,5 +12,8 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-      - /etc/localtime:/etc/localtime:ro  # Synchroniser avec l'hôte (optionnel)    
+      - /etc/localtime:/etc/localtime:ro  # Synchroniser avec l'hôte (optionnel)
+# Exposer le port Flask pour l'interface web
+    ports:
+      - "5000:5000"    
     restart: unless-stopped

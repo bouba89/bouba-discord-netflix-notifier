@@ -11,6 +11,7 @@ import requests
 import json
 from datetime import datetime, timedelta
 import logging
+import html  # Pour décoder les entités HTML
 
 # ============================================================================
 # CONFIGURATION DU LOGGING DÉTAILLÉ
@@ -166,18 +167,22 @@ def fetch_titles():
 # VÉRIFIER DISPONIBILITÉ PAR PAYS
 # ============================================================================
 def is_available_in_country(title, country_code):
+    title_name = title.get('title', 'N/A')
+    
+    # NOUVEAU: Si pas de clist, on ACCEPTE le contenu
     if not title.get("clist"):
-        logger.debug(f"  ⚠️  '{title.get('title', 'N/A')}' - Pas de clist")
-        return False
+        logger.info(f"  ✅ '{title_name}' - Pas de clist, ACCEPTÉ automatiquement")
+        return True
+    
     clist_str = "{" + title["clist"] + "}"
     try:
         clist_dict = json.loads(clist_str)
         available = country_code in clist_dict
-        logger.debug(f"  {'✅' if available else '❌'} '{title.get('title', 'N/A')}' - {country_code}")
+        logger.debug(f"  {'✅' if available else '❌'} '{title_name}' - {country_code}")
         return available
     except Exception as e:
-        logger.warning(f"⚠️  Erreur parsing clist: {e} / {title.get('title', 'N/A')}")
-        return False
+        logger.warning(f"⚠️  Erreur parsing clist: {e} / {title_name}")
+        return True  # En cas d'erreur, accepter quand même
 
 # ============================================================================
 # ENRICHIR VIA TMDB (avec debug)

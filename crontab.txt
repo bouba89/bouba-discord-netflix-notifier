@@ -1,5 +1,4 @@
-# Netflix Bot - Exécution quotidienne à 9h00 UTC
-# CORRECTION: Charge les variables d'environnement avant l'exécution
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-# Charger les variables d'environnement puis exécuter le bot
-0 8 * * * . /app/.env_for_cron && /app/run_netflix.sh >> /app/logs/cron.log 2>&1
+0 8 * * * bash -c "export $(cat /app/.env_for_cron | xargs) && /app/run_netflix.sh" >> /app/logs/cron.log 2>&1

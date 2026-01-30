@@ -17,8 +17,13 @@ RUN pip install --user --no-cache-dir -r requirements.txt
 FROM python:3.11-slim
 WORKDIR /app
 
-# Installer cron, curl et bash
-RUN apt-get update && apt-get install -y --no-install-recommends cron curl bash && rm -rf /var/lib/apt/lists/*
+# Installer cron, curl, bash et procps (pour ps)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cron \
+    curl \
+    bash \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copier les dépendances Python depuis le builder
 COPY --from=builder /root/.local /root/.local
@@ -28,7 +33,9 @@ ENV PATH=/root/.local/bin:/usr/local/bin:$PATH
 
 # Copier l'application
 COPY netflix_bot.py /app/
+COPY web_interface.py /app/
 COPY crontab.txt /app/
+COPY templates /app/templates/
 
 # Créer les dossiers nécessaires
 RUN mkdir -p /app/data /app/logs
@@ -76,7 +83,7 @@ RUN echo '#!/bin/bash' > /app/run_netflix.sh && \
     chmod +x /app/run_netflix.sh
 
 # =========================================
-# Script de démarrage principal
+# Script de démarrage principal avec Flask
 # =========================================
 RUN echo '#!/bin/bash' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
@@ -122,10 +129,17 @@ RUN echo '#!/bin/bash' > /app/start.sh && \
     echo 'crontab -l' >> /app/start.sh && \
     echo 'echo ""' >> /app/start.sh && \
     echo '' >> /app/start.sh && \
-    echo '# Démarrer cron' >> /app/start.sh && \
+    echo '# Démarrer cron en arrière-plan' >> /app/start.sh && \
     echo 'echo "⏰ Démarrage de cron..."' >> /app/start.sh && \
     echo 'cron' >> /app/start.sh && \
     echo 'echo "✅ Cron démarré"' >> /app/start.sh && \
+    echo 'echo ""' >> /app/start.sh && \
+    echo '' >> /app/start.sh && \
+    echo '# Démarrer Flask en arrière-plan' >> /app/start.sh && \
+    echo 'echo "🌐 Démarrage de l'\''interface web sur le port 5000..."' >> /app/start.sh && \
+    echo 'cd /app && python3 /app/web_interface.py &' >> /app/start.sh && \
+    echo 'FLASK_PID=$!' >> /app/start.sh && \
+    echo 'echo "✅ Interface web démarrée (PID: $FLASK_PID)"' >> /app/start.sh && \
     echo 'echo ""' >> /app/start.sh && \
     echo '' >> /app/start.sh && \
     echo '# Tester immédiatement' >> /app/start.sh && \
@@ -136,11 +150,12 @@ RUN echo '#!/bin/bash' > /app/start.sh && \
     echo 'echo ""' >> /app/start.sh && \
     echo 'echo "=================================================="' >> /app/start.sh && \
     echo 'echo "✅ Container opérationnel"' >> /app/start.sh && \
-    echo 'echo "⏰ Prochaine exécution: 9h00 UTC chaque jour"' >> /app/start.sh && \
+    echo 'echo "⏰ Prochaine exécution: 8h00 UTC chaque jour"' >> /app/start.sh && \
+    echo 'echo "🌐 Interface web: http://localhost:5000"' >> /app/start.sh && \
     echo 'echo "📋 Logs disponibles dans /app/logs/"' >> /app/start.sh && \
     echo 'echo "=================================================="' >> /app/start.sh && \
     echo '' >> /app/start.sh && \
-    echo '# Suivre les logs' >> /app/start.sh && \
+    echo '# Suivre les logs Flask' >> /app/start.sh && \
     echo 'tail -f /app/logs/netflix_bot.log /app/logs/netflix_bot_debug.log 2>/dev/null || tail -f /dev/null' >> /app/start.sh && \
     chmod +x /app/start.sh
 
@@ -149,6 +164,9 @@ RUN crontab /app/crontab.txt
 
 # Afficher la crontab pour debug
 RUN echo "📋 Crontab chargée:" && crontab -l
+
+# Exposer le port Flask
+EXPOSE 5000
 
 # Lancer avec bash explicitement
 CMD ["/bin/bash", "/app/start.sh"]

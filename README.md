@@ -38,13 +38,13 @@ Un bot Discord en Python déployable via Docker qui vous informe automatiquement
 ## 🎯 Captures d'écran
 
 ### Dashboard
-![Dashboard](https://via.placeholder.com/800x400?text=Netflix+Bot+Dashboard)
+![Dashboard](./screenshots/dashboard.png)
 
 ### Page de Connexion
-![Login](https://via.placeholder.com/800x400?text=Login+Page)
+![Login](./screenshots/login.png)
 
 ### Configuration Interactive
-![Settings](https://via.placeholder.com/800x400?text=Settings+Page)
+![Settings](./screenshots/settings.png)
 
 ## 🗂️ Architecture du Projet
 

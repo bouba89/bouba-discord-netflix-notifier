@@ -1,36 +1,32 @@
 #!/bin/bash
 
-# Afficher un message de démarrage
-echo "🎬 Starting Netflix Bot..."
+# Afficher la date
 echo "📅 $(date)"
 
 # Exporter les variables d'environnement pour cron
 echo "🔑 Exporting environment variables for cron..."
 printenv | grep -v "no_proxy" >> /etc/environment
 
-# Vérifier que les variables critiques sont présentes
-if [ -z "$RAPIDAPI_KEY" ]; then
-    echo "❌ ERROR: RAPIDAPI_KEY not set!"
-    exit 1
-fi
-
-if [ -z "$DISCORD_WEBHOOK" ]; then
-    echo "❌ ERROR: DISCORD_WEBHOOK not set!"
-    exit 1
-fi
-
+# Afficher les variables d'environnement importantes
 echo "✅ Environment variables loaded"
+if [ ! -z "$RAPIDAPI_KEY" ]; then
+    echo "   RAPIDAPI_KEY: ${RAPIDAPI_KEY:0:10}***"
+fi
+if [ ! -z "$TMDB_API_KEY" ]; then
+    echo "   TMDB_API_KEY: ${TMDB_API_KEY:0:10}***"
+fi
+if [ ! -z "$COUNTRIES" ]; then
+    echo "   COUNTRIES: $COUNTRIES"
+fi
 
-# Créer les dossiers si nécessaire
-mkdir -p /app/data /app/logs
-
-# Démarrer cron
+# Démarrer cron en arrière-plan
 echo "⏰ Starting cron service..."
 cron
 
-echo "✅ Cron started successfully"
-echo "📊 Watching logs at /app/logs/netflix_bot.log"
-echo "----------------------------------------"
+# Lancer le bot Netflix en arrière-plan
+echo "🤖 Starting Netflix bot..."
+python3 netflix_bot.py &
 
-# Suivre les logs (créé automatiquement le fichier si nécessaire)
-tail -f /app/logs/netflix_bot.log 2>/dev/null || (touch /app/logs/netflix_bot.log && tail -f /app/logs/netflix_bot.log)
+# Lancer l'interface web en premier plan (pour garder le conteneur actif)
+echo "🌐 Starting web interface..."
+python3 web_interface.py

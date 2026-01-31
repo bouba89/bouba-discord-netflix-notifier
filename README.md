@@ -1,475 +1,372 @@
 # 🎬 Bouba Discord Netflix Notifier
 
-[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.0-green.svg)](https://flask.palletsprojects.com/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-Open_Source-green.svg)](LICENSE)
+Un bot Discord en Python déployable via Docker qui vous informe automatiquement des nouveautés Netflix directement sur votre serveur Discord, au jour le jour !
 
-Un bot Discord intelligent avec **interface web de monitoring** qui vous informe automatiquement des nouveautés Netflix directement dans votre serveur Discord. Recevez chaque jour à 9h les dernières sorties de films et séries !
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Docker](https://img.shields.io/badge/Docker-Compatible-blue)
+![License](https://img.shields.io/badge/License-Open%20Source-green)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
 
 ## ✨ Fonctionnalités
 
 ### 🤖 Bot Discord
-- 📅 **Notifications quotidiennes automatiques** - Tous les jours à 9h (heure de sortie FR VOD Netflix)
-- 🎭 **Suivi par catégories** - Films et séries classés par genre (Action, Comédie, Documentaire, etc.)
-- 🌍 **Multi-pays** - Configurable pour suivre plusieurs pays simultanément
-- 🔄 **Anti-doublons intelligent** - Évite les notifications répétitives
-- 📊 **Informations détaillées** - Intégration TMDB pour les métadonnées enrichies
-- 💾 **Persistance des données** - Stockage local des contenus déjà envoyés
+- ✅ **Notifications automatiques** des nouveaux films et séries Netflix
+- ✅ **Exécution planifiée** via cron (configurable)
+- ✅ **Multi-pays** : surveillez Netflix dans plusieurs régions simultanément
+- ✅ **Anti-doublons** : ne notifie jamais deux fois le même contenu
+- ✅ **Informations enrichies** via TMDB API (synopsis, note, poster, etc.)
+- ✅ **Catégorisation** par genre (Action, Comédie, Documentaire, etc.)
 
-### 🌐 Interface Web (Flask)
-- 📊 **Dashboard en temps réel** - Surveillance du statut du bot
-- 📈 **Statistiques détaillées** - Nombre de contenus envoyés, par pays, dernière exécution
-- 📋 **Visualisation des logs** - Logs en direct (debug & cron)
-- ▶️ **Exécution manuelle** - Lancer le bot à la demande depuis l'interface
-- 🔧 **Gestion de configuration** - Visualiser les variables d'environnement
-- 🔄 **Réinitialisation mémoire** - Reset de la base anti-doublons
-- 📥 **Téléchargement des logs** - Export des fichiers de logs
-- 🐛 **Debug API** - Visualisation des requêtes API
+### 🌐 Interface Web Moderne
+- ✅ **Dashboard Netflix-style** avec design professionnel
+- ✅ **Authentification sécurisée** (mots de passe hashés avec bcrypt)
+- ✅ **Monitoring en temps réel** : statistiques, logs, état du cron
+- ✅ **Configuration interactive** :
+  - Modifier les pays surveillés depuis l'interface
+  - Changer l'horaire du cron sans toucher au code
+  - Gestion des utilisateurs et des mots de passe
+- ✅ **Interface responsive** compatible mobile/tablette/desktop
+- ✅ **Logs en direct** avec auto-refresh
+- ✅ **Exécution manuelle** du bot en un clic
 
-### 🐳 Déploiement
-- **Docker ready** - Déploiement facile avec Docker et Docker Compose
-- **Auto-configuration** - Cron automatiquement configuré au build
-- **Volumes persistants** - Conservation des données et logs
+### 📊 Statistiques Détaillées
+- Total de contenus notifiés
+- Nouveaux contenus par pays
+- Statistiques du dernier run
+- Historique des exécutions
 
-## 🗂️ Structure du projet
+## 🎯 Captures d'écran
+
+### Dashboard
+![Dashboard](https://via.placeholder.com/800x400?text=Netflix+Bot+Dashboard)
+
+### Page de Connexion
+![Login](https://via.placeholder.com/800x400?text=Login+Page)
+
+### Configuration Interactive
+![Settings](https://via.placeholder.com/800x400?text=Settings+Page)
+
+## 🗂️ Architecture du Projet
 
 ```
 bouba-discord-netflix-notifier/
-├── data/                        # Dossier de données persistantes
-│   ├── sent_ids.json           # Historique des contenus envoyés
-│   └── api_responses_debug.json # Debug des réponses API
-├── logs/                        # Logs du bot
-│   ├── netflix_bot_debug.log   # Logs détaillés du bot
-│   └── cron.log                # Logs des tâches planifiées
-├── templates/                   # Templates HTML pour Flask
-│   └── index.html              # Dashboard principal
-├── Dockerfile                  # Configuration Docker
-├── docker-compose.yml          # Orchestration Docker
-├── netflix_bot.py              # Script principal du bot
-├── web_interface.py            # Interface web Flask
-├── crontab.txt                 # Configuration des tâches planifiées
-├── .env                        # Variables d'environnement (à créer)
-└── README.md                   # Documentation
+├── 📁 data/                    # Données persistantes
+│   ├── sent_ids.json          # Mémoire anti-doublons
+│   └── users.json             # Base de données utilisateurs
+├── 📁 logs/                    # Logs du bot
+│   ├── cron.log               # Logs des exécutions cron
+│   └── netflix_bot_debug.log  # Logs de debug
+├── 📁 templates/               # Templates HTML Flask
+│   ├── index.html             # Dashboard principal
+│   ├── login.html             # Page de connexion
+│   └── settings.html          # Page de configuration
+├── 🐳 Dockerfile               # Image Docker
+├── 🐳 docker-compose.yml       # Configuration Docker Compose
+├── 🐍 netflix_bot.py           # Script principal du bot
+├── 🌐 web_interface.py         # Interface web Flask
+├── ⏰ crontab.txt              # Configuration du cron
+├── 🚀 start.sh                 # Script de démarrage
+├── 📦 requirements.txt         # Dépendances Python
+└── 📖 README.md               # Documentation
 ```
 
 ## ⚙️ Prérequis
 
-Avant de commencer, assurez-vous d'avoir :
-
-- 🐳 [Docker](https://www.docker.com/) et Docker Compose installés
-- 🐍 Python 3.11 (si exécution locale)
-- 🤖 [Token Discord](https://discord.com/developers/applications) pour votre bot
-- 🔑 Abonnement à l'[API UNOGS](https://rapidapi.com/unogs/api/unogs) via RapidAPI
-- 🎬 Clé [API TMDB](https://www.themoviedb.org/settings/api) pour les métadonnées
-- 🌐 Connexion Internet
+- 🐳 **Docker** installé ([Guide d'installation](https://docs.docker.com/get-docker/))
+- 🐳 **Docker Compose** installé
+- 🔑 **Token Discord** (Webhook pour les notifications)
+- 🔑 **Clé API UNOGS** via [RapidAPI](https://rapidapi.com/unogs/api/unogs)
+- 🔑 **Clé API TMDB** via [The Movie Database](https://www.themoviedb.org/settings/api)
+- 🌐 **Connexion Internet**
 
 ## 🚀 Installation & Lancement
 
-### 1️⃣ Cloner le repository
+### 1️⃣ Cloner le projet
 
 ```bash
 git clone https://github.com/bouba89/bouba-discord-netflix-notifier.git
 cd bouba-discord-netflix-notifier
 ```
 
-### 2️⃣ Créer le fichier de configuration
+### 2️⃣ Créer le fichier `.env`
 
 ```bash
 touch .env
 ```
 
-### 3️⃣ Configurer les variables d'environnement
-
-Éditez le fichier `.env` et ajoutez vos clés API :
+Remplissez le fichier `.env` avec vos clés API :
 
 ```env
-# API RapidAPI pour UNOGS
+# APIs Netflix & TMDB
 RAPIDAPI_KEY=votre_cle_rapidapi_ici
-
-# API TMDB pour les informations détaillées
 TMDB_API_KEY=votre_cle_tmdb_ici
 
-# Webhook Discord pour recevoir les notifications
+# Discord Webhook
 DISCORD_WEBHOOK=https://discord.com/api/webhooks/votre_webhook_ici
 
-# Pays à surveiller (codes ISO, séparés par des virgules)
-COUNTRIES=FR,US,CA,GB
+# Pays à surveiller (codes ISO 2 lettres, séparés par des virgules)
+COUNTRIES=FR,US,CA,GB,DE,ES,IT,JP
+
+# Clé secrète Flask pour les sessions (générez-en une aléatoire)
+FLASK_SECRET_KEY=votre_cle_secrete_super_aleatoire_ici
 ```
 
-### 4️⃣ Lancer avec Docker Compose
-
-**Construction et démarrage initial :**
+💡 **Générer une clé secrète Flask sécurisée :**
 ```bash
-docker-compose up --build -d
+python3 -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-**Démarrage après la première installation :**
-```bash
-docker-compose up -d
-```
-
-### 5️⃣ Accéder à l'interface web
-
-Une fois le conteneur lancé, l'interface web est accessible à :
-
-```
-http://localhost:5000
-```
-
-🎉 Vous pouvez maintenant monitorer votre bot en temps réel !
-
-### 6️⃣ Tester le bot manuellement
-
-**Via l'interface web :**
-- Cliquez sur le bouton "▶️ Exécuter Maintenant" dans le dashboard
-
-**Via la ligne de commande :**
-```bash
-docker exec -it netflix_bot python /app/netflix_bot.py
-```
-
-## 🖥️ Interface Web - Fonctionnalités
-
-### Dashboard Principal
-
-L'interface web Flask offre un dashboard complet avec plusieurs sections :
-
-#### 📊 Section Statut
-- **État du bot** : Running / Stopped
-- **Cron actif** : Vérification du service cron
-- **Variables d'environnement** : Affichage masqué des clés sensibles
-- **Dernière exécution** : Timestamp de la dernière notification envoyée
-
-#### 📈 Section Statistiques
-- **Total de contenus envoyés** : Nombre cumulé depuis le début
-- **Statistiques par pays** : Répartition des notifications par pays configuré
-- **Dernière exécution** : 
-  - Total de contenus traités
-  - Nouveaux contenus envoyés
-  - Date et heure d'exécution
-
-#### 📋 Section Logs
-- **Logs en temps réel** : Affichage des 100 dernières lignes
-- **Basculement Debug/Cron** : Deux types de logs disponibles
-- **Auto-refresh** : Mise à jour automatique toutes les 30 secondes
-- **Téléchargement** : Export des logs en fichiers
-
-#### 🛠️ Section Actions
-- **▶️ Exécuter maintenant** : Lancer le bot manuellement
-- **🔄 Réinitialiser la mémoire** : Reset de la liste anti-doublons
-- **📥 Télécharger les logs** : Export de tous les fichiers de logs
-
-#### 🐛 Section Debug
-- **Requêtes API** : Visualisation des 20 dernières requêtes API
-- **Réponses brutes** : Inspection des données retournées par UNOGS et TMDB
-
-### API Endpoints
-
-L'interface web expose plusieurs endpoints API REST :
-
-| Endpoint | Méthode | Description |
-|----------|---------|-------------|
-| `/api/status` | GET | Récupérer le statut général du bot |
-| `/api/stats` | GET | Obtenir les statistiques détaillées |
-| `/api/logs?type=debug&lines=100` | GET | Récupérer les logs (debug ou cron) |
-| `/api/run` | POST | Exécuter le bot manuellement |
-| `/api/config` | GET | Visualiser la configuration |
-| `/api/reset` | POST | Réinitialiser la mémoire anti-doublons |
-| `/api/debug` | GET | Récupérer les données de debug API |
-| `/download/logs/<type>` | GET | Télécharger les fichiers logs |
-
-## 📋 Commandes utiles
-
-### Docker
+### 3️⃣ Construire et lancer le conteneur
 
 ```bash
-# Voir les logs du conteneur en temps réel
-docker-compose logs -f
-
-# Voir uniquement les logs du bot
-docker logs -f netflix_bot
-
-# Arrêter le bot
-docker-compose down
-
-# Redémarrer le bot
-docker-compose restart
-
-# Reconstruire l'image
+# Build et démarrage
 docker-compose up --build -d
 
-# Accéder au conteneur
-docker exec -it netflix_bot /bin/bash
-
-# Vérifier le statut
-docker-compose ps
+# Vérifier que tout fonctionne
+docker logs -f bouba_discord_netflix_notifier
 ```
 
-### Bot
+### 4️⃣ Accéder à l'interface web
 
-```bash
-# Exécuter le bot manuellement
-docker exec -it netflix_bot python /app/netflix_bot.py
+Ouvrez votre navigateur : **http://localhost:5000**
 
-# Voir les logs en direct
-docker exec -it netflix_bot tail -f /app/logs/netflix_bot_debug.log
+**Compte par défaut :**
+- 👤 **Username :** `admin`
+- 🔒 **Password :** `admin123`
 
-# Vérifier le cron
-docker exec -it netflix_bot crontab -l
+⚠️ **IMPORTANT :** Changez le mot de passe immédiatement après la première connexion !
 
-# Réinitialiser la mémoire
-docker exec -it netflix_bot bash -c "echo '[]' > /app/data/sent_ids.json"
-```
-
-## 🔧 Configuration avancée
-
-### Modifier l'heure d'exécution
-
-Éditez le fichier `crontab.txt` pour changer l'horaire :
-
-```bash
-# Format : minute heure jour mois jour_semaine commande
-0 9 * * * python /app/netflix_bot.py >> /app/logs/cron.log 2>&1
-
-# Exemples :
-# Tous les jours à 6h du matin
-0 6 * * * python /app/netflix_bot.py >> /app/logs/cron.log 2>&1
-
-# Deux fois par jour (9h et 18h)
-0 9,18 * * * python /app/netflix_bot.py >> /app/logs/cron.log 2>&1
-```
-
-Puis reconstruisez l'image Docker :
-```bash
-docker-compose up --build -d
-```
-
-### Changer le port de l'interface web
-
-Modifiez le fichier `docker-compose.yml` :
-
-```yaml
-services:
-  netflix-notifier:
-    ports:
-      - "8080:5000"  # Remplacez 8080 par le port souhaité
-```
-
-### Système anti-doublons
-
-Le bot stocke les IDs des contenus déjà envoyés dans :
-```
-/app/data/sent_ids.json
-```
-
-Ce fichier est persisté grâce au volume Docker configuré dans `docker-compose.yml`.
-
-Pour réinitialiser :
-- Via l'interface web : Cliquez sur "🔄 Réinitialiser"
-- Via CLI : `docker exec -it netflix_bot bash -c "echo '[]' > /app/data/sent_ids.json"`
-
-## 🛠️ Technologies utilisées
-
-### Backend
-- **Python 3.11** - Langage principal
-- **Flask 3.0** - Framework web pour l'interface de monitoring
-- **UNOGS API** - Récupération des nouveautés Netflix
-- **TMDB API** - Métadonnées enrichies (posters, synopsis, notes)
-- **Discord Webhooks** - Envoi des notifications
-
-### Infrastructure
-- **Docker & Docker Compose** - Conteneurisation et orchestration
-- **Cron** - Planification des tâches automatiques
-- **Volume Docker** - Persistance des données et logs
-
-### Frontend
-- **HTML5/CSS3** - Interface web responsive
-- **JavaScript (Vanilla)** - Interactions dynamiques et API REST
-- **Bootstrap** (optionnel) - Framework CSS
-
-## 📝 Exemple de notification
-
-Le bot envoie des messages Discord enrichis avec :
-- 🎬 **Titre** du film/série
-- 📅 **Date de sortie** sur Netflix
-- ⭐ **Note TMDB** (sur 10)
-- 📖 **Synopsis** complet
-- 🖼️ **Poster** officiel haute qualité
-- 🎭 **Genres** (Action, Thriller, etc.)
-- 🌍 **Pays** de disponibilité
-- 🔗 **Lien** vers la fiche TMDB
-
-## 📸 Captures d'écran
+## 🎮 Utilisation
 
 ### Interface Web
-```
-┌─────────────────────────────────────────┐
-│  🎬 Netflix Bot Dashboard               │
-├─────────────────────────────────────────┤
-│  📊 Statut                              │
-│  • Bot: ✅ Running                      │
-│  • Cron: ✅ Active                      │
-│  • Dernière exec: 2026-01-30 09:00     │
-│                                         │
-│  📈 Statistiques                        │
-│  • Total envoyés: 1,234 contenus       │
-│  • FR: 456 | US: 398 | CA: 234         │
-│  • Dernier run: 15 nouveaux / 50 traités│
-│                                         │
-│  📋 Logs en direct                      │
-│  [Auto-refresh] [Debug] [Cron]         │
-│  [...logs...]                           │
-│                                         │
-│  🛠️ Actions                             │
-│  [▶️ Exécuter] [🔄 Reset] [📥 Export]  │
-└─────────────────────────────────────────┘
-```
 
-### Notification Discord
-```
-╔══════════════════════════════════════╗
-║  🎬 NOUVELLE SORTIE NETFLIX FR      ║
-╠══════════════════════════════════════╣
-║  [Image du poster]                   ║
-║                                      ║
-║  📺 Titre: The Awesome Series        ║
-║  📅 Sortie: 30 janvier 2026          ║
-║  ⭐ Note: 8.5/10                     ║
-║  🎭 Genres: Action, Thriller         ║
-║                                      ║
-║  📖 Synopsis:                        ║
-║  Une série captivante qui...         ║
-║                                      ║
-║  🔗 Plus d'infos: [TMDB]            ║
-╚══════════════════════════════════════╝
-```
+1. **Dashboard** (`http://localhost:5000`)
+   - Voir les statistiques en temps réel
+   - Consulter les logs en direct
+   - Exécuter le bot manuellement
+   - Télécharger les logs
 
-## 🤝 Contribution
+2. **Paramètres** (`http://localhost:5000/settings`)
+   - ⏰ Modifier l'horaire du cron
+   - 🌍 Ajouter/retirer des pays
+   - 💾 Sauvegarder la configuration
 
-Les contributions sont les bienvenues ! N'hésitez pas à :
+3. **Gestion du compte**
+   - 🔑 Changer votre mot de passe
+   - 🚪 Se déconnecter
 
-1. 🍴 **Fork** le projet
-2. 🌿 Créer une branche (`git checkout -b feature/amelioration`)
-3. 💬 **Commit** vos changements (`git commit -m 'Ajout d'une fonctionnalité'`)
-4. 📤 **Push** vers la branche (`git push origin feature/amelioration`)
-5. 🔀 Ouvrir une **Pull Request**
+### Commandes Docker
 
-### Idées de contributions
-- 🎨 Améliorer le design de l'interface web
-- 📱 Rendre l'interface responsive (mobile)
-- 🔔 Ajouter des alertes par email
-- 🌐 Support d'autres plateformes de streaming
-- 📊 Graphiques de statistiques
-- 🔐 Authentification pour l'interface web
-- 🌍 Internationalisation (i18n)
-
-Pour signaler un bug ou proposer une idée, [ouvrez une issue](https://github.com/bouba89/bouba-discord-netflix-notifier/issues).
-
-## 🐛 Troubleshooting
-
-### Le bot ne s'exécute pas automatiquement
 ```bash
-# Vérifier si cron est actif
-docker exec -it netflix_bot ps aux | grep cron
+# Voir les logs en temps réel
+docker logs -f bouba_discord_netflix_notifier
 
-# Vérifier la configuration cron
-docker exec -it netflix_bot crontab -l
+# Redémarrer le conteneur
+docker-compose restart
 
-# Voir les logs cron
-docker exec -it netflix_bot cat /app/logs/cron.log
+# Arrêter le conteneur
+docker-compose stop
+
+# Supprimer le conteneur
+docker-compose down
+
+# Entrer dans le conteneur
+docker exec -it bouba_discord_netflix_notifier bash
+
+# Exécuter le bot manuellement
+docker exec -it bouba_discord_netflix_notifier python /app/netflix_bot.py
+
+# Vérifier le cron
+docker exec -it bouba_discord_netflix_notifier crontab -l
 ```
 
-### L'interface web ne répond pas
-```bash
-# Vérifier que Flask tourne
-docker exec -it netflix_bot ps aux | grep flask
+## 🔧 Configuration Avancée
 
-# Voir les logs Flask
-docker logs netflix_bot | grep Flask
+### Modifier l'horaire du cron
+
+**Via l'interface web (recommandé) :**
+- Allez sur `http://localhost:5000/settings`
+- Modifiez l'heure et les minutes
+- Cliquez sur "💾 Sauvegarder l'Horaire"
+
+**Manuellement :**
+```bash
+# Éditer le crontab
+docker exec -it bouba_discord_netflix_notifier nano /app/crontab.txt
+
+# Réinstaller le crontab
+docker exec -it bouba_discord_netflix_notifier crontab /app/crontab.txt
+
+# Redémarrer cron
+docker exec -it bouba_discord_netflix_notifier service cron restart
+```
+
+### Ajouter/Retirer des pays
+
+**Via l'interface web (recommandé) :**
+- Allez sur `http://localhost:5000/settings`
+- Section "Pays à Surveiller"
+- Ajoutez ou retirez des pays
+- Cliquez sur "💾 Sauvegarder les Pays"
+
+**Codes pays disponibles :**
+- 🇫🇷 FR (France)
+- 🇺🇸 US (USA)
+- 🇨🇦 CA (Canada)
+- 🇬🇧 GB (Royaume-Uni)
+- 🇩🇪 DE (Allemagne)
+- 🇪🇸 ES (Espagne)
+- 🇮🇹 IT (Italie)
+- 🇯🇵 JP (Japon)
+- 🇧🇷 BR (Brésil)
+- Et bien d'autres... (codes ISO 3166-1 alpha-2)
+
+### Réinitialiser la mémoire anti-doublons
+
+Si vous souhaitez que le bot renvoie tous les contenus :
+
+**Via l'interface web :**
+- Dashboard → "🗑️ Reset Mémoire"
+
+**Manuellement :**
+```bash
+docker exec -it bouba_discord_netflix_notifier bash -c "echo '[]' > /app/data/sent_ids.json"
+```
+
+## 🔒 Sécurité
+
+### Authentification
+- ✅ Mots de passe hashés avec **bcrypt**
+- ✅ Sessions sécurisées avec clé secrète Flask
+- ✅ Protection de toutes les routes API
+- ✅ Timeout de session configurable (24h par défaut)
+
+### Bonnes pratiques
+1. **Changez le mot de passe admin** après la première connexion
+2. **Définissez une clé secrète Flask forte** dans `.env`
+3. **Ne commitez jamais** le fichier `.env` sur GitHub
+4. **Limitez l'accès** au port 5000 (pare-feu)
+5. **Sauvegardez régulièrement** le dossier `/data`
+
+## 📊 Monitoring
+
+### Logs disponibles
+
+- **`/logs/cron.log`** : Logs des exécutions automatiques
+- **`/logs/netflix_bot_debug.log`** : Logs détaillés du bot
+- **`/data/api_responses_debug.json`** : Réponses API pour debug
+
+### Endpoints de santé
+
+- `http://localhost:5000/api/status` - État du bot
+- `http://localhost:5000/api/stats` - Statistiques
+- `http://localhost:5000/api/config` - Configuration actuelle
+
+## 🐛 Dépannage
+
+### Le cron ne s'exécute pas
+
+```bash
+# Vérifier que cron tourne
+docker exec -it bouba_discord_netflix_notifier service cron status
+
+# Vérifier le crontab
+docker exec -it bouba_discord_netflix_notifier crontab -l
+
+# Réinstaller le crontab
+docker exec -it bouba_discord_netflix_notifier crontab /app/crontab.txt
+docker exec -it bouba_discord_netflix_notifier service cron restart
+```
+
+### Erreur "crontab file is missing newline"
+
+Le fichier `crontab.txt` doit se terminer par une ligne vide :
+
+```bash
+echo "" >> crontab.txt
+docker cp crontab.txt bouba_discord_netflix_notifier:/app/
+docker exec -it bouba_discord_netflix_notifier crontab /app/crontab.txt
+```
+
+### L'interface web ne fonctionne pas
+
+```bash
+# Vérifier que Flask est installé
+docker exec -it bouba_discord_netflix_notifier pip list | grep Flask
+
+# Vérifier que les templates existent
+docker exec -it bouba_discord_netflix_notifier ls -la /app/templates/
 
 # Redémarrer le conteneur
 docker-compose restart
 ```
 
-### Pas de notifications reçues
-1. ✅ Vérifiez que le webhook Discord est valide
-2. ✅ Vérifiez les clés API (RAPIDAPI_KEY, TMDB_API_KEY)
-3. ✅ Consultez les logs : `/api/logs` ou `docker logs netflix_bot`
-4. ✅ Vérifiez que les pays configurés ont des nouveautés
+### Les notifications Discord ne partent pas
 
-### Erreurs d'API
+1. Vérifiez que le webhook Discord est correct dans `.env`
+2. Testez le webhook manuellement
+3. Consultez les logs : `docker logs bouba_discord_netflix_notifier`
+
+## 🔄 Mises à jour
+
 ```bash
-# Voir les réponses API en détail
-curl http://localhost:5000/api/debug
+# Récupérer les dernières modifications
+git pull origin main
 
-# Télécharger le fichier de debug API
-curl http://localhost:5000/download/logs/api > api_debug.json
+# Reconstruire l'image
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
 ```
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! 
+
+1. 🍴 Fork le projet
+2. 🌿 Créez une branche (`git checkout -b feature/nouvelle-fonctionnalite`)
+3. 💾 Commit vos changements (`git commit -m 'Ajout d'une nouvelle fonctionnalité'`)
+4. 📤 Push vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
+5. 🔀 Ouvrez une Pull Request
+
+### Idées de contributions
+
+- [ ] Support de Telegram/Slack en plus de Discord
+- [ ] Filtres par genre/note/année
+- [ ] Système de recommandations personnalisées
+- [ ] Export des statistiques en CSV/JSON
+- [ ] Notifications par email
+- [ ] Support multi-utilisateurs avec rôles
+- [ ] API REST complète
+- [ ] Interface mobile native
 
 ## 📄 Licence
 
-Ce projet est sous licence Open Source. Consultez le fichier [LICENSE](LICENSE) pour plus de détails.
+Ce projet est sous licence **Open Source**.
 
-## 🆘 Support
+## 👨‍💻 Auteur
 
-Si vous rencontrez des problèmes :
-
-1. 📖 Consultez la section [Troubleshooting](#-troubleshooting)
-2. 🔍 Vérifiez les [issues existantes](https://github.com/bouba89/bouba-discord-netflix-notifier/issues)
-3. 💬 [Ouvrez une nouvelle issue](https://github.com/bouba89/bouba-discord-netflix-notifier/issues/new) avec :
-   - Description du problème
-   - Logs pertinents
-   - Configuration (sans les clés sensibles)
-   - Étapes pour reproduire
-
-## 🎯 Roadmap
-
-### Version actuelle (v1.1)
-- [x] Interface web Flask de monitoring
-- [x] Dashboard avec statistiques en temps réel
-- [x] Visualisation et téléchargement des logs
-- [x] Exécution manuelle depuis l'interface
-- [x] API REST complète
-
-### Prochaines versions
-- [ ] 🔐 Authentification pour l'interface web
-- [ ] 📊 Graphiques et visualisations avancées
-- [ ] 🌍 Support de plus de plateformes (Prime Video, Disney+)
-- [ ] 📱 Application mobile (React Native)
-- [ ] 🔔 Notifications par email
-- [ ] 🤖 Bot Discord interactif (commandes)
-- [ ] 🗄️ Base de données (PostgreSQL)
-- [ ] 🎨 Thèmes personnalisables (dark/light mode)
-- [ ] 📅 Calendrier des sorties à venir
-- [ ] 🔍 Recherche et filtres avancés
-- [ ] 👥 Gestion multi-utilisateurs
-- [ ] 🌐 Internationalisation (EN, ES, DE)
+**Bouba89**
+- GitHub: [@bouba89](https://github.com/bouba89)
+- Projet: [bouba-discord-netflix-notifier](https://github.com/bouba89/bouba-discord-netflix-notifier)
 
 ## 🙏 Remerciements
 
-- [UNOGS](https://rapidapi.com/unogs/api/unogs) pour l'API Netflix
-- [TMDB](https://www.themoviedb.org/) pour les métadonnées
-- [Discord](https://discord.com/) pour les webhooks
+- [UNOGS API](https://rapidapi.com/unogs/api/unogs) pour les données Netflix
+- [TMDB API](https://www.themoviedb.org/) pour les informations détaillées
+- [Discord](https://discord.com/) pour l'API de webhooks
 - [Flask](https://flask.palletsprojects.com/) pour le framework web
-- La communauté open-source pour l'inspiration
+- [Docker](https://www.docker.com/) pour la conteneurisation
 
-## 📞 Contact
+## 📞 Support
 
-- **GitHub** : [@bouba89](https://github.com/bouba89)
-- **Issues** : [Signaler un problème](https://github.com/bouba89/bouba-discord-netflix-notifier/issues)
-- **Discussions** : [Forum du projet](https://github.com/bouba89/bouba-discord-netflix-notifier/discussions)
+En cas de problème :
+1. 📖 Consultez la section [Dépannage](#-dépannage)
+2. 🐛 Ouvrez une [Issue](https://github.com/bouba89/bouba-discord-netflix-notifier/issues)
+3. 💬 Consultez les discussions existantes
 
 ---
 
-<div align="center">
+⭐ **Si ce projet vous plaît, n'hésitez pas à lui donner une étoile !** ⭐
 
-**Développé avec ❤️ par [bouba89](https://github.com/bouba89)**
-
-⭐ **N'oubliez pas de donner une étoile au projet si vous l'aimez !**
-
-[![GitHub stars](https://img.shields.io/github/stars/bouba89/bouba-discord-netflix-notifier?style=social)](https://github.com/bouba89/bouba-discord-netflix-notifier/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/bouba89/bouba-discord-netflix-notifier?style=social)](https://github.com/bouba89/bouba-discord-netflix-notifier/network/members)
-[![GitHub watchers](https://img.shields.io/github/watchers/bouba89/bouba-discord-netflix-notifier?style=social)](https://github.com/bouba89/bouba-discord-netflix-notifier/watchers)
-
-</div>
+🎬 **Bon monitoring Netflix !** 🍿

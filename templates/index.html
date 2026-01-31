@@ -538,6 +538,16 @@
                 font-size: 1.5em;
             }
 
+            .header-status {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .header-status > div {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+
             .grid {
                 grid-template-columns: 1fr;
             }
@@ -593,6 +603,14 @@
             <div class="header-status">
                 <span class="status-dot" id="main-status-dot"></span>
                 <span id="main-status-text">Chargement...</span>
+                <div style="display: flex; gap: 10px; margin-left: 20px;">
+                    <button class="btn btn-secondary" onclick="changePassword()" style="padding: 8px 16px; font-size: 0.9em;">
+                        🔑 Changer mot de passe
+                    </button>
+                    <button class="btn btn-danger" onclick="logout()" style="padding: 8px 16px; font-size: 0.9em;">
+                        🚪 Déconnexion
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -968,6 +986,56 @@
             document.getElementById(`tab-${type}`).classList.add('active');
             
             loadLogs(type);
+        }
+
+        // Déconnexion
+        function logout() {
+            if (confirm('🚪 Voulez-vous vraiment vous déconnecter ?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        // Changer le mot de passe
+        async function changePassword() {
+            const currentPassword = prompt('🔒 Entrez votre mot de passe actuel :');
+            if (!currentPassword) return;
+
+            const newPassword = prompt('🔑 Entrez votre nouveau mot de passe :');
+            if (!newPassword) return;
+
+            const confirmPassword = prompt('✅ Confirmez votre nouveau mot de passe :');
+            if (confirmPassword !== newPassword) {
+                showAlert('❌ Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showAlert('❌ Le mot de passe doit contenir au moins 6 caractères', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('✅ Mot de passe changé avec succès !', 'success');
+                } else {
+                    showAlert('❌ ' + data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Erreur: ' + error.message, 'error');
+            }
         }
     </script>
 </body>

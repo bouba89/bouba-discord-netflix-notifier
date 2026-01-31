@@ -348,6 +348,134 @@ def config():
     elif request.method == 'POST':
         return jsonify({'error': 'Modification non implémentée pour la sécurité'}), 501
 
+@app.route('/api/config/countries', methods=['GET', 'POST'])
+@login_required
+def config_countries():
+    """API: Gérer la configuration des pays"""
+    if request.method == 'GET':
+        try:
+            countries = []
+            if os.path.exists(ENV_FILE):
+                with open(ENV_FILE, 'r') as f:
+                    for line in f:
+                        if line.startswith('COUNTRIES='):
+                            countries_str = line.split('=', 1)[1].strip()
+                            countries = [c.strip() for c in countries_str.split(',')]
+                            break
+            return jsonify({'countries': countries})
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    
+    elif request.method == 'POST':
+        try:
+            new_countries = request.json.get('countries', [])
+            
+            if not new_countries:
+                return jsonify({'success': False, 'error': 'Au moins un pays requis'}), 400
+            
+            # Valider les codes pays (2 lettres en majuscules)
+            for country in new_countries:
+                if not country.isalpha() or len(country) != 2:
+                    return jsonify({'success': False, 'error': f'Code pays invalide: {country}'}), 400
+            
+            # Lire le fichier .env
+            env_lines = []
+            if os.path.exists(ENV_FILE):
+                with open(ENV_FILE, 'r') as f:
+                    env_lines = f.readlines()
+            
+            # Mettre à jour la ligne COUNTRIES
+            countries_str = ','.join([c.upper() for c in new_countries])
+            updated = False
+            for i, line in enumerate(env_lines):
+                if line.startswith('COUNTRIES='):
+                    env_lines[i] = f'COUNTRIES={countries_str}\n'
+                    updated = True
+                    break
+            
+            # Si COUNTRIES n'existe pas, l'ajouter
+            if not updated:
+                env_lines.append(f'COUNTRIES={countries_str}\n')
+            
+            # Sauvegarder
+            with open(ENV_FILE, 'w') as f:
+                f.writelines(env_lines)
+            
+            return jsonify({'success': True, 'countries': new_countries})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/config/cron', methods=['GET', 'POST'])
+@login_required
+def config_cron():
+    """API: Gérer la configuration du cron"""
+    if request.method == 'GET':
+        try:
+            # Lire le crontab actuel
+            result = subprocess.run(['crontab', '-l'], capture_output=True, text=True)
+            if result.returncode == 0:
+                lines = result.stdout.strip().split('\n')
+                for line in lines:
+                    if 'run_netflix.sh' in line and not line.startswith('#'):
+                        # Parser la ligne cron
+                        parts = line.split()
+                        if len(parts) >= 5:
+                            return jsonify({
+                                'minute': parts[0],
+                                'hour': parts[1],
+                                'enabled': True
+                            })
+            return jsonify({'minute': '0', 'hour': '8', 'enabled': False})
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    
+    elif request.method == 'POST':
+        try:
+            hour = request.json.get('hour', '8')
+            minute = request.json.get('minute', '0')
+            
+            # Valider
+            try:
+                hour_int = int(hour)
+                minute_int = int(minute)
+                if not (0 <= hour_int <= 23) or not (0 <= minute_int <= 59):
+                    raise ValueError()
+            except:
+                return jsonify({'success': False, 'error': 'Heure invalide'}), 400
+            
+            # Lire le fichier crontab.txt
+            crontab_path = '/app/crontab.txt'
+            if os.path.exists(crontab_path):
+                with open(crontab_path, 'r') as f:
+                    lines = f.readlines()
+                
+                # Mettre à jour la ligne du cron
+                for i, line in enumerate(lines):
+                    if 'run_netflix.sh' in line and not line.strip().startswith('#'):
+                        # Remplacer les deux premiers champs (minute et heure)
+                        parts = line.split()
+                        if len(parts) >= 5:
+                            parts[0] = minute
+                            parts[1] = hour
+                            lines[i] = ' '.join(parts) + '\n'
+                            break
+                
+                # Sauvegarder
+                with open(crontab_path, 'w') as f:
+                    f.writelines(lines)
+                
+                # Réinstaller le crontab
+                subprocess.run(['crontab', crontab_path], check=True)
+                
+                # Redémarrer cron
+                subprocess.run(['service', 'cron', 'restart'], check=True)
+                
+                return jsonify({'success': True, 'hour': hour, 'minute': minute})
+            else:
+                return jsonify({'success': False, 'error': 'Fichier crontab.txt introuvable'}), 404
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/reset', methods=['POST'])
 @login_required
 def reset_memory():
@@ -398,6 +526,12 @@ def download_logs(log_type):
 def serve_template():
     """Servir le template (pour dev)"""
     return render_template('index.html', username=session.get('username'))
+
+@app.route('/settings')
+@login_required
+def settings():
+    """Page de configuration"""
+    return render_template('settings.html', username=session.get('username'))
 
 if __name__ == '__main__':
     # Créer le dossier templates s'il n'existe pas

@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎬 Netflix Bot Dashboard</title>
     <style>
+        :root {
+            --netflix-red: #E50914;
+            --netflix-dark: #141414;
+            --netflix-gray: #2F2F2F;
+            --netflix-light-gray: #808080;
+            --success-green: #46d369;
+            --warning-yellow: #ffa500;
+            --danger-red: #f44336;
+            --card-bg: rgba(45, 45, 45, 0.95);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,87 +24,174 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
             color: #fff;
-            padding: 20px;
             min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
         }
 
-        .container {
+        /* Header avec effet glassmorphism */
+        .header {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--netflix-red);
+            padding: 25px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 30px rgba(229, 9, 20, 0.2);
+        }
+
+        .header-content {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .header {
-            text-align: center;
-            padding: 30px 0;
-            border-bottom: 2px solid #E50914;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            color: #E50914;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .header p {
-            color: #aaa;
-            margin-top: 10px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        .card h2 {
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            color: #E50914;
+        .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
 
-        .status-indicator {
-            display: inline-block;
+        .logo h1 {
+            font-size: 2em;
+            color: var(--netflix-red);
+            text-shadow: 0 0 20px rgba(229, 9, 20, 0.5);
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .logo-icon {
+            font-size: 2.5em;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(229, 9, 20, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 1px solid rgba(229, 9, 20, 0.3);
+        }
+
+        .status-dot {
             width: 12px;
             height: 12px;
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
 
-        .status-indicator.running {
-            background: #4CAF50;
+        .status-dot.active {
+            background: var(--success-green);
+            box-shadow: 0 0 10px var(--success-green);
         }
 
-        .status-indicator.stopped {
-            background: #f44336;
+        .status-dot.inactive {
+            background: var(--danger-red);
+            box-shadow: 0 0 10px var(--danger-red);
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
         }
 
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Grille responsive améliorée */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        /* Cards avec effet de survol amélioré */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(229, 9, 20, 0.3);
+            border-color: rgba(229, 9, 20, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(229, 9, 20, 0.2);
+        }
+
+        .card-icon {
+            font-size: 1.8em;
+            filter: drop-shadow(0 2px 4px rgba(229, 9, 20, 0.3));
+        }
+
+        .card h2 {
+            font-size: 1.4em;
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        /* Statistiques avec badges */
         .stat-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s;
+        }
+
+        .stat-item:hover {
+            background: rgba(229, 9, 20, 0.05);
+            padding-left: 10px;
+            border-left: 3px solid var(--netflix-red);
         }
 
         .stat-item:last-child {
@@ -100,87 +199,259 @@
         }
 
         .stat-label {
-            color: #aaa;
+            color: var(--netflix-light-gray);
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .stat-value {
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 1.1em;
             color: #fff;
+            padding: 4px 12px;
+            background: rgba(229, 9, 20, 0.15);
+            border-radius: 8px;
+            border: 1px solid rgba(229, 9, 20, 0.3);
         }
 
+        .stat-value.success {
+            background: rgba(70, 211, 105, 0.15);
+            border-color: rgba(70, 211, 105, 0.3);
+            color: var(--success-green);
+        }
+
+        .stat-value.warning {
+            background: rgba(255, 165, 0, 0.15);
+            border-color: rgba(255, 165, 0, 0.3);
+            color: var(--warning-yellow);
+        }
+
+        /* Boutons modernes */
         .btn {
-            background: #E50914;
+            background: linear-gradient(135deg, var(--netflix-red) 0%, #b8070f 100%);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 14px 28px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1em;
-            transition: all 0.3s;
-            margin: 5px;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn:hover {
-            background: #b8070f;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+            box-shadow: 0 6px 25px rgba(229, 9, 20, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn:disabled {
-            background: #555;
+            background: linear-gradient(135deg, #555 0%, #444 100%);
             cursor: not-allowed;
+            opacity: 0.6;
             transform: none;
+            box-shadow: none;
         }
 
         .btn-secondary {
-            background: #0f3460;
+            background: linear-gradient(135deg, #2F2F2F 0%, #1a1a1a 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .btn-secondary:hover {
-            background: #16213e;
+            box-shadow: 0 6px 25px rgba(255, 255, 255, 0.1);
         }
 
         .btn-danger {
-            background: #f44336;
+            background: linear-gradient(135deg, var(--danger-red) 0%, #d32f2f 100%);
         }
 
-        .btn-danger:hover {
-            background: #d32f2f;
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-green) 0%, #2ea043 100%);
         }
 
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
 
+        /* Logs avec terminal amélioré */
         .log-container {
             background: #000;
             color: #0f0;
-            font-family: 'Courier New', monospace;
-            padding: 15px;
-            border-radius: 8px;
-            max-height: 400px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 500px;
             overflow-y: auto;
             font-size: 0.85em;
-            line-height: 1.4;
+            line-height: 1.6;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.2);
         }
 
+        .log-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .log-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        .log-container::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        .log-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 0, 0.5);
+        }
+
+        /* Tabs modernes */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px;
+            border-radius: 12px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--netflix-light-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .tab:hover {
+            background: rgba(229, 9, 20, 0.1);
+            color: #fff;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--netflix-red) 0%, #b8070f 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Alertes modernes */
+        .alerts-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .alert {
+            padding: 18px 24px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: rgba(70, 211, 105, 0.15);
+            border-color: var(--success-green);
+            color: var(--success-green);
+        }
+
+        .alert-error {
+            background: rgba(244, 67, 54, 0.15);
+            border-color: var(--danger-red);
+            color: var(--danger-red);
+        }
+
+        .alert-icon {
+            font-size: 1.4em;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Loading spinner amélioré */
         .loading {
             text-align: center;
-            padding: 20px;
-            color: #aaa;
+            padding: 40px 20px;
         }
 
         .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid #E50914;
+            border: 4px solid rgba(229, 9, 20, 0.1);
+            border-top: 4px solid var(--netflix-red);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+            width: 50px;
+            height: 50px;
+            animation: spin 0.8s linear infinite;
             margin: 20px auto;
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
         }
 
         @keyframes spin {
@@ -188,149 +459,257 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Country tags */
         .country-tag {
-            display: inline-block;
-            background: rgba(229, 9, 20, 0.2);
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin: 3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.2), rgba(229, 9, 20, 0.1));
+            padding: 8px 14px;
+            border-radius: 20px;
+            margin: 5px;
             font-size: 0.9em;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            animation: slideIn 0.3s;
-        }
-
-        .alert-success {
-            background: rgba(76, 175, 80, 0.2);
-            border: 1px solid #4CAF50;
-        }
-
-        .alert-error {
-            background: rgba(244, 67, 54, 0.2);
-            border: 1px solid #f44336;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
-            border-radius: 8px 8px 0 0;
-            color: #aaa;
-            cursor: pointer;
+            font-weight: 600;
+            border: 1px solid rgba(229, 9, 20, 0.3);
             transition: all 0.3s;
         }
 
-        .tab.active {
-            background: rgba(229, 9, 20, 0.3);
-            color: #fff;
+        .country-tag:hover {
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.3), rgba(229, 9, 20, 0.2));
+            transform: scale(1.05);
         }
 
-        .tab-content {
-            display: none;
+        /* Progress bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
         }
 
-        .tab-content.active {
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--netflix-red), #ff3333);
+            border-radius: 10px;
+            transition: width 0.3s;
+            box-shadow: 0 0 10px var(--netflix-red);
+        }
+
+        /* Stats cards avec icônes */
+        .stat-card {
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.1), rgba(229, 9, 20, 0.05));
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(229, 9, 20, 0.2);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.3);
+        }
+
+        .stat-card-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--netflix-red);
             display: block;
+            margin: 10px 0;
+        }
+
+        .stat-card-label {
+            color: var(--netflix-light-gray);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .logo h1 {
+                font-size: 1.5em;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .alerts-container {
+                left: 20px;
+                right: 20px;
+                max-width: none;
+            }
+        }
+
+        /* Tooltip */
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+        }
+
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            font-size: 0.85em;
+            white-space: nowrap;
+            border-radius: 6px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            margin-bottom: 5px;
+        }
+
+        [data-tooltip]:hover::after {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🎬</span>
+                <h1>Netflix Bot Dashboard</h1>
+            </div>
+            <div class="header-status">
+                <span class="status-dot" id="main-status-dot"></span>
+                <span id="main-status-text">Chargement...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts Container -->
+    <div class="alerts-container" id="alerts"></div>
+
+    <!-- Main Container -->
     <div class="container">
-        <div class="header">
-            <h1>🎬 Netflix Bot Dashboard</h1>
-            <p>Monitoring et contrôle de votre bot de notifications Netflix</p>
+        <!-- Quick Stats Cards -->
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="stat-card">
+                <span class="stat-card-value" id="quick-total">0</span>
+                <span class="stat-card-label">📊 Total Notifié</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-value" id="quick-new">0</span>
+                <span class="stat-card-label">✨ Nouveaux (Dernier Run)</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-value" id="quick-countries">0</span>
+                <span class="stat-card-label">🌍 Pays</span>
+            </div>
         </div>
 
-        <!-- Messages -->
-        <div id="alerts"></div>
-
-        <!-- Statistiques principales -->
+        <!-- Main Grid -->
         <div class="grid">
-            <!-- Status -->
+            <!-- Status Card -->
             <div class="card">
-                <h2>
-                    <span class="status-indicator" id="status-indicator"></span>
-                    Status du Bot
-                </h2>
+                <div class="card-header">
+                    <span class="card-icon">⚡</span>
+                    <h2>Status du Bot</h2>
+                </div>
                 <div id="status-content">
                     <div class="loading">
                         <div class="spinner"></div>
-                        Chargement...
+                        <p>Chargement du statut...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Statistiques -->
+            <!-- Statistics Card -->
             <div class="card">
-                <h2>📊 Statistiques</h2>
+                <div class="card-header">
+                    <span class="card-icon">📊</span>
+                    <h2>Statistiques</h2>
+                </div>
                 <div id="stats-content">
                     <div class="loading">
                         <div class="spinner"></div>
-                        Chargement...
+                        <p>Chargement des stats...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Configuration -->
+            <!-- Configuration Card -->
             <div class="card">
-                <h2>⚙️ Configuration</h2>
+                <div class="card-header">
+                    <span class="card-icon">⚙️</span>
+                    <h2>Configuration</h2>
+                </div>
                 <div id="config-content">
                     <div class="loading">
                         <div class="spinner"></div>
-                        Chargement...
+                        <p>Chargement de la config...</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Actions -->
+        <!-- Actions Card -->
         <div class="card">
-            <h2>🎮 Actions</h2>
-            <div class="actions">
-                <button class="btn" onclick="runBot()">▶️ Exécuter maintenant</button>
-                <button class="btn btn-secondary" onclick="refreshAll()">🔄 Actualiser</button>
-                <button class="btn btn-secondary" onclick="downloadLogs('debug')">📥 Télécharger Logs</button>
-                <button class="btn btn-secondary" onclick="downloadLogs('api')">📥 Debug API</button>
-                <button class="btn btn-danger" onclick="resetMemory()">🗑️ Réinitialiser mémoire</button>
+            <div class="card-header">
+                <span class="card-icon">🎮</span>
+                <h2>Actions Rapides</h2>
+            </div>
+            <div class="actions-grid">
+                <button class="btn btn-success" onclick="runBot()">
+                    <span>▶️</span> Exécuter Maintenant
+                </button>
+                <button class="btn btn-secondary" onclick="refreshAll()">
+                    <span>🔄</span> Actualiser
+                </button>
+                <button class="btn btn-secondary" onclick="downloadLogs('debug')">
+                    <span>📥</span> Logs Debug
+                </button>
+                <button class="btn btn-secondary" onclick="downloadLogs('api')">
+                    <span>📥</span> Debug API
+                </button>
+                <button class="btn btn-danger" onclick="resetMemory()" data-tooltip="Réinitialise la mémoire anti-doublons">
+                    <span>🗑️</span> Reset Mémoire
+                </button>
             </div>
         </div>
 
-        <!-- Logs -->
+        <!-- Logs Card -->
         <div class="card">
-            <h2>📋 Logs</h2>
+            <div class="card-header">
+                <span class="card-icon">📋</span>
+                <h2>Logs en Direct</h2>
+            </div>
             <div class="tabs">
-                <button class="tab active" onclick="showTab('debug')">Debug</button>
-                <button class="tab" onclick="showTab('cron')">Cron</button>
+                <button class="tab active" onclick="showTab('debug')">
+                    🐛 Debug Logs
+                </button>
+                <button class="tab" onclick="showTab('cron')">
+                    ⏰ Cron Logs
+                </button>
             </div>
             <div class="tab-content active" id="tab-debug">
                 <div class="log-container" id="log-debug">
-                    <div class="loading">Chargement des logs...</div>
+                    <div class="loading">Chargement des logs debug...</div>
                 </div>
             </div>
             <div class="tab-content" id="tab-cron">
                 <div class="log-container" id="log-cron">
-                    <div class="loading">Chargement des logs...</div>
+                    <div class="loading">Chargement des logs cron...</div>
                 </div>
             </div>
         </div>
@@ -339,13 +718,24 @@
     <script>
         // Variables globales
         let currentTab = 'debug';
+        let autoRefreshInterval = null;
 
-        // Charger les données au démarrage
+        // Charger au démarrage
         window.onload = function() {
             refreshAll();
+            startAutoRefresh();
         };
 
-        // Actualiser toutes les données
+        // Auto-refresh intelligent
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                loadStatus();
+                loadStats();
+                loadLogs(currentTab);
+            }, 30000); // 30 secondes
+        }
+
+        // Actualiser tout
         function refreshAll() {
             loadStatus();
             loadStats();
@@ -353,15 +743,22 @@
             loadLogs(currentTab);
         }
 
-        // Afficher une alerte
+        // Afficher alerte
         function showAlert(message, type = 'success') {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
-            alertDiv.textContent = message;
+            
+            const icon = type === 'success' ? '✅' : '❌';
+            alertDiv.innerHTML = `
+                <span class="alert-icon">${icon}</span>
+                <span>${message}</span>
+            `;
+            
             document.getElementById('alerts').appendChild(alertDiv);
             
             setTimeout(() => {
-                alertDiv.remove();
+                alertDiv.style.animation = 'slideInRight 0.3s reverse';
+                setTimeout(() => alertDiv.remove(), 300);
             }, 5000);
         }
 
@@ -371,32 +768,36 @@
                 const response = await fetch('/api/status');
                 const data = await response.json();
                 
-                const indicator = document.getElementById('status-indicator');
-                indicator.className = `status-indicator ${data.cron_active ? 'running' : 'stopped'}`;
+                // Update main header status
+                const mainDot = document.getElementById('main-status-dot');
+                const mainText = document.getElementById('main-status-text');
+                mainDot.className = `status-dot ${data.cron_active ? 'active' : 'inactive'}`;
+                mainText.textContent = data.cron_active ? '🟢 Actif' : '🔴 Inactif';
                 
                 const html = `
                     <div class="stat-item">
-                        <span class="stat-label">État</span>
-                        <span class="stat-value">${data.cron_active ? '✅ Actif' : '❌ Arrêté'}</span>
+                        <span class="stat-label">📡 État du Service</span>
+                        <span class="stat-value ${data.cron_active ? 'success' : ''}">${data.cron_active ? '✅ Opérationnel' : '❌ Arrêté'}</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Cron</span>
-                        <span class="stat-value">${data.cron_active ? '✅ En cours' : '❌ Arrêté'}</span>
+                        <span class="stat-label">⏰ Service Cron</span>
+                        <span class="stat-value ${data.cron_active ? 'success' : ''}">${data.cron_active ? '✅ Actif' : '❌ Inactif'}</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Contenus notifiés</span>
+                        <span class="stat-label">📊 Contenus Notifiés</span>
                         <span class="stat-value">${data.statistics.total_sent}</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Dernière exécution</span>
+                        <span class="stat-label">🕐 Dernière Exécution</span>
                         <span class="stat-value">${data.statistics.last_run}</span>
                     </div>
                 `;
                 
                 document.getElementById('status-content').innerHTML = html;
+                document.getElementById('quick-total').textContent = data.statistics.total_sent;
             } catch (error) {
                 document.getElementById('status-content').innerHTML = 
-                    `<div class="alert alert-error">Erreur: ${error.message}</div>`;
+                    `<div class="alert alert-error"><span class="alert-icon">❌</span>Erreur: ${error.message}</div>`;
             }
         }
 
@@ -406,9 +807,13 @@
                 const response = await fetch('/api/stats');
                 const data = await response.json();
                 
+                // Update quick stats
+                document.getElementById('quick-new').textContent = data.last_run?.new_sent || 0;
+                document.getElementById('quick-countries').textContent = Object.keys(data.by_country || {}).length;
+                
                 let html = `
                     <div class="stat-item">
-                        <span class="stat-label">Total contenus notifiés</span>
+                        <span class="stat-label">📦 Total Contenus</span>
                         <span class="stat-value">${data.total_content}</span>
                     </div>
                 `;
@@ -416,29 +821,34 @@
                 if (data.last_run) {
                     html += `
                         <div class="stat-item">
-                            <span class="stat-label">Dernier run - Traités</span>
+                            <span class="stat-label">🔄 Dernier Run - Traités</span>
                             <span class="stat-value">${data.last_run.total_treated}</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Dernier run - Nouveaux</span>
-                            <span class="stat-value">${data.last_run.new_sent}</span>
+                            <span class="stat-label">✨ Dernier Run - Nouveaux</span>
+                            <span class="stat-value success">${data.last_run.new_sent}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">📅 Date du Dernier Run</span>
+                            <span class="stat-value">${data.last_run.date}</span>
                         </div>
                     `;
                 }
                 
                 if (Object.keys(data.by_country).length > 0) {
-                    html += '<div class="stat-item"><span class="stat-label">Nouveaux par pays (dernier run)</span></div>';
+                    html += '<div class="stat-item" style="flex-direction: column; align-items: flex-start; gap: 10px;"><span class="stat-label">🌍 Nouveaux par Pays (Dernier Run)</span><div>';
                     for (const [country, count] of Object.entries(data.by_country)) {
-                        html += `<div class="country-tag">${country}: ${count}</div>`;
+                        html += `<span class="country-tag">🌐 ${country}: <strong>${count}</strong></span>`;
                     }
+                    html += '</div></div>';
                 } else {
-                    html += '<div class="stat-item"><span class="stat-label" style="color: #888;">Aucun nouveau contenu au dernier run</span></div>';
+                    html += '<div class="stat-item"><span class="stat-label" style="color: #888;">💤 Aucun nouveau contenu au dernier run</span></div>';
                 }
                 
                 document.getElementById('stats-content').innerHTML = html;
             } catch (error) {
                 document.getElementById('stats-content').innerHTML = 
-                    `<div class="alert alert-error">Erreur: ${error.message}</div>`;
+                    `<div class="alert alert-error"><span class="alert-icon">❌</span>Erreur: ${error.message}</div>`;
             }
         }
 
@@ -449,10 +859,18 @@
                 const data = await response.json();
                 
                 let html = '';
+                const icons = {
+                    'RAPIDAPI_KEY': '🔑',
+                    'TMDB_API_KEY': '🎬',
+                    'DISCORD_WEBHOOK': '💬',
+                    'COUNTRIES': '🌍'
+                };
+                
                 for (const [key, value] of Object.entries(data)) {
+                    const icon = icons[key] || '⚙️';
                     html += `
                         <div class="stat-item">
-                            <span class="stat-label">${key}</span>
+                            <span class="stat-label">${icon} ${key}</span>
                             <span class="stat-value">${value}</span>
                         </div>
                     `;
@@ -461,14 +879,14 @@
                 document.getElementById('config-content').innerHTML = html;
             } catch (error) {
                 document.getElementById('config-content').innerHTML = 
-                    `<div class="alert alert-error">Erreur: ${error.message}</div>`;
+                    `<div class="alert alert-error"><span class="alert-icon">❌</span>Erreur: ${error.message}</div>`;
             }
         }
 
         // Charger les logs
         async function loadLogs(type) {
             try {
-                const response = await fetch(`/api/logs?type=${type}&lines=100`);
+                const response = await fetch(`/api/logs?type=${type}&lines=200`);
                 const data = await response.json();
                 
                 const logContainer = document.getElementById(`log-${type}`);
@@ -476,17 +894,18 @@
                 logContainer.scrollTop = logContainer.scrollHeight;
             } catch (error) {
                 document.getElementById(`log-${type}`).innerHTML = 
-                    `<div class="alert alert-error">Erreur: ${error.message}</div>`;
+                    `<div class="alert alert-error"><span class="alert-icon">❌</span>Erreur: ${error.message}</div>`;
             }
         }
 
         // Exécuter le bot
         async function runBot() {
-            if (!confirm('Voulez-vous vraiment exécuter le bot maintenant ?')) return;
+            if (!confirm('🚀 Voulez-vous vraiment exécuter le bot maintenant ?')) return;
             
-            const btn = event.target;
+            const btn = event.target.closest('.btn');
+            const originalHTML = btn.innerHTML;
             btn.disabled = true;
-            btn.textContent = '⏳ Exécution en cours...';
+            btn.innerHTML = '<span>⏳</span> Exécution en cours...';
             
             try {
                 const response = await fetch('/api/run', { method: 'POST' });
@@ -498,18 +917,18 @@
                     showAlert('❌ Erreur: ' + (data.error || 'Erreur inconnue'), 'error');
                 }
                 
-                setTimeout(refreshAll, 2000);
+                setTimeout(refreshAll, 3000);
             } catch (error) {
                 showAlert('❌ Erreur: ' + error.message, 'error');
             } finally {
                 btn.disabled = false;
-                btn.textContent = '▶️ Exécuter maintenant';
+                btn.innerHTML = originalHTML;
             }
         }
 
         // Réinitialiser la mémoire
         async function resetMemory() {
-            if (!confirm('⚠️ Cela va réinitialiser la mémoire anti-doublons. Tous les contenus seront renvoyés au prochain run. Continuer ?')) {
+            if (!confirm('⚠️ ATTENTION: Cela va réinitialiser la mémoire anti-doublons.\n\nTous les contenus seront considérés comme nouveaux au prochain run.\n\nContinuer ?')) {
                 return;
             }
             
@@ -518,7 +937,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showAlert('✅ Mémoire réinitialisée!', 'success');
+                    showAlert('✅ Mémoire réinitialisée avec succès!', 'success');
                     refreshAll();
                 } else {
                     showAlert('❌ Erreur: ' + data.error, 'error');
@@ -531,34 +950,25 @@
         // Télécharger les logs
         function downloadLogs(type) {
             window.location.href = `/download/logs/${type}`;
+            showAlert(`📥 Téléchargement des logs ${type} en cours...`, 'success');
         }
 
         // Changer d'onglet
         function showTab(type) {
             currentTab = type;
             
-            // Mettre à jour les onglets
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // Mettre à jour le contenu
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
             document.getElementById(`tab-${type}`).classList.add('active');
             
-            // Charger les logs
             loadLogs(type);
         }
-
-        // Auto-refresh toutes les 30 secondes
-        setInterval(() => {
-            loadStatus();
-            loadStats();
-            loadLogs(currentTab);
-        }, 30000);
     </script>
 </body>
 </html>

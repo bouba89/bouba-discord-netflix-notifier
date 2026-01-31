@@ -1,4 +1,3 @@
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-
 0 8 * * * bash -c "export $(cat /app/.env_for_cron | xargs) && /app/run_netflix.sh" >> /app/logs/cron.log 2>&1

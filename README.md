@@ -2,11 +2,6 @@
 
 Un bot Discord en Python déployable via Docker qui vous informe automatiquement des nouveautés Netflix directement sur votre serveur Discord, au jour le jour !
 
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-![Docker](https://img.shields.io/badge/Docker-Compatible-blue)
-![License](https://img.shields.io/badge/License-Open%20Source-green)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
-
 ## ✨ Fonctionnalités
 
 ### 🤖 Bot Discord
@@ -248,20 +243,6 @@ docker exec -it bouba_discord_netflix_notifier bash -c "echo '[]' > /app/data/se
 4. **Limitez l'accès** au port 5000 (pare-feu)
 5. **Sauvegardez régulièrement** le dossier `/data`
 
-## 📊 Monitoring
-
-### Logs disponibles
-
-- **`/logs/cron.log`** : Logs des exécutions automatiques
-- **`/logs/netflix_bot_debug.log`** : Logs détaillés du bot
-- **`/data/api_responses_debug.json`** : Réponses API pour debug
-
-### Endpoints de santé
-
-- `http://localhost:5000/api/status` - État du bot
-- `http://localhost:5000/api/stats` - Statistiques
-- `http://localhost:5000/api/config` - Configuration actuelle
-
 ## 🐛 Dépannage
 
 ### Le cron ne s'exécute pas
@@ -366,7 +347,5 @@ En cas de problème :
 3. 💬 Consultez les discussions existantes
 
 ---
-
-⭐ **Si ce projet vous plaît, n'hésitez pas à lui donner une étoile !** ⭐
 
 🎬 **Bon monitoring Netflix !** 🍿

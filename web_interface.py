@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Netflix Bot - Interface Web Flask
+Netflix Bot - Interface Web Flask avec Authentification
 Interface de monitoring et configuration du bot Netflix
 """
 
-from flask import Flask, render_template, jsonify, request, send_file
+from flask import Flask, render_template, jsonify, request, send_file, session, redirect, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 import os
 import json
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 app = Flask(__name__)
+
+# Configuration de sécurité
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'netflix-bot-super-secret-key-change-me-in-production')
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
 # Configuration
 DATA_DIR = "/app/data"
@@ -22,17 +28,136 @@ DEBUG_API_FILE = f"{DATA_DIR}/api_responses_debug.json"
 LOG_FILE = f"{LOGS_DIR}/netflix_bot_debug.log"
 CRON_LOG_FILE = f"{LOGS_DIR}/cron.log"
 ENV_FILE = "/app/.env_for_cron"
+USERS_FILE = f"{DATA_DIR}/users.json"
+
+# Créer le fichier users.json s'il n'existe pas
+def init_users_file():
+    """Initialiser le fichier users avec un compte admin par défaut"""
+    if not os.path.exists(USERS_FILE):
+        default_users = {
+            "admin": {
+                "password": generate_password_hash("admin123"),
+                "role": "admin",
+                "created_at": datetime.now().isoformat()
+            }
+        }
+        os.makedirs(DATA_DIR, exist_ok=True)
+        with open(USERS_FILE, 'w') as f:
+            json.dump(default_users, f, indent=2)
+        print("⚠️  Compte admin par défaut créé: admin / admin123")
+        print("⚠️  CHANGEZ LE MOT DE PASSE IMMÉDIATEMENT!")
+
+# Initialiser au démarrage
+init_users_file()
 
 # ============================================================================
-# ROUTES PRINCIPALES
+# FONCTIONS D'AUTHENTIFICATION
+# ============================================================================
+
+def login_required(f):
+    """Décorateur pour protéger les routes"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def get_users():
+    """Récupérer tous les utilisateurs"""
+    try:
+        with open(USERS_FILE, 'r') as f:
+            return json.load(f)
+    except:
+        return {}
+
+def save_users(users):
+    """Sauvegarder les utilisateurs"""
+    with open(USERS_FILE, 'w') as f:
+        json.dump(users, f, indent=2)
+
+def verify_user(username, password):
+    """Vérifier les credentials d'un utilisateur"""
+    users = get_users()
+    if username in users:
+        return check_password_hash(users[username]['password'], password)
+    return False
+
+# ============================================================================
+# ROUTES D'AUTHENTIFICATION
+# ============================================================================
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Page de connexion"""
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        remember = request.form.get('remember') == 'on'
+        
+        if verify_user(username, password):
+            session['username'] = username
+            session['role'] = get_users()[username].get('role', 'user')
+            if remember:
+                session.permanent = True
+            
+            # Log de connexion
+            users = get_users()
+            users[username]['last_login'] = datetime.now().isoformat()
+            save_users(users)
+            
+            return redirect(url_for('index'))
+        else:
+            return render_template('login.html', error='Identifiants incorrects')
+    
+    # Si déjà connecté, rediriger vers le dashboard
+    if 'username' in session:
+        return redirect(url_for('index'))
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    """Déconnexion"""
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route('/change-password', methods=['POST'])
+@login_required
+def change_password():
+    """Changer le mot de passe"""
+    try:
+        current_password = request.json.get('current_password')
+        new_password = request.json.get('new_password')
+        username = session.get('username')
+        
+        users = get_users()
+        
+        # Vérifier le mot de passe actuel
+        if not check_password_hash(users[username]['password'], current_password):
+            return jsonify({'success': False, 'error': 'Mot de passe actuel incorrect'}), 401
+        
+        # Mettre à jour le mot de passe
+        users[username]['password'] = generate_password_hash(new_password)
+        users[username]['password_changed_at'] = datetime.now().isoformat()
+        save_users(users)
+        
+        return jsonify({'success': True, 'message': 'Mot de passe changé avec succès'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================================================
+# ROUTES PRINCIPALES (PROTÉGÉES)
 # ============================================================================
 
 @app.route('/')
+@login_required
 def index():
     """Page d'accueil - Dashboard"""
-    return render_template('index.html')
+    return render_template('index.html', username=session.get('username'))
 
 @app.route('/api/status')
+@login_required
 def get_status():
     """API: Récupérer le statut du bot"""
     try:
@@ -65,7 +190,6 @@ def get_status():
                 lines = f.readlines()
                 for line in reversed(lines):
                     if "🏁 TERMINÉ" in line:
-                        # Extraire la date du log
                         try:
                             timestamp = line.split(' - ')[0]
                             last_run = timestamp
@@ -86,6 +210,7 @@ def get_status():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/stats')
+@login_required
 def get_stats():
     """API: Récupérer les statistiques détaillées"""
     try:
@@ -113,9 +238,7 @@ def get_stats():
                 
             current_country = None
             
-            # Parcourir les logs en sens inverse pour avoir les stats les plus récentes
-            for line in reversed(lines[-500:]):  # Dernières 500 lignes
-                # Extraire les stats du dernier run
+            for line in reversed(lines[-500:]):
                 if "Contenus traités:" in line:
                     try:
                         stats['last_run']['total_treated'] = int(line.split("Contenus traités:")[1].split()[0])
@@ -135,7 +258,6 @@ def get_stats():
                     except:
                         pass
                 
-                # Stats par pays (recherche dans l'ordre chronologique)
                 if "TRAITEMENT DU PAYS:" in line:
                     try:
                         country = line.split("TRAITEMENT DU PAYS:")[1].strip()
@@ -147,7 +269,6 @@ def get_stats():
                 
                 if "nouveaux titres (non envoyés)" in line and current_country:
                     try:
-                        # Format: "✨ X nouveaux titres (non envoyés)"
                         count = int(line.split("✨")[1].split("nouveaux")[0].strip())
                         stats['by_country'][current_country] = count
                     except:
@@ -159,6 +280,7 @@ def get_stats():
         return jsonify({'error': str(e), 'traceback': traceback.format_exc()}), 500
 
 @app.route('/api/logs')
+@login_required
 def get_logs():
     """API: Récupérer les logs"""
     try:
@@ -182,6 +304,7 @@ def get_logs():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/run', methods=['POST'])
+@login_required
 def run_bot():
     """API: Exécuter le bot manuellement"""
     try:
@@ -203,6 +326,7 @@ def run_bot():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/config', methods=['GET', 'POST'])
+@login_required
 def config():
     """API: Voir/Modifier la configuration"""
     if request.method == 'GET':
@@ -213,7 +337,6 @@ def config():
                     for line in f:
                         if '=' in line:
                             key, value = line.strip().split('=', 1)
-                            # Masquer les clés sensibles
                             if 'KEY' in key or 'WEBHOOK' in key:
                                 config_data[key] = value[:10] + '***'
                             else:
@@ -226,6 +349,7 @@ def config():
         return jsonify({'error': 'Modification non implémentée pour la sécurité'}), 501
 
 @app.route('/api/reset', methods=['POST'])
+@login_required
 def reset_memory():
     """API: Réinitialiser la mémoire (anti-doublons)"""
     try:
@@ -236,6 +360,7 @@ def reset_memory():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/debug')
+@login_required
 def get_debug():
     """API: Récupérer les données de debug API"""
     try:
@@ -244,12 +369,12 @@ def get_debug():
         
         with open(DEBUG_API_FILE, 'r') as f:
             debug_data = json.load(f)
-            # Limiter à 20 dernières requêtes pour ne pas surcharger
             return jsonify({'data': debug_data[-20:]})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/download/logs/<log_type>')
+@login_required
 def download_logs(log_type):
     """Télécharger les logs"""
     try:
@@ -265,17 +390,25 @@ def download_logs(log_type):
         return str(e), 500
 
 # ============================================================================
-# TEMPLATES HTML
+# TEMPLATE HTML
 # ============================================================================
 
 @app.route('/templates/index.html')
+@login_required
 def serve_template():
     """Servir le template (pour dev)"""
-    return render_template('index.html')
+    return render_template('index.html', username=session.get('username'))
 
 if __name__ == '__main__':
     # Créer le dossier templates s'il n'existe pas
     os.makedirs('templates', exist_ok=True)
     
     # Lancer Flask en mode debug sur toutes les interfaces
+    print("=" * 60)
+    print("🎬 Netflix Bot - Interface Web")
+    print("=" * 60)
+    print("🌐 Interface accessible sur: http://localhost:5000")
+    print("👤 Compte par défaut: admin / admin123")
+    print("⚠️  CHANGEZ LE MOT DE PASSE IMMÉDIATEMENT!")
+    print("=" * 60)
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -1,3 +1,11 @@
-requests==2.32.4
+# API Dependencies
+requests==2.31.0
 python-dotenv==1.0.0
-flask==3.0.0
+
+# Flask pour l'interface web
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# Autres dépendances si vous en avez
+# discord-webhook==1.3.0
+# Pillow==10.0.0

@@ -7,9 +7,19 @@ WORKDIR /app
 # Installer gcc pour pip (build de certains paquets)
 RUN apt-get update && apt-get install -y --no-install-recommends gcc && rm -rf /var/lib/apt/lists/*
 
-# Installer les dépendances Python localement
+
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN python -m pip install --upgrade pip
+
+
+
+# Install dependencies:
 COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
+
+
 
 # =========================================
 # Runtime stage - image finale légère
@@ -25,11 +35,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     procps \
     && rm -rf /var/lib/apt/lists/*
 
-# Copier les dépendances Python depuis le builder
-COPY --from=builder /root/.local /root/.local
-
-# Ajouter le PATH pour pip --user
-ENV PATH=/root/.local/bin:/usr/local/bin:$PATH
 
 # Copier l'application
 COPY netflix_bot.py /app/

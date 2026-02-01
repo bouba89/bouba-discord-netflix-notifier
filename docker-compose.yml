@@ -1,19 +1,15 @@
+version: '3.9'
+
 services:
   netflix-notifier:
     build: .
+    image: bouba89/netflix-bot:latest  
     container_name: bouba_discord_netflix_notifier
-    
-    # Variables d'environnement depuis le fichier .env
-    env_file:
-      - .env
- # Définir le fuseau horaire
-    environment:
-      - TZ=Europe/Paris    
+    ports:
+      - "5000:5000"
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-      - /etc/localtime:/etc/localtime:ro  # Synchroniser avec l'hôte (optionnel)
-# Exposer le port Flask pour l'interface web
-    ports:
-      - "5000:5000"    
+    env_file:
+      - .env
     restart: unless-stopped

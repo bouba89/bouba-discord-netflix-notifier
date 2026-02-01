@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚙️ Configuration - Netflix Bot</title>
+    
+    <!-- Favicon SVG Netflix-style -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23E50914'/><text x='50' y='70' font-size='60' font-weight='bold' text-anchor='middle' fill='white' font-family='Arial, sans-serif'>N</text></svg>">
+    
     <style>
         :root {
             --netflix-red: #E50914;
@@ -290,6 +294,59 @@
             margin: 10px 0;
         }
 
+        .countdown-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(229, 9, 20, 0.2);
+        }
+
+        .countdown {
+            font-size: 2em;
+            font-weight: 600;
+            color: var(--success-green);
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .countdown-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+
+        .countdown-value {
+            font-size: 1.5em;
+            color: var(--netflix-red);
+            font-weight: 700;
+        }
+
+        .countdown-label {
+            font-size: 0.4em;
+            color: #aaa;
+            margin-top: 5px;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--netflix-red), var(--success-green));
+            border-radius: 10px;
+            transition: width 1s linear;
+        }
+
         .loading {
             text-align: center;
             padding: 40px;
@@ -341,6 +398,15 @@
 
             .current-schedule .time {
                 font-size: 2em;
+            }
+
+            .countdown {
+                font-size: 1.5em;
+                gap: 10px;
+            }
+
+            .countdown-unit {
+                min-width: 60px;
             }
         }
     </style>
@@ -451,12 +517,89 @@
 
     <script>
         let currentCountries = [];
+        let countdownInterval = null;
+        let scheduledHour = 8;
+        let scheduledMinute = 0;
 
         // Charger au démarrage
         window.onload = function() {
             loadCronConfig();
             loadCountries();
         };
+
+        // Calculer le temps restant jusqu'à la prochaine exécution
+        function calculateTimeRemaining() {
+            const now = new Date();
+            const scheduled = new Date();
+            scheduled.setHours(scheduledHour, scheduledMinute, 0, 0);
+            
+            // Si l'heure est déjà passée aujourd'hui, planifier pour demain
+            if (scheduled <= now) {
+                scheduled.setDate(scheduled.getDate() + 1);
+            }
+            
+            const diff = scheduled - now;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // Calculer le pourcentage de progression (24h = 100%)
+            const totalSeconds = 24 * 60 * 60;
+            const remainingSeconds = hours * 3600 + minutes * 60 + seconds;
+            const progressPercent = ((totalSeconds - remainingSeconds) / totalSeconds) * 100;
+            
+            return { hours, minutes, seconds, progressPercent };
+        }
+
+        // Mettre à jour le compteur
+        function updateCountdown() {
+            const { hours, minutes, seconds, progressPercent } = calculateTimeRemaining();
+            
+            const countdownHTML = `
+                <div class="countdown">
+                    <div class="countdown-unit">
+                        <div class="countdown-value">${String(hours).padStart(2, '0')}</div>
+                        <div class="countdown-label">heures</div>
+                    </div>
+                    <div class="countdown-unit">
+                        <div class="countdown-value">${String(minutes).padStart(2, '0')}</div>
+                        <div class="countdown-label">minutes</div>
+                    </div>
+                    <div class="countdown-unit">
+                        <div class="countdown-value">${String(seconds).padStart(2, '0')}</div>
+                        <div class="countdown-label">secondes</div>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+            `;
+            
+            return countdownHTML;
+        }
+
+        // Démarrer le compteur
+        function startCountdown() {
+            // Arrêter l'ancien interval s'il existe
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            // Mettre à jour immédiatement
+            const countdownContainer = document.getElementById('countdown-display');
+            if (countdownContainer) {
+                countdownContainer.innerHTML = updateCountdown();
+            }
+            
+            // Mettre à jour toutes les secondes
+            countdownInterval = setInterval(() => {
+                const countdownContainer = document.getElementById('countdown-display');
+                if (countdownContainer) {
+                    countdownContainer.innerHTML = updateCountdown();
+                }
+            }, 1000);
+        }
 
         // Afficher une alerte
         function showAlert(message, type = 'success') {
@@ -483,15 +626,25 @@
                 const response = await fetch('/api/config/cron');
                 const data = await response.json();
                 
-                document.getElementById('hour').value = data.hour || '8';
-                document.getElementById('minute').value = data.minute || '0';
+                scheduledHour = data.hour || 8;
+                scheduledMinute = data.minute || 0;
+                
+                document.getElementById('hour').value = scheduledHour;
+                document.getElementById('minute').value = scheduledMinute;
                 
                 const schedule = document.getElementById('current-schedule');
                 schedule.innerHTML = `
                     <p style="color: #aaa; margin-bottom: 10px;">Exécution programmée tous les jours à</p>
-                    <div class="time">${String(data.hour || '8').padStart(2, '0')}:${String(data.minute || '0').padStart(2, '0')}</div>
+                    <div class="time">${String(scheduledHour).padStart(2, '0')}:${String(scheduledMinute).padStart(2, '0')}</div>
                     <p style="color: #aaa; margin-top: 10px;">${data.enabled ? '✅ Cron actif' : '⚠️ Cron inactif'}</p>
+                    <div class="countdown-container">
+                        <p style="color: #aaa; margin-bottom: 15px;">⏳ Temps restant avant la prochaine exécution</p>
+                        <div id="countdown-display"></div>
+                    </div>
                 `;
+                
+                // Démarrer le compteur
+                startCountdown();
             } catch (error) {
                 showAlert('Erreur lors du chargement de la configuration du cron', 'error');
                 console.error(error);
@@ -502,8 +655,8 @@
         document.getElementById('cron-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const hour = document.getElementById('hour').value;
-            const minute = document.getElementById('minute').value;
+            const hour = parseInt(document.getElementById('hour').value);
+            const minute = parseInt(document.getElementById('minute').value);
             
             try {
                 const response = await fetch('/api/config/cron', {
@@ -517,6 +670,8 @@
                 const data = await response.json();
                 
                 if (data.success) {
+                    scheduledHour = hour;
+                    scheduledMinute = minute;
                     showAlert(`✅ Horaire mis à jour: ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`, 'success');
                     loadCronConfig();
                 } else {
@@ -633,6 +788,13 @@
                 addCountry();
             }
         });
+
+        // Nettoyer l'interval au déchargement de la page
+        window.onbeforeunload = function() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        };
     </script>
 </body>
 </html>

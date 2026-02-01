@@ -55,7 +55,7 @@ bouba-discord-netflix-notifier/
 │   ├── index.html             # Dashboard principal
 │   ├── login.html             # Page de connexion
 │   └── settings.html          # Page de configuration
-├── 🐳 Dockerfile               # Image Docker
+├── 🐳 Dockerfile               # Image Docker multi-étapes Alpine
 ├── 🐳 docker-compose.yml       # Configuration Docker Compose
 ├── 🐍 netflix_bot.py           # Script principal du bot
 ├── 🌐 web_interface.py         # Interface web Flask
@@ -64,6 +64,25 @@ bouba-discord-netflix-notifier/
 ├── 📦 requirements.txt         # Dépendances Python
 └── 📖 README.md               # Documentation
 ```
+
+## 🐳 Image Docker Légère
+
+Ce projet utilise une **image Docker Alpine ultra-légère** grâce à un build multi-étapes :
+
+| Caractéristique | Détail |
+|-----------------|--------|
+| **Image de base** | `python:3.11-alpine` |
+| **Taille finale** | ~80 Mo (vs ~400 Mo avec Debian) |
+| **Build** | Multi-étapes (compilation séparée) |
+| **Sécurité** | Utilisateur non-root (UID 1000) |
+| **Cron** | `dcron` (léger, adapté Alpine) |
+
+### Avantages de l'image Alpine
+- ✅ **5x plus légère** que les images Debian/Ubuntu
+- ✅ **Démarrage rapide** du conteneur
+- ✅ **Surface d'attaque réduite** (moins de paquets)
+- ✅ **Téléchargement et déploiement accélérés**
+- ✅ **Consommation mémoire minimale**
 
 ## ⚙️ Prérequis
 

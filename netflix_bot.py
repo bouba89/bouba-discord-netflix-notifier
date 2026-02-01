@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Netflix Bot Discord Notifier - Version avec Debug Complet
+Netflix Bot Discord Notifier - Version Optimisée avec Fetch par Pays
 Auteur: Bouba89
 Description: Bot qui notifie les nouveautés Netflix sur Discord avec logging détaillé
 """
@@ -11,7 +11,6 @@ import requests
 import json
 from datetime import datetime, timedelta
 import logging
-import html  # Pour décoder les entités HTML
 
 # ============================================================================
 # CONFIGURATION DU LOGGING DÉTAILLÉ
@@ -37,7 +36,7 @@ MEMORY_FILE = "/app/data/sent_ids.json"
 DEBUG_API_FILE = "/app/data/api_responses_debug.json"
 API_HOST = "unogsng.p.rapidapi.com"
 
-# Dates - MODIFIÉ :  24h
+# Dates - Filtre 24h (sorties du jour)
 today = datetime.utcnow().date()
 yesterday = today - timedelta(days=1)
 
@@ -45,7 +44,7 @@ logger.info("="*80)
 logger.info("🎬 NETFLIX BOT - DÉMARRAGE")
 logger.info("="*80)
 logger.info(f"📅 Date UTC: {today}")
-logger.info(f"📅 Filtre: contenus depuis {last_week} (7 derniers jours)")
+logger.info(f"📅 Filtre: contenus depuis {yesterday} (24 dernières heures)")
 logger.info(f"🌍 Pays configurés: {COUNTRIES}")
 logger.info(f"🔑 RapidAPI Key: {'✅ Configurée' if API_KEY else '❌ Manquante'}")
 logger.info(f"🔑 TMDB API Key: {'✅ Configurée' if TMDB_API_KEY else '❌ Manquante'}")
@@ -67,18 +66,15 @@ def save_api_debug(api_name, endpoint, params, response_data, status_code, error
     }
 
     try:
-        # Charger les données existantes
         if os.path.exists(DEBUG_API_FILE):
             with open(DEBUG_API_FILE, 'r', encoding='utf-8') as f:
                 debug_data = json.load(f)
         else:
             debug_data = []
 
-        # Ajouter la nouvelle entrée (garder les 100 dernières)
         debug_data.append(debug_entry)
         debug_data = debug_data[-100:]
 
-        # Sauvegarder
         os.makedirs(os.path.dirname(DEBUG_API_FILE), exist_ok=True)
         with open(DEBUG_API_FILE, 'w', encoding='utf-8') as f:
             json.dump(debug_data, f, indent=2, ensure_ascii=False)
@@ -103,11 +99,15 @@ with open(MEMORY_FILE, "r") as f:
 logger.info(f"📋 {len(sent_ids)} contenus déjà envoyés chargés depuis {MEMORY_FILE}")
 
 # ============================================================================
-# FONCTION FETCH TITRES uNoGS (avec debug)
+# FONCTION FETCH TITRES uNoGS PAR PAYS (SOLUTION 1)
 # ============================================================================
-def fetch_titles():
+def fetch_titles(country_code):
+    """
+    Récupère les titres directement pour un pays spécifique.
+    Cette approche évite le problème des clist manquants.
+    """
     logger.info("\n" + "="*60)
-    logger.info("🔍 RÉCUPÉRATION DES TITRES uNoGS")
+    logger.info(f"🔍 RÉCUPÉRATION DES TITRES uNoGS POUR {country_code}")
     logger.info("="*60)
 
     url = f"https://{API_HOST}/search"
@@ -115,15 +115,18 @@ def fetch_titles():
         "X-RapidAPI-Key": API_KEY,
         "X-RapidAPI-Host": API_HOST
     }
+    
+    # ✅ NOUVEAU : Filtrer directement par pays dans l'API
     params = {
         "limit": 100,
-        "orderby": "date_added"
+        "orderby": "date_added",
+        "country_list": country_code  # ← Filtre par pays directement !
     }
 
     logger.debug(f"📤 Requête uNoGS:")
     logger.debug(f"   URL: {url}")
     logger.debug(f"   Params: {json.dumps(params, indent=2)}")
-    logger.debug(f"   Headers: X-RapidAPI-Key=***, X-RapidAPI-Host={API_HOST}")
+    logger.debug(f"   Country: {country_code}")
 
     try:
         r = requests.get(url, headers=headers, params=params, timeout=30)
@@ -133,12 +136,10 @@ def fetch_titles():
         response_json = r.json()
         results = response_json.get("results", [])
 
-        # Sauvegarder pour debug
-        save_api_debug("uNoGS", url, params, response_json, r.status_code)
+        save_api_debug(f"uNoGS-{country_code}", url, params, response_json, r.status_code)
 
-        logger.info(f"✅ Total titres récupérés: {len(results)}")
+        logger.info(f"✅ Total titres récupérés pour {country_code}: {len(results)}")
 
-        # Afficher un exemple de titre
         if results:
             logger.debug(f"📋 Exemple de titre récupéré:")
             logger.debug(json.dumps(results[0], indent=2, ensure_ascii=False)[:500])
@@ -146,43 +147,26 @@ def fetch_titles():
         return results
 
     except requests.exceptions.Timeout:
-        logger.error("⏱️  Timeout lors de la requête uNoGS (>30s)")
-        save_api_debug("uNoGS", url, params, None, None, "Timeout")
+        logger.error(f"⏱️  Timeout lors de la requête uNoGS pour {country_code} (>30s)")
+        save_api_debug(f"uNoGS-{country_code}", url, params, None, None, "Timeout")
         return []
     except requests.exceptions.HTTPError as e:
-        logger.error(f"❌ Erreur HTTP uNoGS: {e}")
+        logger.error(f"❌ Erreur HTTP uNoGS pour {country_code}: {e}")
         try:
             error_data = r.json()
             logger.error(f"📄 Détails erreur: {json.dumps(error_data, indent=2)}")
-            save_api_debug("uNoGS", url, params, error_data, r.status_code, str(e))
+            save_api_debug(f"uNoGS-{country_code}", url, params, error_data, r.status_code, str(e))
         except:
             logger.error(f"📄 Réponse brute: {r.text[:500]}")
-            save_api_debug("uNoGS", url, params, {"raw": r.text}, r.status_code, str(e))
+            save_api_debug(f"uNoGS-{country_code}", url, params, {"raw": r.text}, r.status_code, str(e))
         return []
     except Exception as e:
-        logger.error(f"❌ Erreur API uNoGS: {e}")
-        save_api_debug("uNoGS", url, params, None, None, str(e))
+        logger.error(f"❌ Erreur API uNoGS pour {country_code}: {e}")
+        save_api_debug(f"uNoGS-{country_code}", url, params, None, None, str(e))
         return []
 
 # ============================================================================
-# VÉRIFIER DISPONIBILITÉ PAR PAYS
-# ============================================================================
-def is_available_in_country(title, country_code):
-    if not title.get("clist"):
-        logger.debug(f"  ⚠️  '{title.get('title', 'N/A')}' - Pas de clist")
-        return False
-    clist_str = "{" + title["clist"] + "}"
-    try:
-        clist_dict = json.loads(clist_str)
-        available = country_code in clist_dict
-        logger.debug(f"  {'✅' if available else '❌'} '{title.get('title', 'N/A')}' - {country_code}")
-        return available
-    except Exception as e:
-        logger.warning(f"⚠️  Erreur parsing clist: {e} / {title.get('title', 'N/A')}")
-        return False
-
-# ============================================================================
-# ENRICHIR VIA TMDB (avec debug)
+# ENRICHIR VIA TMDB
 # ============================================================================
 def enrich_with_tmdb(title, year, vtype="movie"):
     logger.debug(f"🎬 TMDB enrichissement: {title} ({year}) - Type: {vtype}")
@@ -201,12 +185,10 @@ def enrich_with_tmdb(title, year, vtype="movie"):
         "first_air_date_year": year if vtype=="series" else None,
         "language": "fr-FR"
     }
-    # Nettoyer les params None
     params = {k: v for k, v in params.items() if v is not None}
 
     logger.debug(f"📤 Requête TMDB: {url}")
     logger.debug(f"   Query: {title}")
-    logger.debug(f"   Params: {params}")
 
     try:
         r = requests.get(url, params=params, timeout=10)
@@ -216,7 +198,6 @@ def enrich_with_tmdb(title, year, vtype="movie"):
         response_json = r.json()
         results = response_json.get("results", [])
 
-        # Sauvegarder pour debug
         save_api_debug("TMDB", url, params, response_json, r.status_code)
 
         if not results:
@@ -225,8 +206,6 @@ def enrich_with_tmdb(title, year, vtype="movie"):
 
         tmdb_data = results[0]
         logger.debug(f"✅ Résultat TMDB trouvé: {tmdb_data.get('title') or tmdb_data.get('name')}")
-        logger.debug(f"   Poster: {tmdb_data.get('poster_path', 'N/A')}")
-        logger.debug(f"   Synopsis: {tmdb_data.get('overview', 'N/A')[:100]}...")
 
         poster = f"https://image.tmdb.org/t/p/w500{tmdb_data.get('poster_path')}" if tmdb_data.get("poster_path") else ""
         overview = tmdb_data.get("overview", "")
@@ -239,7 +218,7 @@ def enrich_with_tmdb(title, year, vtype="movie"):
         return "", ""
 
 # ============================================================================
-# ENVOYER DISCORD (avec debug)
+# ENVOYER DISCORD
 # ============================================================================
 def send_discord(movies, series, country):
     logger.info(f"\n📨 ENVOI DISCORD POUR {country}")
@@ -258,19 +237,22 @@ def send_discord(movies, series, country):
 
         logger.debug(f"  📝 Formatage embed: {title} ({year})")
 
-        # Enrichir via TMDB si possible
         tmdb_poster, tmdb_synopsis = enrich_with_tmdb(title, year, vtype)
         poster = tmdb_poster or t.get('img') or t.get('poster') or ""
         synopsis = tmdb_synopsis or t.get('synopsis', '')
 
-        # URL TMDB
         tmdb_id = ""
         if TMDB_API_KEY:
             search_type = "movie" if vtype=="movie" else "tv"
             try:
                 r = requests.get(
                     f"https://api.themoviedb.org/3/search/{search_type}",
-                    params={"api_key": TMDB_API_KEY, "query": title, "year": year if vtype=="movie" else None, "first_air_date_year": year if vtype=="series" else None},
+                    params={
+                        "api_key": TMDB_API_KEY,
+                        "query": title,
+                        "year": year if vtype=="movie" else None,
+                        "first_air_date_year": year if vtype=="series" else None
+                    },
                     timeout=10
                 )
                 r.raise_for_status()
@@ -300,13 +282,11 @@ def send_discord(movies, series, country):
 
     logger.info(f"📦 {len(embeds)} embeds préparés (max 10 par message)")
 
-    # Discord limite à 10 embeds par message
     for i in range(0, len(embeds), 10):
         chunk = embeds[i:i+10]
         payload = {"embeds": chunk}
 
         logger.debug(f"📤 Envoi chunk {i//10 + 1}/{(len(embeds)-1)//10 + 1}")
-        logger.debug(f"   Payload: {json.dumps(payload, indent=2, ensure_ascii=False)[:300]}...")
 
         try:
             r = requests.post(WEBHOOK_URL, json=payload, timeout=10)
@@ -329,7 +309,6 @@ logger.info("\n" + "="*80)
 logger.info(f"🎬 Netflix Bot - {datetime.now()}")
 logger.info("="*80)
 
-all_titles = fetch_titles()
 total_new = 0
 
 for country_code in COUNTRIES:
@@ -338,18 +317,20 @@ for country_code in COUNTRIES:
     logger.info(f"🌍 TRAITEMENT DU PAYS: {country_code}")
     logger.info(f"{'='*60}")
 
-    # Filtrer par pays
-    logger.debug(f"🔍 Filtrage par pays {country_code}...")
-    titles_country = [t for t in all_titles if is_available_in_country(t, country_code)]
-    logger.info(f"  📺 {len(titles_country)} titres disponibles dans {country_code}")
+    # ✅ NOUVEAU : Récupérer directement les titres pour ce pays
+    titles_country = fetch_titles(country_code)
+    
+    if not titles_country:
+        logger.warning(f"⚠️  Aucun titre récupéré pour {country_code}")
+        continue
 
-    # Filtrer 7 derniers jours - MODIFIÉ
-    logger.debug(f"🔍 Filtrage par date (>= {last_week})...")
+    # Filtrer par date (dernières 24h)
+    logger.debug(f"🔍 Filtrage par date (>= {yesterday})...")
     titles_recent = []
     for t in titles_country:
         try:
             title_date = datetime.strptime(t['titledate'], "%Y-%m-%d").date()
-           if title_date >= yesterday:
+            if title_date >= yesterday:
                 titles_recent.append(t)
                 logger.debug(f"  ✅ {t['title']} - Date: {title_date}")
             else:
@@ -357,7 +338,7 @@ for country_code in COUNTRIES:
         except Exception as e:
             logger.warning(f"⚠️  Erreur parsing date: {e} / {t.get('title','')}")
 
-    logger.info(f"  🆕 {len(titles_recent)} titres récents (7 derniers jours)")
+    logger.info(f"  🆕 {len(titles_recent)} titres récents (24 dernières heures)")
 
     # Filtrer anti-doublons
     logger.debug(f"🔍 Filtrage anti-doublons...")
@@ -372,18 +353,15 @@ for country_code in COUNTRIES:
     logger.info(f"  ✨ {len(new_titles)} nouveaux titres (non envoyés)")
 
     if new_titles:
-        # Ajouter les IDs
         new_ids = [t['nfid'] for t in new_titles]
         sent_ids.extend(new_ids)
         total_new += len(new_titles)
 
-        # Séparer films / séries
         movies = [t for t in new_titles if t.get('vtype') == 'movie']
         series = [t for t in new_titles if t.get('vtype') == 'series']
 
         logger.info(f"  🎥 Films: {len(movies)} | 📺 Séries: {len(series)}")
 
-        # Envoyer Discord
         send_discord(movies, series, country_code)
     else:
         logger.info(f"  ℹ️  Rien de nouveau à envoyer pour {country_code}")
@@ -406,7 +384,7 @@ except Exception as e:
 logger.info("\n" + "="*80)
 logger.info("🏁 TERMINÉ")
 logger.info(f"📊 Résumé:")
-logger.info(f"   - Contenus traités: {len(all_titles)}")
+logger.info(f"   - Pays traités: {len(COUNTRIES)}")
 logger.info(f"   - Nouveaux envoyés: {total_new}")
 logger.info(f"   - Total en mémoire: {len(sent_ids)}")
 logger.info(f"📁 Fichiers de debug:")

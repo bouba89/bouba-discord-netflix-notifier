@@ -156,6 +156,15 @@ def index():
     """Page d'accueil - Dashboard"""
     return render_template('index.html', username=session.get('username'))
 
+@app.route('/health')
+def health():
+    """Healthcheck endpoint pour Docker (public, pas de login requis)"""
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'service': 'netflix-bot-web'
+    }), 200
+
 @app.route('/api/status')
 @login_required
 def get_status():
@@ -226,6 +235,7 @@ def get_stats():
         stats = {
             'total_content': 0,
             'by_country': {},
+            'by_country_total': {},  # ← NOUVEAU : Stats cumulées par pays
             'recent_notifications': [],
             'last_run': {
                 'total_treated': 0,
@@ -240,17 +250,64 @@ def get_stats():
                 sent_ids = json.load(f)
                 stats['total_content'] = len(sent_ids)
         
-        # Lire les logs pour extraire les stats
+        # ✅ NOUVEAU : Analyser tous les logs pour stats cumulées par pays
         if os.path.exists(LOG_FILE):
             with open(LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.readlines()
-                
-            current_country = None
             
-            for line in reversed(lines[-500:]):
-                if "Contenus traités:" in line:
+            # Stats cumulées (tous les runs)
+            country_totals = {}
+            
+            # Stats du dernier run uniquement
+            current_country = None
+            last_run_countries = {}
+            in_last_run = False
+            
+            for line in lines:
+                # Détecter le début du dernier run
+                if "🎬 Netflix Bot - " in line:
+                    in_last_run = True
+                    last_run_countries = {}
+                    current_country = None
+                
+                # Stats cumulées (tous les runs)
+                if "📨 ENVOI DISCORD POUR" in line:
                     try:
-                        stats['last_run']['total_treated'] = int(line.split("Contenus traités:")[1].split()[0])
+                        country = line.split("📨 ENVOI DISCORD POUR")[1].strip()
+                        if country not in country_totals:
+                            country_totals[country] = 0
+                    except:
+                        pass
+                
+                if "nouveaux titres (non envoyés)" in line and "✨" in line:
+                    try:
+                        # Extraire le nombre
+                        count = int(line.split("✨")[1].split("nouveaux")[0].strip())
+                        
+                        # Pour le dernier run
+                        if in_last_run and current_country:
+                            last_run_countries[current_country] = count
+                        
+                        # Pour les stats cumulées
+                        if current_country and count > 0:
+                            if current_country not in country_totals:
+                                country_totals[current_country] = 0
+                            country_totals[current_country] += count
+                    except:
+                        pass
+                
+                if "TRAITEMENT DU PAYS:" in line:
+                    try:
+                        country = line.split("TRAITEMENT DU PAYS:")[1].strip()
+                        current_country = country
+                    except:
+                        pass
+            
+            # Parser le dernier run pour infos détaillées
+            for line in reversed(lines[-500:]):
+                if "Contenus traités:" in line or "Pays traités:" in line:
+                    try:
+                        stats['last_run']['total_treated'] = int(line.split(":")[1].split()[0])
                     except:
                         pass
                 
@@ -262,30 +319,15 @@ def get_stats():
                 
                 if "🏁 TERMINÉ" in line:
                     try:
-                        # Format: 2026-02-01 03:06:18,418 - INFO - 🏁 TERMINÉ
                         timestamp_str = line.split(' - ')[0]
-                        # Parser et reformater proprement (format français 24h)
                         dt = datetime.strptime(timestamp_str.split(',')[0], '%Y-%m-%d %H:%M:%S')
                         stats['last_run']['date'] = dt.strftime('%d/%m/%Y %H:%M:%S')
                     except:
                         stats['last_run']['date'] = timestamp_str
                     break
-                
-                if "TRAITEMENT DU PAYS:" in line:
-                    try:
-                        country = line.split("TRAITEMENT DU PAYS:")[1].strip()
-                        current_country = country
-                        if country not in stats['by_country']:
-                            stats['by_country'][country] = 0
-                    except:
-                        pass
-                
-                if "nouveaux titres (non envoyés)" in line and current_country:
-                    try:
-                        count = int(line.split("✨")[1].split("nouveaux")[0].strip())
-                        stats['by_country'][current_country] = count
-                    except:
-                        pass
+            
+            stats['by_country'] = last_run_countries
+            stats['by_country_total'] = country_totals
         
         return jsonify(stats)
     except Exception as e:

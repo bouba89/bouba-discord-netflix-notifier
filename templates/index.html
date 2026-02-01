@@ -604,8 +604,11 @@
                 <span class="status-dot" id="main-status-dot"></span>
                 <span id="main-status-text">Chargement...</span>
                 <div style="display: flex; gap: 10px; margin-left: 20px;">
+                    <a href="/settings" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9em; text-decoration: none;">
+                        ⚙️ Paramètres
+                    </a>
                     <button class="btn btn-secondary" onclick="changePassword()" style="padding: 8px 16px; font-size: 0.9em;">
-                        🔑 Changer mot de passe
+                        🔑 Mot de passe
                     </button>
                     <button class="btn btn-danger" onclick="logout()" style="padding: 8px 16px; font-size: 0.9em;">
                         🚪 Déconnexion
@@ -855,8 +858,17 @@
                 
                 if (Object.keys(data.by_country).length > 0) {
                     html += '<div class="stat-item" style="flex-direction: column; align-items: flex-start; gap: 10px;"><span class="stat-label">🌍 Nouveaux par Pays (Dernier Run)</span><div>';
+                    
+                    // Drapeaux par pays
+                    const countryFlags = {
+                        'FR': '🇫🇷', 'US': '🇺🇸', 'CA': '🇨🇦', 'GB': '🇬🇧',
+                        'DE': '🇩🇪', 'ES': '🇪🇸', 'IT': '🇮🇹', 'JP': '🇯🇵',
+                        'BR': '🇧🇷', 'MX': '🇲🇽', 'AU': '🇦🇺', 'IN': '🇮🇳'
+                    };
+                    
                     for (const [country, count] of Object.entries(data.by_country)) {
-                        html += `<span class="country-tag">🌐 ${country}: <strong>${count}</strong></span>`;
+                        const flag = countryFlags[country] || '🌐';
+                        html += `<span class="country-tag">${flag} ${country}: <strong>${count}</strong></span>`;
                     }
                     html += '</div></div>';
                 } else {
@@ -876,20 +888,54 @@
                 const response = await fetch('/api/config');
                 const data = await response.json();
                 
-                let html = '';
-                const icons = {
-                    'RAPIDAPI_KEY': '🔑',
-                    'TMDB_API_KEY': '🎬',
-                    'DISCORD_WEBHOOK': '💬',
-                    'COUNTRIES': '🌍'
+                // Mapping des drapeaux par code pays
+                const countryFlags = {
+                    'FR': '🇫🇷', 'US': '🇺🇸', 'CA': '🇨🇦', 'GB': '🇬🇧',
+                    'DE': '🇩🇪', 'ES': '🇪🇸', 'IT': '🇮🇹', 'JP': '🇯🇵',
+                    'BR': '🇧🇷', 'MX': '🇲🇽', 'AU': '🇦🇺', 'IN': '🇮🇳',
+                    'KR': '🇰🇷', 'NL': '🇳🇱', 'SE': '🇸🇪', 'NO': '🇳🇴',
+                    'DK': '🇩🇰', 'FI': '🇫🇮', 'PL': '🇵🇱', 'BE': '🇧🇪',
+                    'CH': '🇨🇭', 'AT': '🇦🇹', 'PT': '🇵🇹', 'AR': '🇦🇷'
                 };
                 
+                // Mapping des icônes par clé
+                const configIcons = {
+                    'COUNTRIES': '🌍',
+                    'DISCORD_WEBHOOK': '💬',
+                    'RAPIDAPI_KEY': '🔑',
+                    'TMDB_API_KEY': '🎬',
+                    'FLASK_SECRET_KEY': '🔐'
+                };
+                
+                // Labels lisibles
+                const configLabels = {
+                    'COUNTRIES': 'Pays Surveillés',
+                    'DISCORD_WEBHOOK': 'Webhook Discord',
+                    'RAPIDAPI_KEY': 'Clé API UNOGS',
+                    'TMDB_API_KEY': 'Clé API TMDB',
+                    'FLASK_SECRET_KEY': 'Clé Secrète Flask'
+                };
+                
+                let html = '';
                 for (const [key, value] of Object.entries(data)) {
-                    const icon = icons[key] || '⚙️';
+                    const icon = configIcons[key] || '⚙️';
+                    const label = configLabels[key] || key;
+                    
+                    let displayValue = value;
+                    
+                    // Traitement spécial pour COUNTRIES : ajouter les drapeaux
+                    if (key === 'COUNTRIES') {
+                        const countries = value.split(',');
+                        displayValue = countries.map(country => {
+                            const flag = countryFlags[country.trim()] || '🌐';
+                            return `${flag} ${country.trim()}`;
+                        }).join('  ');
+                    }
+                    
                     html += `
                         <div class="stat-item">
-                            <span class="stat-label">${icon} ${key}</span>
-                            <span class="stat-value">${value}</span>
+                            <span class="stat-label">${icon} ${label}</span>
+                            <span class="stat-value">${displayValue}</span>
                         </div>
                     `;
                 }

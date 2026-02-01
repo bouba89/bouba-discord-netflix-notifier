@@ -161,8 +161,14 @@ def index():
 def get_status():
     """API: Récupérer le statut du bot"""
     try:
-        # Vérifier si cron tourne
-        cron_running = os.path.exists('/var/run/crond.pid')
+        # Vérifier si cron tourne (compatible Alpine)
+        import subprocess
+        try:
+            result = subprocess.run(['pgrep', 'crond'], capture_output=True, timeout=5)
+            cron_running = result.returncode == 0
+        except:
+            # Fallback : vérifier les fichiers PID classiques
+            cron_running = os.path.exists('/var/run/crond.pid') or os.path.exists('/var/run/cron.pid')
         
         # Récupérer les variables d'environnement
         env_vars = {}
@@ -183,7 +189,7 @@ def get_status():
                 sent_ids = json.load(f)
                 sent_count = len(sent_ids)
         
-        # Dernière exécution depuis les logs
+        # Dernière exécution depuis les logs (format propre)
         last_run = "Jamais"
         if os.path.exists(LOG_FILE):
             with open(LOG_FILE, 'r') as f:
@@ -191,10 +197,13 @@ def get_status():
                 for line in reversed(lines):
                     if "🏁 TERMINÉ" in line:
                         try:
-                            timestamp = line.split(' - ')[0]
-                            last_run = timestamp
+                            # Format original: 2026-02-01 03:06:18,418 - INFO - 🏁 TERMINÉ
+                            timestamp_str = line.split(' - ')[0]
+                            # Parser et reformater proprement
+                            dt = datetime.strptime(timestamp_str.split(',')[0], '%Y-%m-%d %H:%M:%S')
+                            last_run = dt.strftime('%d/%m/%Y %H:%M:%S')  # Format français propre
                         except:
-                            pass
+                            last_run = timestamp_str  # Fallback si parsing échoue
                         break
         
         return jsonify({
@@ -253,10 +262,14 @@ def get_stats():
                 
                 if "🏁 TERMINÉ" in line:
                     try:
-                        timestamp = line.split(' - ')[0]
-                        stats['last_run']['date'] = timestamp
+                        # Format: 2026-02-01 03:06:18,418 - INFO - 🏁 TERMINÉ
+                        timestamp_str = line.split(' - ')[0]
+                        # Parser et reformater proprement (format français 24h)
+                        dt = datetime.strptime(timestamp_str.split(',')[0], '%Y-%m-%d %H:%M:%S')
+                        stats['last_run']['date'] = dt.strftime('%d/%m/%Y %H:%M:%S')
                     except:
-                        pass
+                        stats['last_run']['date'] = timestamp_str
+                    break
                 
                 if "TRAITEMENT DU PAYS:" in line:
                     try:
@@ -332,15 +345,24 @@ def config():
     if request.method == 'GET':
         try:
             config_data = {}
+            
+            # Liste des variables à afficher (whitelist)
+            allowed_vars = ['COUNTRIES', 'DISCORD_WEBHOOK', 'RAPIDAPI_KEY', 'TMDB_API_KEY', 'FLASK_SECRET_KEY']
+            
             if os.path.exists(ENV_FILE):
                 with open(ENV_FILE, 'r') as f:
                     for line in f:
                         if '=' in line:
                             key, value = line.strip().split('=', 1)
-                            if 'KEY' in key or 'WEBHOOK' in key:
-                                config_data[key] = value[:10] + '***'
-                            else:
-                                config_data[key] = value
+                            
+                            # Filtrer : garder uniquement les variables importantes
+                            if key in allowed_vars:
+                                # Masquer les clés sensibles
+                                if 'KEY' in key or 'WEBHOOK' in key or 'SECRET' in key:
+                                    config_data[key] = value[:10] + '***' if len(value) > 10 else '***'
+                                else:
+                                    config_data[key] = value
+            
             return jsonify(config_data)
         except Exception as e:
             return jsonify({'error': str(e)}), 500

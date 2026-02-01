@@ -1,251 +1,251 @@
-# CLAUDE.md - AI Assistant Guide
+# CLAUDE.md - Guide pour Assistants IA
 
-This document provides essential context for AI assistants working with the Bouba Discord Netflix Notifier codebase.
+Ce document fournit le contexte essentiel pour les assistants IA travaillant sur le code du Bouba Discord Netflix Notifier.
 
-## Project Overview
+## Aperçu du Projet
 
-**Bouba Discord Netflix Notifier** is a Python-based Discord bot that automatically notifies Discord servers about new Netflix releases across multiple countries. It features:
+**Bouba Discord Netflix Notifier** est un bot Discord basé sur Python qui notifie automatiquement les serveurs Discord des nouvelles sorties Netflix dans plusieurs pays. Il propose :
 
-- **Discord Webhook Integration**: Sends rich embedded notifications about new Netflix content
-- **Flask Web Dashboard**: Netflix-styled interface for monitoring, configuration, and manual bot execution
-- **Multi-country Support**: Monitors Netflix releases in 25+ countries simultaneously
-- **Duplicate Prevention**: Memory system to prevent sending the same content twice
-- **TMDB Enrichment**: Fetches posters, synopses, and ratings from The Movie Database API
+- **Intégration Webhook Discord** : Envoie des notifications enrichies sur les nouveaux contenus Netflix
+- **Tableau de Bord Web Flask** : Interface stylisée Netflix pour la surveillance, la configuration et l'exécution manuelle du bot
+- **Support Multi-pays** : Surveille les sorties Netflix dans plus de 25 pays simultanément
+- **Prévention des Doublons** : Système de mémoire pour éviter d'envoyer le même contenu deux fois
+- **Enrichissement TMDB** : Récupère les affiches, synopsis et notes depuis The Movie Database API
 
-**Primary Language**: Python 3.11
-**Documentation Language**: French
-**Author**: Bouba89
+**Langage Principal** : Python 3.11
+**Langue de Documentation** : Français
+**Auteur** : Bouba89
 
-## Repository Structure
+## Structure du Dépôt
 
 ```
 bouba-discord-netflix-notifier/
-├── netflix_bot.py           # Core bot logic (API fetching, filtering, Discord sending)
-├── web_interface.py         # Flask web server (auth, dashboard, API endpoints)
+├── netflix_bot.py           # Logique principale du bot (appels API, filtrage, envoi Discord)
+├── web_interface.py         # Serveur web Flask (auth, tableau de bord, endpoints API)
 ├── templates/
-│   ├── login.html           # Netflix-styled login page
-│   ├── index.html           # Main dashboard
-│   └── settings.html        # Configuration interface
-├── Dockerfile               # Multi-stage Alpine-based Docker image
-├── docker-compose.yml       # Container orchestration
-├── start.sh                 # Container initialization script
-├── crontab.txt              # Scheduled bot execution (default: 8:00 AM daily)
-├── requirements.txt         # Python dependencies
-├── .env.example             # Environment variable template
-├── data/                    # Persistent data (Docker volume)
-│   ├── sent_ids.json        # Anti-duplicate memory (Netflix IDs already sent)
-│   └── users.json           # User credentials storage
-├── logs/                    # Log files (Docker volume)
+│   ├── login.html           # Page de connexion style Netflix
+│   ├── index.html           # Tableau de bord principal
+│   └── settings.html        # Interface de configuration
+├── Dockerfile               # Image Docker multi-étapes basée sur Alpine
+├── docker-compose.yml       # Orchestration des conteneurs
+├── start.sh                 # Script d'initialisation du conteneur
+├── crontab.txt              # Exécution planifiée du bot (par défaut : 8h00 quotidien)
+├── requirements.txt         # Dépendances Python
+├── .env.example             # Modèle de variables d'environnement
+├── data/                    # Données persistantes (volume Docker)
+│   ├── sent_ids.json        # Mémoire anti-doublons (IDs Netflix déjà envoyés)
+│   └── users.json           # Stockage des identifiants utilisateurs
+├── logs/                    # Fichiers de logs (volume Docker)
 │   ├── netflix_bot_debug.log
 │   └── cron.log
-└── README.md                # User documentation (French)
+└── README.md                # Documentation utilisateur (Français)
 ```
 
-## Key Files
+## Fichiers Clés
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `netflix_bot.py` | Main bot: UNOGS API calls, TMDB enrichment, Discord webhooks | ~415 |
-| `web_interface.py` | Flask app: authentication, dashboard, settings API | ~570 |
-| `templates/index.html` | Dashboard with stats, logs, controls | ~1088 |
-| `templates/settings.html` | Country and cron configuration UI | ~638 |
-| `templates/login.html` | Netflix-style login page | ~438 |
+| Fichier | Objectif | Lignes |
+|---------|----------|--------|
+| `netflix_bot.py` | Bot principal : appels API UNOGS, enrichissement TMDB, webhooks Discord | ~415 |
+| `web_interface.py` | Application Flask : authentification, tableau de bord, API paramètres | ~570 |
+| `templates/index.html` | Tableau de bord avec stats, logs, contrôles | ~1088 |
+| `templates/settings.html` | Interface de configuration pays et cron | ~638 |
+| `templates/login.html` | Page de connexion style Netflix | ~438 |
 
-## Technology Stack
+## Stack Technologique
 
 ### Backend
-- **Python 3.11** with Flask 3.0.0
-- **Werkzeug 3.0.1** for password hashing (bcrypt)
-- **requests 2.31.0** for HTTP API calls
-- **python-dotenv 1.0.0** for environment variables
+- **Python 3.11** avec Flask 3.0.0
+- **Werkzeug 3.0.1** pour le hachage des mots de passe (bcrypt)
+- **requests 2.31.0** pour les appels HTTP API
+- **python-dotenv 1.0.0** pour les variables d'environnement
 
-### External APIs
-- **UNOGS API** (via RapidAPI): Netflix catalog data
-- **TMDB API**: Movie/series metadata enrichment
-- **Discord Webhooks**: Notification delivery
+### APIs Externes
+- **API UNOGS** (via RapidAPI) : Données du catalogue Netflix
+- **API TMDB** : Enrichissement des métadonnées films/séries
+- **Webhooks Discord** : Livraison des notifications
 
 ### Infrastructure
-- **Docker** with multi-stage Alpine build
-- **dcron** for scheduled execution
-- **Docker Compose** for orchestration
+- **Docker** avec build multi-étapes Alpine
+- **dcron** pour l'exécution planifiée
+- **Docker Compose** pour l'orchestration
 
 ### Frontend
-- Vanilla HTML5/CSS3/JavaScript (no frameworks)
-- Netflix-inspired dark theme with animations
-- Responsive design (mobile/tablet/desktop)
+- HTML5/CSS3/JavaScript vanilla (pas de frameworks)
+- Thème sombre inspiré de Netflix avec animations
+- Design responsive (mobile/tablette/desktop)
 
-## Development Commands
+## Commandes de Développement
 
-### Docker Operations
+### Opérations Docker
 ```bash
-# Build and start
+# Construire et démarrer
 docker-compose up --build -d
 
-# View logs
+# Voir les logs
 docker logs -f bouba_discord_netflix_notifier
 
-# Restart container
+# Redémarrer le conteneur
 docker-compose restart
 
-# Stop container
+# Arrêter le conteneur
 docker-compose stop
 
-# Enter container shell
+# Entrer dans le shell du conteneur
 docker exec -it bouba_discord_netflix_notifier bash
 
-# Run bot manually
+# Exécuter le bot manuellement
 docker exec -it bouba_discord_netflix_notifier python /app/netflix_bot.py
 
-# Check cron status
+# Vérifier le statut cron
 docker exec -it bouba_discord_netflix_notifier crontab -l
 ```
 
-### Local Development
+### Développement Local
 ```bash
-# Install dependencies
+# Installer les dépendances
 pip install -r requirements.txt
 
-# Run web interface
+# Lancer l'interface web
 python web_interface.py
 
-# Run bot directly
+# Lancer le bot directement
 python netflix_bot.py
 ```
 
-## Environment Variables
+## Variables d'Environnement
 
-Required in `.env` file:
+Requises dans le fichier `.env` :
 
 | Variable | Description |
 |----------|-------------|
-| `RAPIDAPI_KEY` | UNOGS API key from RapidAPI |
-| `TMDB_API_KEY` | The Movie Database API key |
-| `DISCORD_WEBHOOK` | Discord webhook URL for notifications |
-| `COUNTRIES` | Comma-separated ISO country codes (e.g., `FR,US,CA,GB`) |
-| `FLASK_SECRET_KEY` | Secret key for Flask sessions (generate with `secrets.token_hex(32)`) |
+| `RAPIDAPI_KEY` | Clé API UNOGS depuis RapidAPI |
+| `TMDB_API_KEY` | Clé API The Movie Database |
+| `DISCORD_WEBHOOK` | URL du webhook Discord pour les notifications |
+| `COUNTRIES` | Codes pays ISO séparés par virgules (ex : `FR,US,CA,GB`) |
+| `FLASK_SECRET_KEY` | Clé secrète pour les sessions Flask (générer avec `secrets.token_hex(32)`) |
 
-## Code Conventions
+## Conventions de Code
 
 ### Logging
-- Uses Python's `logging` module with DEBUG level
-- Dual output: file (`logs/netflix_bot_debug.log`) and console
-- Emoji prefixes for visual clarity in logs
-- API debug responses saved to `logs/api_debug_last_*.json`
+- Utilise le module `logging` de Python avec niveau DEBUG
+- Double sortie : fichier (`logs/netflix_bot_debug.log`) et console
+- Préfixes emoji pour la clarté visuelle dans les logs
+- Réponses de debug API sauvegardées dans `logs/api_debug_last_*.json`
 
-### Naming Conventions
-- **Variables/Functions**: snake_case (e.g., `sent_ids`, `fetch_titles`)
-- **Constants**: UPPERCASE (e.g., `API_KEY`, `WEBHOOK_URL`)
-- **Comments**: French language
+### Conventions de Nommage
+- **Variables/Fonctions** : snake_case (ex : `sent_ids`, `fetch_titles`)
+- **Constantes** : MAJUSCULES (ex : `API_KEY`, `WEBHOOK_URL`)
+- **Commentaires** : Langue française
 
-### Error Handling
-- Try-catch blocks around all API calls
-- Graceful fallbacks for missing data
-- Detailed error messages with context
-- Timeouts configured for all HTTP requests
+### Gestion des Erreurs
+- Blocs try-catch autour de tous les appels API
+- Fallbacks gracieux pour les données manquantes
+- Messages d'erreur détaillés avec contexte
+- Timeouts configurés pour toutes les requêtes HTTP
 
-### Security Practices
-- Password hashing with bcrypt via Werkzeug
-- Session management with 24-hour timeout
-- Environment variables for all secrets
-- Non-root Docker user (UID 1000)
-- API keys masked in logs (first 10 chars + `***`)
+### Pratiques de Sécurité
+- Hachage des mots de passe avec bcrypt via Werkzeug
+- Gestion des sessions avec timeout de 24 heures
+- Variables d'environnement pour tous les secrets
+- Utilisateur Docker non-root (UID 1000)
+- Clés API masquées dans les logs (10 premiers caractères + `***`)
 
-## Architecture Patterns
+## Patterns d'Architecture
 
-### Bot Execution Flow (netflix_bot.py)
-1. Load environment variables and configure logging
-2. Load sent_ids.json (anti-duplicate memory)
-3. For each configured country:
-   - Fetch Netflix catalog from UNOGS API
-   - Filter by date (last 7 days)
-   - Remove already-sent items
-   - Enrich with TMDB data (poster, synopsis, rating)
-   - Send to Discord webhook (max 10 embeds per message)
-4. Save updated sent_ids.json
+### Flux d'Exécution du Bot (netflix_bot.py)
+1. Charger les variables d'environnement et configurer le logging
+2. Charger sent_ids.json (mémoire anti-doublons)
+3. Pour chaque pays configuré :
+   - Récupérer le catalogue Netflix depuis l'API UNOGS
+   - Filtrer par date (7 derniers jours)
+   - Retirer les éléments déjà envoyés
+   - Enrichir avec les données TMDB (affiche, synopsis, note)
+   - Envoyer au webhook Discord (max 10 embeds par message)
+4. Sauvegarder sent_ids.json mis à jour
 
-### Web Interface Routes (web_interface.py)
-- `/` - Dashboard (requires auth)
-- `/login`, `/logout` - Authentication
-- `/settings` - Configuration page
-- `/api/status` - Bot and cron status
-- `/api/stats` - Detailed statistics
-- `/api/logs` - Log retrieval
-- `/api/run` - Manual bot execution
-- `/api/config/*` - Configuration management
-- `/api/reset` - Memory reset
-- `/download/logs/<type>` - Log file downloads
-- `/health` - Docker health check endpoint
+### Routes de l'Interface Web (web_interface.py)
+- `/` - Tableau de bord (requiert authentification)
+- `/login`, `/logout` - Authentification
+- `/settings` - Page de configuration
+- `/api/status` - Statut du bot et du cron
+- `/api/stats` - Statistiques détaillées
+- `/api/logs` - Récupération des logs
+- `/api/run` - Exécution manuelle du bot
+- `/api/config/*` - Gestion de la configuration
+- `/api/reset` - Réinitialisation de la mémoire
+- `/download/logs/<type>` - Téléchargement des fichiers de logs
+- `/health` - Endpoint de health check Docker
 
-### Data Persistence
-- `data/sent_ids.json`: Array of Netflix IDs already sent
-- `data/users.json`: User credentials with hashed passwords
-- Docker volumes mount these directories for persistence
+### Persistance des Données
+- `data/sent_ids.json` : Tableau des IDs Netflix déjà envoyés
+- `data/users.json` : Identifiants utilisateurs avec mots de passe hachés
+- Les volumes Docker montent ces répertoires pour la persistance
 
-## Common Tasks
+## Tâches Courantes
 
-### Adding a New Country
-1. Via web UI: Settings > "Pays a Surveiller" > Add country code
-2. Via .env: Add ISO code to `COUNTRIES` variable
+### Ajouter un Nouveau Pays
+1. Via l'interface web : Paramètres > "Pays à Surveiller" > Ajouter le code pays
+2. Via .env : Ajouter le code ISO à la variable `COUNTRIES`
 
-### Changing Cron Schedule
-1. Via web UI: Settings > Modify hour/minute
-2. Manual: Edit `crontab.txt`, reinstall with `crontab /app/crontab.txt`
+### Modifier la Planification Cron
+1. Via l'interface web : Paramètres > Modifier heure/minute
+2. Manuel : Éditer `crontab.txt`, réinstaller avec `crontab /app/crontab.txt`
 
-### Resetting Duplicate Memory
-1. Via web UI: Dashboard > "Reset Memoire" button
-2. Manual: `echo '[]' > data/sent_ids.json`
+### Réinitialiser la Mémoire des Doublons
+1. Via l'interface web : Tableau de bord > Bouton "Réinitialiser Mémoire"
+2. Manuel : `echo '[]' > data/sent_ids.json`
 
-### Testing Discord Webhook
-Run the bot manually and check logs for webhook responses.
+### Tester le Webhook Discord
+Exécuter le bot manuellement et vérifier les logs pour les réponses du webhook.
 
-## Known Issues
+## Problèmes Connus
 
-1. **Flask Debug Mode**: `app.run(debug=True)` in production - should be disabled
-2. **Hard-coded Paths**: Many paths assume `/app/` directory (Docker-only)
-3. **No Type Hints**: Python code lacks type annotations
+1. **Mode Debug Flask** : `app.run(debug=True)` en production - devrait être désactivé
+2. **Chemins Codés en Dur** : Beaucoup de chemins supposent le répertoire `/app/` (Docker uniquement)
+3. **Pas de Type Hints** : Le code Python manque d'annotations de types
 
-## Default Credentials
+## Identifiants par Défaut
 
-- **Username**: `admin`
-- **Password**: `admin123`
+- **Nom d'utilisateur** : `admin`
+- **Mot de passe** : `admin123`
 
-**Important**: Change password immediately after first login via the web interface.
+**Important** : Changer le mot de passe immédiatement après la première connexion via l'interface web.
 
-## API Rate Limits
+## Limites de Taux API
 
-- **UNOGS API**: Check RapidAPI plan limits
-- **TMDB API**: 40 requests per 10 seconds
-- **Discord Webhooks**: 30 requests per 60 seconds per webhook
+- **API UNOGS** : Vérifier les limites du plan RapidAPI
+- **API TMDB** : 40 requêtes par 10 secondes
+- **Webhooks Discord** : 30 requêtes par 60 secondes par webhook
 
-## File Paths Reference
+## Référence des Chemins de Fichiers
 
-When working in Docker container, all paths are relative to `/app/`:
-- Bot script: `/app/netflix_bot.py`
-- Web interface: `/app/web_interface.py`
-- Templates: `/app/templates/`
-- Data directory: `/app/data/`
-- Logs directory: `/app/logs/`
-- Crontab: `/app/crontab.txt`
+Dans le conteneur Docker, tous les chemins sont relatifs à `/app/` :
+- Script du bot : `/app/netflix_bot.py`
+- Interface web : `/app/web_interface.py`
+- Templates : `/app/templates/`
+- Répertoire données : `/app/data/`
+- Répertoire logs : `/app/logs/`
+- Crontab : `/app/crontab.txt`
 
-## Testing
+## Tests
 
-No automated test suite exists. Testing is done manually:
-1. Run bot with `python netflix_bot.py`
-2. Check logs for errors
-3. Verify Discord messages received
-4. Use web interface to monitor status
+Aucune suite de tests automatisés n'existe. Les tests sont effectués manuellement :
+1. Exécuter le bot avec `python netflix_bot.py`
+2. Vérifier les logs pour les erreurs
+3. Vérifier que les messages Discord sont reçus
+4. Utiliser l'interface web pour surveiller le statut
 
-## Contributing
+## Contribuer
 
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/new-feature`
-3. Commit changes: `git commit -m 'Add new feature'`
-4. Push branch: `git push origin feature/new-feature`
-5. Open Pull Request
+1. Forker le dépôt
+2. Créer une branche feature : `git checkout -b feature/nouvelle-feature`
+3. Commiter les changements : `git commit -m 'Ajouter nouvelle feature'`
+4. Pousser la branche : `git push origin feature/nouvelle-feature`
+5. Ouvrir une Pull Request
 
-## Dependencies
+## Dépendances
 
-From `requirements.txt`:
+Depuis `requirements.txt` :
 ```
 requests==2.31.0
 python-dotenv==1.0.0

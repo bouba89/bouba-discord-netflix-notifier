@@ -1,532 +1,313 @@
 # 🎬 Bouba Discord Netflix Notifier
 
-Un bot Discord en Python déployable via Docker qui vous informe automatiquement des nouveautés Netflix directement sur votre serveur Discord, au jour le jour !
+[![Release](https://img.shields.io/github/v/release/bouba89/bouba-discord-netflix-notifier)](https://github.com/bouba89/bouba-discord-netflix-notifier/releases)
+[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://www.docker.com/)
+[![Python](https://img.shields.io/badge/python-3.11-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-Open--Source-green)](LICENSE)
+
+Un bot Discord automatisé qui vous notifie quotidiennement des nouvelles sorties Netflix directement dans votre serveur Discord ! 🍿
 
 ## ✨ Fonctionnalités
 
-### 🤖 Bot Discord
-- ✅ **Notifications automatiques** des nouveaux films et séries Netflix (sorties du jour)
-- ✅ **Exécution planifiée** via cron (configurable depuis l'interface web)
-- ✅ **Multi-pays** : surveillez Netflix dans plusieurs régions simultanément (🇫🇷 🇺🇸 🇨🇦 🇬🇧 🇩🇪 🇪🇸 🇮🇹 🇯🇵 etc.)
-- ✅ **Anti-doublons** : ne notifie jamais deux fois le même contenu
-- ✅ **Informations enrichies** via TMDB API (synopsis, note, poster, lien)
-- ✅ **Logs détaillés** pour le debug et le monitoring
+- 🔔 **Notifications automatiques** des nouveaux films et séries Netflix chaque jour à 9h
+- 🎯 **Suivi par catégorie** (Action, Comédie, Documentaire, etc.)
+- 🌍 **Multi-pays** : Configurez les pays que vous souhaitez suivre (FR, US, CA, etc.)
+- 🚫 **Anti-doublons** : Ne notifie jamais le même contenu deux fois
+- 🐳 **Déployable facilement** avec Docker et Docker Compose
+- 📊 **Healthcheck intégré** pour monitorer l'état du container
+- 💾 **Persistence des données** avec volumes Docker
+- 🌐 **Interface web** avec authentification et tableau de bord
+- ⏱️ **Countdown timer** et barre de progression avant la prochaine exécution
+- 🏳️ **Statistiques par pays** avec drapeaux sur le dashboard
 
-### 🌐 Interface Web Moderne
-- ✅ **Dashboard Netflix-style** avec design professionnel rouge/noir
-- ✅ **Authentification sécurisée** (mots de passe hashés avec bcrypt)
-- ✅ **Monitoring en temps réel** : statistiques, logs, état du cron
-- ✅ **Configuration interactive** :
-  - 🌍 Modifier les pays surveillés avec drapeaux
-  - ⏰ Changer l'horaire du cron sans toucher au code
-  - 🔑 Gestion sécurisée des mots de passe
-- ✅ **Interface responsive** compatible mobile/tablette/desktop
-- ✅ **Logs en direct** avec auto-refresh (30s)
-- ✅ **Exécution manuelle** du bot en un clic
+## 🆕 Nouveautés récentes
 
-### 📊 Statistiques Détaillées
-- 📦 Total de contenus notifiés depuis le début
-- 🆕 Nouveaux contenus du dernier run
-- 🌍 Statistiques par pays avec drapeaux
-- 📅 Dernière exécution (format français JJ/MM/AAAA HH:MM:SS)
-- 📥 Téléchargement des logs (debug et cron)
+### Version actuelle
 
-### 🐳 Docker Optimisé
-- ✅ **Image multi-stage Alpine** (~200MB au lieu de 800MB - **75% plus légère** !)
-  - **Stage 1 (Builder)** : Compile les dépendances Python avec gcc/g++
-  - **Stage 2 (Runtime)** : Image finale minimaliste sans outils de build
-  - **Alpine Linux** : Distribution ultra-légère et sécurisée
-- ✅ **Healthcheck intégré** : Vérification automatique toutes les 30s
-- ✅ **Fuseau horaire Europe/Paris** configuré (CET/CEST)
-- ✅ **Redémarrage automatique** en cas de crash
-- ✅ **.dockerignore** : Exclut les fichiers inutiles du build
+- ✅ **Endpoint healthcheck** : Nouveau endpoint `/health` pour vérifier l'état du service et logique de stats améliorée
+- ⚡ **Optimisation des performances** : Récupération des titres optimisée et filtrage par date amélioré
+- 🎨 **Interface améliorée** : Favicon ajouté sur toutes les pages (index et login)
+- 📊 **Statistiques par pays** : Visualisation des stats avec drapeaux des pays configurés
+- ⏱️ **Timer de compte à rebours** : Affichage du temps restant avant la prochaine exécution avec barre de progression
 
-## 🗂️ Architecture du Projet
+## 📋 Prérequis
 
-```
-bouba-discord-netflix-notifier/
-├── 📁 data/                    # Données persistantes
-│   ├── sent_ids.json          # Mémoire anti-doublons
-│   ├── users.json             # Base de données utilisateurs
-│   └── api_responses_debug.json # Réponses API pour debug
-├── 📁 logs/                    # Logs du bot
-│   ├── cron.log               # Logs des exécutions cron
-│   └── netflix_bot_debug.log  # Logs de debug détaillés
-├── 📁 templates/               # Templates HTML Flask
-│   ├── index.html             # Dashboard principal
-│   ├── login.html             # Page de connexion
-│   └── settings.html          # Page de configuration
-├── 🐳 Dockerfile               # Image Docker multi-stage Alpine
-├── 🐳 docker-compose.yml       # Configuration Docker Compose
-├── 🐍 netflix_bot.py           # Script principal du bot
-├── 🌐 web_interface.py         # Interface web Flask
-├── 🚀 start.sh                 # Script de démarrage
-├── 🔧 run_netflix.sh           # Script d'exécution pour cron
-├── ⏰ crontab.txt              # Configuration du cron
-├── 📦 requirements.txt         # Dépendances Python
-├── 🚫 .dockerignore            # Fichiers exclus du build
-├── 🔐 .env                     # Variables d'environnement (à créer)
-└── 📖 README.md               # Documentation
-```
+- [Docker](https://docs.docker.com/get-docker/) installé
+- [Docker Compose](https://docs.docker.com/compose/install/) installé
+- Un webhook Discord (voir [Comment créer un webhook Discord](https://support.discord.com/hc/en-us/articles/228383668))
+- Clé API [UNOGS via RapidAPI](https://rapidapi.com/unogs/api/unogs)
+- Clé API [TMDB](https://www.themoviedb.org/settings/api)
 
-## ⚙️ Prérequis
+## 🚀 Installation rapide
 
-- 🐳 **Docker** installé ([Guide d'installation](https://docs.docker.com/get-docker/))
-- 🐳 **Docker Compose** installé
-- 🔑 **Token Discord** (Webhook pour les notifications)
-- 🔑 **Clé API UNOGS** via [RapidAPI](https://rapidapi.com/unogs/api/unogs)
-- 🔑 **Clé API TMDB** via [The Movie Database](https://www.themoviedb.org/settings/api)
-- 🌐 **Connexion Internet**
-
-## 🚀 Installation & Lancement
-
-### 1️⃣ Cloner le projet
+### 1. Cloner le projet
 
 ```bash
 git clone https://github.com/bouba89/bouba-discord-netflix-notifier.git
 cd bouba-discord-netflix-notifier
 ```
 
-### 2️⃣ Créer le fichier `.env`
+### 2. Configurer les variables d'environnement
+
+Créez un fichier `.env` à la racine du projet :
 
 ```bash
 touch .env
 ```
 
-Remplissez le fichier `.env` avec vos clés API :
+Remplissez-le avec vos clés API :
 
 ```env
-# APIs Netflix & TMDB
-RAPIDAPI_KEY=votre_cle_rapidapi_ici
-TMDB_API_KEY=votre_cle_tmdb_ici
+# API Keys
+RAPIDAPI_KEY=votre_cle_rapidapi
+TMDB_API_KEY=votre_cle_tmdb
 
-# Discord Webhook
-DISCORD_WEBHOOK=https://discord.com/api/webhooks/votre_webhook_ici
+# Discord
+DISCORD_WEBHOOK=https://discord.com/api/webhooks/VOTRE_WEBHOOK_URL
 
-# Pays à surveiller (codes ISO 2 lettres, séparés par des virgules)
-COUNTRIES=FR,US,CA,GB
+# Configuration
+COUNTRIES=FR,US,CA
 
-# Clé secrète Flask pour les sessions (générez-en une aléatoire)
-FLASK_SECRET_KEY=votre_cle_secrete_super_aleatoire_ici
-
-# Fuseau horaire (optionnel, par défaut Europe/Paris)
-TZ=Europe/Paris
+# Interface Web (optionnel)
+WEB_USERNAME=admin
+WEB_PASSWORD=votre_mot_de_passe
 ```
 
-💡 **Générer une clé secrète Flask sécurisée :**
+### 3. Lancer le bot
+
 ```bash
-python3 -c "import secrets; print(secrets.token_hex(32))"
+# Build et démarrage en arrière-plan
+docker-compose up -d
+
+# Vérifier les logs
+docker-compose logs -f
 ```
 
-### 3️⃣ Construire et lancer le conteneur
+### 4. Accéder à l'interface web
+
+Ouvrez votre navigateur et accédez à `http://localhost:5000` (ou le port configuré).
+
+### 5. Tester manuellement (optionnel)
 
 ```bash
-# Build et démarrage
-docker-compose up --build -d
-
-# Vérifier que tout fonctionne
-docker logs -f bouba_discord_netflix_notifier
+docker exec -it bouba_discord_netflix_notifier python /app/netflix_bot.py
 ```
 
-### 4️⃣ Accéder à l'interface web
+## 🗂️ Architecture du projet
 
-Ouvrez votre navigateur : **http://localhost:5000**
+```
+bouba-discord-netflix-notifier/
+├── data/                      # Données persistantes (anti-doublons)
+├── logs/                      # Fichiers de logs
+├── static/                    # Fichiers statiques (favicon, etc.)
+├── templates/                 # Templates HTML
+│   ├── index.html             # Dashboard principal
+│   └── login.html             # Page de connexion
+├── .dockerignore              # Fichiers exclus du build Docker
+├── .env                       # Variables d'environnement (à créer)
+├── .gitignore                 # Fichiers exclus de Git
+├── crontab.txt                # Configuration du cron (9h chaque jour)
+├── docker-compose.yml         # Configuration Docker Compose
+├── Dockerfile                 # Image Docker multi-stage optimisée
+├── netflix_bot.py             # Script principal du bot
+├── web_interface.py           # Interface web Flask
+├── requirements.txt           # Dépendances Python
+├── start.sh                   # Script d'initialisation du container
+├── README.md                  # Documentation
+└── LICENSE                    # Licence open-source
+```
 
-**Compte par défaut :**
-- 👤 **Username :** `admin`
-- 🔒 **Password :** `admin123`
+## 📦 Dépendances
 
-⚠️ **IMPORTANT :** Changez le mot de passe immédiatement après la première connexion via le bouton "🔑 Mot de passe" !
+- **Python 3.11**
+- **requests 2.31.0** - Pour les appels API
+- **python-dotenv 1.0.0** - Pour la gestion des variables d'environnement
+- **Flask** - Pour l'interface web
 
-## 🎮 Utilisation
+## 🌐 Interface Web
 
-### Interface Web
+L'interface web offre plusieurs fonctionnalités :
 
-#### 1. **Dashboard** (`http://localhost:5000`)
-   - 📊 Voir les statistiques en temps réel
-   - 📜 Consulter les logs en direct (auto-refresh 30s)
-   - ▶️ Exécuter le bot manuellement
-   - 📥 Télécharger les logs (debug et cron)
-   - 🗑️ Reset la mémoire anti-doublons
+- 🔐 **Authentification** : Page de connexion sécurisée
+- 📊 **Dashboard** : Vue d'ensemble du système
+- ⏱️ **Countdown Timer** : Affichage du temps restant avant la prochaine notification
+- 📈 **Barre de progression** : Visualisation graphique du temps écoulé
+- 🏳️ **Stats par pays** : Statistiques détaillées avec drapeaux pour chaque pays configuré
+- 🩺 **Endpoint Healthcheck** : `/health` pour vérifier l'état du service
 
-#### 2. **Paramètres** (`http://localhost:5000/settings`)
-   - ⏰ Modifier l'horaire du cron (heure et minutes)
-   - 🌍 Ajouter/retirer des pays surveillés
-   - 💾 Sauvegarder la configuration en temps réel
+### Endpoints disponibles
 
-#### 3. **Gestion du compte**
-   - 🔑 Changer votre mot de passe
-   - 🚪 Se déconnecter
+| Endpoint | Description |
+|----------|-------------|
+| `/` | Dashboard principal |
+| `/login` | Page de connexion |
+| `/health` | Vérification de l'état du service (JSON) |
+| `/stats` | Statistiques détaillées |
 
-### Commandes Docker
+## 🔧 Commandes utiles
 
 ```bash
-# Voir les logs en temps réel
-docker logs -f bouba_discord_netflix_notifier
+# Démarrer le bot
+docker-compose up -d
 
-# Redémarrer le conteneur
-docker-compose restart
-
-# Arrêter le conteneur
-docker-compose stop
-
-# Démarrer le conteneur
-docker-compose start
-
-# Supprimer le conteneur
+# Arrêter le bot
 docker-compose down
 
-# Entrer dans le conteneur
-docker exec -it bouba_discord_netflix_notifier bash
+# Voir les logs en temps réel
+docker-compose logs -f
 
-# Exécuter le bot manuellement
-docker exec -it bouba_discord_netflix_notifier python /app/netflix_bot.py
-
-# Vérifier le cron
-docker exec -it bouba_discord_netflix_notifier crontab -l
-
-# Vérifier le fuseau horaire
-docker exec -it bouba_discord_netflix_notifier date
-```
-
-## 🐳 Optimisation Docker
-
-### Pourquoi Alpine Linux ?
-
-Le projet utilise **Alpine Linux** comme base au lieu de Debian/Ubuntu pour plusieurs raisons :
-
-| Critère | Alpine | Debian |
-|---------|--------|--------|
-| **Taille de base** | ~5 MB | ~124 MB |
-| **Taille finale** | ~200 MB | ~800 MB |
-| **Gain** | ✅ **75% plus léger** | ❌ 4x plus lourd |
-| **Sécurité** | ✅ Surface d'attaque minimale | ⚠️ Plus de packages = plus de CVE |
-| **Performance** | ✅ Démarrage rapide | ⚠️ Plus lent |
-
-### Multi-Stage Build
-
-Le Dockerfile utilise une **approche multi-stage** pour optimiser l'image :
-
-#### **Stage 1 : Builder** (python:3.11-slim)
-```dockerfile
-FROM python:3.11-slim AS builder
-# Installation des outils de compilation (gcc, g++)
-# Création d'un environnement virtuel Python
-# Installation de toutes les dépendances
-```
-
-**Avantages :**
-- ✅ Accès à tous les outils nécessaires pour compiler
-- ✅ Dépendances Python correctement buildées
-
-**Inconvénient :**
-- ❌ Image très lourde (~600 MB) → Non conservée !
-
-#### **Stage 2 : Runtime** (python:3.11-alpine)
-```dockerfile
-FROM python:3.11-alpine
-# Copie UNIQUEMENT l'environnement virtuel depuis le builder
-# Installation des outils runtime (bash, curl, cron)
-# Aucun outil de compilation
-```
-
-**Avantages :**
-- ✅ Image finale ultra-légère (~200 MB)
-- ✅ Pas d'outils de compilation = plus sécurisé
-- ✅ Tous les packages Python fonctionnels
-
-### Comparaison Avant/Après
-
-**Avant optimisation :**
-```bash
-REPOSITORY              TAG       SIZE
-bouba89/netflix-bot    latest    680 MB
-```
-
-**Après optimisation :**
-```bash
-REPOSITORY              TAG       SIZE
-bouba89/netflix-bot    latest    180 MB  ✅ -73%
-```
-
-### Bénéfices concrets
-
-1. **Déploiement plus rapide** : Moins de bande passante utilisée
-2. **Moins d'espace disque** : Économie de 500 MB par instance
-3. **Startup plus rapide** : Moins de couches à charger
-4. **Plus sécurisé** : Moins de packages = moins de vulnérabilités
-5. **Coûts réduits** : Moins de stockage cloud nécessaire
-
-### Vérifier la taille de votre image
-
-```bash
-# Voir la taille de l'image
-docker images | grep netflix-bot
-
-# Voir l'historique des couches
-docker history bouba89/netflix-bot:latest
-
-# Comparer avec une image non-optimisée
-docker images python:3.11-slim  # ~600 MB
-docker images python:3.11-alpine  # ~50 MB
-```
-
-## 🔧 Configuration Avancée
-
-### Modifier l'horaire du cron
-
-**Via l'interface web (recommandé) :**
-1. Allez sur `http://localhost:5000/settings`
-2. Modifiez l'heure et les minutes
-3. Cliquez sur "💾 Sauvegarder l'Horaire"
-
-**Manuellement :**
-```bash
-# Éditer le crontab
-docker exec -it bouba_discord_netflix_notifier nano /app/crontab.txt
-
-# Réinstaller le crontab
-docker exec -it bouba_discord_netflix_notifier crontab /app/crontab.txt
-
-# Redémarrer cron
-docker exec -it bouba_discord_netflix_notifier sh -c "pkill crond && crond -f -l 2 &"
-```
-
-### Ajouter/Retirer des pays
-
-**Via l'interface web (recommandé) :**
-1. Allez sur `http://localhost:5000/settings`
-2. Section "Pays à Surveiller"
-3. Ajoutez ou retirez des pays
-4. Cliquez sur "💾 Sauvegarder les Pays"
-
-**Codes pays disponibles :**
-- 🇫🇷 FR (France)
-- 🇺🇸 US (USA)
-- 🇨🇦 CA (Canada)
-- 🇬🇧 GB (Royaume-Uni)
-- 🇩🇪 DE (Allemagne)
-- 🇪🇸 ES (Espagne)
-- 🇮🇹 IT (Italie)
-- 🇯🇵 JP (Japon)
-- 🇧🇷 BR (Brésil)
-- 🇲🇽 MX (Mexique)
-- 🇦🇺 AU (Australie)
-- 🇮🇳 IN (Inde)
-- Et bien d'autres... (codes ISO 3166-1 alpha-2)
-
-### Réinitialiser la mémoire anti-doublons
-
-Si vous souhaitez que le bot renvoie tous les contenus :
-
-**Via l'interface web :**
-- Dashboard → "🗑️ Reset Mémoire"
-
-**Manuellement :**
-```bash
-docker exec -it bouba_discord_netflix_notifier bash -c "echo '[]' > /app/data/sent_ids.json"
-```
-
-### Modifier le filtre temporel
-
-Par défaut, le bot cherche les sorties **du jour** (24h). Pour changer :
-
-**Éditer `netflix_bot.py` ligne 41 :**
-```python
-# Pour chercher les 3 derniers jours
-yesterday = today - timedelta(days=3)
-
-# Pour chercher la dernière semaine
-last_week = today - timedelta(days=7)
-```
-
-Puis redéployer :
-```bash
-docker cp netflix_bot.py bouba_discord_netflix_notifier:/app/
+# Redémarrer le bot
 docker-compose restart
-```
 
-## 🔒 Sécurité
-
-### Authentification
-- ✅ Mots de passe hashés avec **bcrypt**
-- ✅ Sessions sécurisées avec clé secrète Flask
-- ✅ Protection de toutes les routes API avec `@login_required`
-- ✅ Timeout de session configurable (24h par défaut avec "Se souvenir de moi")
-
-### Bonnes pratiques
-1. **Changez le mot de passe admin** après la première connexion
-2. **Définissez une clé secrète Flask forte** dans `.env`
-3. **Ne commitez jamais** le fichier `.env` sur GitHub
-4. **Limitez l'accès** au port 5000 (pare-feu si exposé publiquement)
-5. **Sauvegardez régulièrement** le dossier `/data`
-
-## 🐛 Dépannage
-
-### Le cron ne s'exécute pas
-
-```bash
-# Vérifier que crond tourne
-docker exec -it bouba_discord_netflix_notifier ps aux | grep crond
-
-# Vérifier le crontab
-docker exec -it bouba_discord_netflix_notifier crontab -l
-
-# Réinstaller le crontab
-docker exec -it bouba_discord_netflix_notifier crontab /app/crontab.txt
-
-# Redémarrer crond
-docker exec -it bouba_discord_netflix_notifier sh -c "pkill crond && crond -f -l 2 &"
-```
-
-### Erreur "crontab file is missing newline"
-
-Le fichier `crontab.txt` doit se terminer par une ligne vide :
-
-```bash
-echo "" >> crontab.txt
-docker cp crontab.txt bouba_discord_netflix_notifier:/app/
-docker exec -it bouba_discord_netflix_notifier crontab /app/crontab.txt
-```
-
-### L'interface web ne fonctionne pas
-
-```bash
-# Vérifier que Flask est installé
-docker exec -it bouba_discord_netflix_notifier pip list | grep Flask
-
-# Vérifier que les templates existent
-docker exec -it bouba_discord_netflix_notifier ls -la /app/templates/
-
-# Redémarrer le conteneur
-docker-compose restart
-```
-
-### Les notifications Discord ne partent pas
-
-1. Vérifiez que le webhook Discord est correct dans `.env`
-2. Testez le webhook manuellement avec curl
-3. Consultez les logs : `docker logs bouba_discord_netflix_notifier`
-4. Vérifiez les logs détaillés : `docker exec -it bouba_discord_netflix_notifier cat /app/logs/netflix_bot_debug.log`
-
-### Le bot ne trouve aucun contenu (0 nouveaux)
-
-C'est **normal** ! Netflix n'ajoute pas de contenu tous les jours.
-- Les **vendredis** sont les jours principaux de sortie (5-15 nouveautés)
-- Les autres jours : 0-2 nouveautés maximum
-- Pour tester : augmentez le filtre à 7 jours dans `netflix_bot.py`
-
-### Le dashboard affiche "Inactif" mais le cron tourne
-
-Vérifiez que `crond` est bien actif :
-```bash
-docker exec -it bouba_discord_netflix_notifier ps aux | grep crond
-```
-
-Si oui, c'est juste un problème d'affichage (corrigé dans la dernière version).
-
-## 🔄 Mises à jour
-
-```bash
-# Récupérer les dernières modifications
-git pull origin main
-
-# Reconstruire l'image
+# Rebuild complet
 docker-compose down
 docker-compose build --no-cache
 docker-compose up -d
+
+# Vérifier le statut du healthcheck
+docker inspect bouba_discord_netflix_notifier | grep -A 10 Health
+
+# Tester l'endpoint healthcheck
+curl http://localhost:5000/health
+
+# Voir les statistiques du container
+docker stats bouba_discord_netflix_notifier --no-stream
+
+# Accéder au shell du container
+docker exec -it bouba_discord_netflix_notifier /bin/bash
 ```
 
-## 📊 Statistiques & Monitoring
+## ⚙️ Configuration avancée
 
-### Fichiers de logs disponibles
+### Modifier l'heure d'exécution
 
-- **`/logs/cron.log`** : Logs des exécutions automatiques
-- **`/logs/netflix_bot_debug.log`** : Logs détaillés du bot avec debug
-- **`/data/api_responses_debug.json`** : Réponses API brutes pour analyse
+Éditez le fichier `crontab.txt` :
 
-### Healthcheck Docker
-
-Le conteneur vérifie automatiquement toutes les 30s que Flask répond :
 ```bash
-# Voir le statut de santé
+# Format: minute heure jour mois jour_semaine commande
+0 9 * * * /usr/local/bin/python /app/netflix_bot.py >> /app/logs/netflix_bot.log 2>&1
+```
+
+Exemples :
+- `0 9 * * *` → Tous les jours à 9h00
+- `0 12 * * *` → Tous les jours à 12h00
+- `0 9 * * 1` → Tous les lundis à 9h00
+
+### Ajouter des pays
+
+Dans votre `.env`, modifiez la variable `COUNTRIES` :
+
+```env
+COUNTRIES=FR,US,CA,GB,ES,DE
+```
+
+Les drapeaux correspondants s'afficheront automatiquement dans l'interface web.
+
+### Filtrage par date
+
+Le bot filtre automatiquement les titres des **7 derniers jours** pour éviter les notifications redondantes et optimiser les performances.
+
+## 🛡️ Sécurité
+
+- ✅ Le fichier `.env` n'est **jamais** copié dans l'image Docker
+- ✅ Les secrets sont passés via variables d'environnement au runtime
+- ✅ Image Docker optimisée avec multi-stage build
+- ✅ Mise à jour automatique des packages système avec `apt-get`
+- ✅ Authentification requise pour accéder à l'interface web
+
+## 📊 Monitoring
+
+Le bot inclut un **healthcheck** qui vérifie toutes les heures :
+- Que le fichier de données existe (`sent_ids.json`)
+- Que le container fonctionne correctement
+- Que l'interface web répond correctement
+
+### Vérifier la santé du container
+
+```bash
+# Via Docker
 docker ps
 
-# STATUS devrait afficher "healthy"
+# Via l'endpoint HTTP
+curl http://localhost:5000/health
 ```
 
-### Portainer (optionnel)
+Le status peut être :
+- `healthy` ✅ - Le bot fonctionne correctement
+- `unhealthy` ❌ - Problème détecté
+- `starting` ⏳ - En cours de démarrage (30s)
 
-Si vous utilisez Portainer, vous verrez :
-- ✅ Status: "healthy" (avec icône verte)
-- ✅ Taille d'image réduite (~200MB)
-- ✅ Métriques en temps réel
+## 🐛 Dépannage
+
+### Le bot ne démarre pas
+
+```bash
+# Vérifier les logs
+docker-compose logs
+
+# Vérifier que les variables d'environnement sont correctes
+docker exec -it bouba_discord_netflix_notifier printenv | grep -E "RAPIDAPI|TMDB|DISCORD"
+```
+
+### Les notifications ne s'affichent pas
+
+1. Vérifiez que votre webhook Discord est valide
+2. Testez manuellement le bot :
+   ```bash
+   docker exec -it bouba_discord_netflix_notifier python /app/netflix_bot.py
+   ```
+3. Vérifiez les logs : `docker-compose logs -f`
+
+### Le container est "unhealthy"
+
+```bash
+# Vérifier si le fichier de données existe
+docker exec -it bouba_discord_netflix_notifier ls -la /app/data/
+
+# Tester l'endpoint healthcheck
+curl http://localhost:5000/health
+
+# Redémarrer le container
+docker-compose restart
+```
+
+### L'interface web ne répond pas
+
+```bash
+# Vérifier que Flask est bien démarré
+docker-compose logs | grep -i flask
+
+# Vérifier le port d'écoute
+docker exec -it bouba_discord_netflix_notifier netstat -tlnp
+```
 
 ## 🤝 Contribution
 
 Les contributions sont les bienvenues ! 
 
-1. 🍴 Fork le projet
-2. 🌿 Créez une branche (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. 💾 Commit vos changements (`git commit -m 'Ajout d'une nouvelle fonctionnalité'`)
-4. 📤 Push vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
-5. 🔀 Ouvrez une Pull Request
-
-### Idées de contributions
-
-- [ ] Support de Telegram/Slack en plus de Discord
-- [ ] Filtres par genre/note/année
-- [ ] Système de recommandations personnalisées
-- [ ] Export des statistiques en CSV/JSON
-- [ ] Notifications par email
-- [ ] Support multi-utilisateurs avec rôles
-- [ ] API REST complète
-- [ ] Application mobile native
-- [ ] Graphiques Chart.js pour les statistiques
-- [ ] Watchlist partagée
+1. Fork le projet
+2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/ma-feature`)
+3. Committez vos changements (`git commit -m 'Ajout de ma feature'`)
+4. Pushez vers la branche (`git push origin feature/ma-feature`)
+5. Ouvrez une Pull Request
 
 ## 📄 Licence
 
-Ce projet est sous licence **Open Source**.
+Ce projet est sous licence Open-Source. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
-## 👨‍💻 Auteur
+## 👤 Auteur
 
-**Bouba89**
+**bouba89**
+
 - GitHub: [@bouba89](https://github.com/bouba89)
 - Projet: [bouba-discord-netflix-notifier](https://github.com/bouba89/bouba-discord-netflix-notifier)
 
 ## 🙏 Remerciements
 
 - [UNOGS API](https://rapidapi.com/unogs/api/unogs) pour les données Netflix
-- [TMDB API](https://www.themoviedb.org/) pour les informations détaillées
-- [Discord](https://discord.com/) pour l'API de webhooks
-- [Flask](https://flask.palletsprojects.com/) pour le framework web
-- [Docker](https://www.docker.com/) pour la conteneurisation
-- [Alpine Linux](https://alpinelinux.org/) pour l'image Docker légère
-
-## 📞 Support
-
-En cas de problème :
-1. 📖 Consultez la section [Dépannage](#-dépannage)
-2. 🐛 Ouvrez une [Issue](https://github.com/bouba89/bouba-discord-netflix-notifier/issues)
-3. 💬 Consultez les discussions existantes
-
-## 🎯 Roadmap
-
-- [x] Bot Discord fonctionnel
-- [x] Interface web moderne
-- [x] Authentification sécurisée
-- [x] Configuration interactive
-- [x] Docker optimisé (Alpine multi-stage)
-- [x] Support multi-pays avec drapeaux
-- [ ] Graphiques de statistiques (Chart.js)
-- [ ] Historique des notifications
-- [ ] Filtres avancés (note, genre, année)
-- [ ] Support Telegram/Slack
-- [ ] Application mobile
+- [TMDB API](https://www.themoviedb.org/) pour les informations détaillées des films/séries
+- La communauté Docker pour les bonnes pratiques
 
 ---
 
-🎬 **Bon monitoring Netflix !** 🍿
-
-*Dernière mise à jour : 01/02/2026*
+⭐ Si ce projet vous est utile, n'hésitez pas à lui donner une étoile sur GitHub !

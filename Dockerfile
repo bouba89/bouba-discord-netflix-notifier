@@ -3,98 +3,85 @@
 # ============================================================================
 FROM python:3.11-slim AS builder
 
-# Variables d'environnement pour optimiser pip
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    DEBIAN_FRONTEND=noninteractive
 
-# Installer les dépendances système nécessaires pour la compilation
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc=4:14.2.0-1 \
+        g++=4:14.2.0-1 && \
+    rm -rf /var/lib/apt/lists/* && \
+    python -m venv /opt/venv
 
-# Créer un environnement virtuel
-RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Copier et installer les dépendances Python
 COPY requirements.txt /tmp/requirements.txt
-RUN pip install --upgrade pip && \
-    pip install -r /tmp/requirements.txt
+RUN pip install --upgrade pip==25.3 wheel==0.46.2 && \
+    pip install --no-cache-dir -r /tmp/requirements.txt
 
 # ============================================================================
 # Stage 2: Runtime - Image finale légère
 # ============================================================================
 FROM python:3.11-alpine
 
-# Métadonnées
-LABEL maintainer="bouba89"
-LABEL description="Netflix Discord Notifier Bot with Web Interface"
-LABEL version="1.0.0"
+LABEL maintainer="bouba89" \
+      description="Netflix Discord Notifier Bot with Web Interface" \
+      version="1.0.0"
 
-# Variables d'environnement
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PATH="/opt/venv/bin:$PATH" \
     LANG=C.UTF-8 \
-    LC_ALL=C.UTF-8
+    LC_ALL=C.UTF-8 \
+    TZ=Europe/Paris
 
-# Installer les dépendances runtime nécessaires
+# hadolint ignore=DL3018
 RUN apk add --no-cache \
-    bash \
-    curl \
-    nano \
-    tzdata \
-    dcron \
-    && rm -rf /var/cache/apk/*
-
-ENV TZ=Europe/Paris
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-
-
-# Copier l'environnement virtuel depuis le builder
-COPY --from=builder /opt/venv /opt/venv
-
-# Créer l'utilisateur non-root pour la sécurité
-RUN addgroup -g 1000 appuser && \
-    adduser -D -u 1000 -G appuser appuser
-
-# Créer les dossiers nécessaires
-RUN mkdir -p /app/data /app/logs /app/templates && \
+        bash \
+        curl \
+        nano \
+        tzdata \
+        dcron && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone && \
+    addgroup -g 1000 appuser && \
+    adduser -D -u 1000 -G appuser appuser && \
+    mkdir -p /app/data /app/logs /app/templates && \
     chown -R appuser:appuser /app
 
-# Définir le répertoire de travail
 WORKDIR /app
 
-# Copier les fichiers de l'application
-COPY --chown=appuser:appuser netflix_bot.py /app/
-COPY --chown=appuser:appuser web_interface.py /app/
-COPY --chown=appuser:appuser run_netflix.sh /app/
-COPY --chown=appuser:appuser start.sh /app/
-COPY --chown=appuser:appuser crontab.txt /app/
+COPY --from=builder /opt/venv /opt/venv
+
+# Supprimer pip/wheel du système Alpine (on utilise le venv)
+RUN pip uninstall -y pip wheel setuptools || true && \
+    rm -rf /usr/local/lib/python3.11/site-packages/pip* \
+           /usr/local/lib/python3.11/site-packages/wheel* \
+           /usr/local/lib/python3.11/site-packages/setuptools*
+
+COPY --chown=appuser:appuser netflix_bot.py \
+                              web_interface.py \
+                              run_netflix.sh \
+                              start.sh \
+                              crontab.txt \
+                              /app/
+
 COPY --chown=appuser:appuser templates/ /app/templates/
 
-# Rendre les scripts exécutables
-RUN chmod +x /app/start.sh /app/run_netflix.sh
+RUN chmod +x /app/start.sh /app/run_netflix.sh && \
+    touch /app/.env_for_cron && \
+    chown appuser:appuser /app/.env_for_cron
 
-# Créer le fichier .env_for_cron vide (sera rempli au runtime)
-RUN touch /app/.env_for_cron && chown appuser:appuser /app/.env_for_cron
-
-# Exposer le port Flask
 EXPOSE 5000
 
-# Volumes pour la persistance des données
 VOLUME ["/app/data", "/app/logs"]
 
-# Nouveau healthcheck (utilise /health qui est public)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:5000/health || exit 1
 
 USER root
 
-
-# Commande de démarrage
 CMD ["bash", "/app/start.sh"]

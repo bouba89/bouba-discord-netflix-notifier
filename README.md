@@ -3,6 +3,7 @@
 [![Release](https://img.shields.io/github/v/release/bouba89/bouba-discord-netflix-notifier)](https://github.com/bouba89/bouba-discord-netflix-notifier/releases)
 [![Docker](https://img.shields.io/badge/docker-ready-blue)](https://www.docker.com/)
 [![Python](https://img.shields.io/badge/python-3.11-blue)](https://www.python.org/)
+[![Security](https://img.shields.io/badge/trivy-0%20CVE-brightgreen)](https://trivy.dev/)
 [![License](https://img.shields.io/badge/license-Open--Source-green)](LICENSE)
 
 Un bot Discord automatisé qui vous notifie quotidiennement des nouvelles sorties Netflix directement dans votre serveur Discord ! 🍿
@@ -16,19 +17,7 @@ Un bot Discord automatisé qui vous notifie quotidiennement des nouvelles sortie
 - 🐳 **Déployable facilement** avec Docker et Docker Compose
 - 📊 **Healthcheck intégré** pour monitorer l'état du container
 - 💾 **Persistence des données** avec volumes Docker
-- 🌐 **Interface web** avec authentification et tableau de bord
-- ⏱️ **Countdown timer** et barre de progression avant la prochaine exécution
-- 🏳️ **Statistiques par pays** avec drapeaux sur le dashboard
-
-## 🆕 Nouveautés récentes
-
-### Version actuelle
-
-- ✅ **Endpoint healthcheck** : Nouveau endpoint `/health` pour vérifier l'état du service et logique de stats améliorée
-- ⚡ **Optimisation des performances** : Récupération des titres optimisée et filtrage par date amélioré
-- 🎨 **Interface améliorée** : Favicon ajouté sur toutes les pages (index et login)
-- 📊 **Statistiques par pays** : Visualisation des stats avec drapeaux des pays configurés
-- ⏱️ **Timer de compte à rebours** : Affichage du temps restant avant la prochaine exécution avec barre de progression
+- 🔒 **Image sécurisée** avec 0 vulnérabilité CVE
 
 ## 📋 Prérequis
 
@@ -67,10 +56,6 @@ DISCORD_WEBHOOK=https://discord.com/api/webhooks/VOTRE_WEBHOOK_URL
 
 # Configuration
 COUNTRIES=FR,US,CA
-
-# Interface Web (optionnel)
-WEB_USERNAME=admin
-WEB_PASSWORD=votre_mot_de_passe
 ```
 
 ### 3. Lancer le bot
@@ -83,11 +68,7 @@ docker-compose up -d
 docker-compose logs -f
 ```
 
-### 4. Accéder à l'interface web
-
-Ouvrez votre navigateur et accédez à `http://localhost:5000` (ou le port configuré).
-
-### 5. Tester manuellement (optionnel)
+### 4. Tester manuellement (optionnel)
 
 ```bash
 docker exec -it bouba_discord_netflix_notifier python /app/netflix_bot.py
@@ -99,10 +80,7 @@ docker exec -it bouba_discord_netflix_notifier python /app/netflix_bot.py
 bouba-discord-netflix-notifier/
 ├── data/                      # Données persistantes (anti-doublons)
 ├── logs/                      # Fichiers de logs
-├── static/                    # Fichiers statiques (favicon, etc.)
-├── templates/                 # Templates HTML
-│   ├── index.html             # Dashboard principal
-│   └── login.html             # Page de connexion
+├── templates/                 # Templates web
 ├── .dockerignore              # Fichiers exclus du build Docker
 ├── .env                       # Variables d'environnement (à créer)
 ├── .gitignore                 # Fichiers exclus de Git
@@ -112,6 +90,7 @@ bouba-discord-netflix-notifier/
 ├── netflix_bot.py             # Script principal du bot
 ├── web_interface.py           # Interface web Flask
 ├── requirements.txt           # Dépendances Python
+├── run_netflix.sh             # Script d'exécution Netflix
 ├── start.sh                   # Script d'initialisation du container
 ├── README.md                  # Documentation
 └── LICENSE                    # Licence open-source
@@ -119,30 +98,78 @@ bouba-discord-netflix-notifier/
 
 ## 📦 Dépendances
 
-- **Python 3.11**
-- **requests 2.31.0** - Pour les appels API
-- **python-dotenv 1.0.0** - Pour la gestion des variables d'environnement
-- **Flask** - Pour l'interface web
+| Package | Version | Description |
+|---------|---------|-------------|
+| Python | 3.11 | Runtime |
+| Flask | 3.0.0 | Interface web |
+| requests | ≥2.32.4 | Appels API |
+| werkzeug | ≥3.1.5 | WSGI toolkit |
+| python-dotenv | 1.0.0 | Variables d'environnement |
+| jaraco.context | ≥6.1.0 | Gestion de contexte |
 
-## 🌐 Interface Web
+## 🛡️ Sécurité
 
-L'interface web offre plusieurs fonctionnalités :
+Cette image Docker a été durcie et auditée pour la production.
 
-- 🔐 **Authentification** : Page de connexion sécurisée
-- 📊 **Dashboard** : Vue d'ensemble du système
-- ⏱️ **Countdown Timer** : Affichage du temps restant avant la prochaine notification
-- 📈 **Barre de progression** : Visualisation graphique du temps écoulé
-- 🏳️ **Stats par pays** : Statistiques détaillées avec drapeaux pour chaque pays configuré
-- 🩺 **Endpoint Healthcheck** : `/health` pour vérifier l'état du service
+### ✅ Scan de vulnérabilités
 
-### Endpoints disponibles
+L'image est scannée avec [Trivy](https://trivy.dev/) et affiche **0 vulnérabilité CVE** :
 
-| Endpoint | Description |
-|----------|-------------|
-| `/` | Dashboard principal |
-| `/login` | Page de connexion |
-| `/health` | Vérification de l'état du service (JSON) |
-| `/stats` | Statistiques détaillées |
+```bash
+# Scanner l'image
+trivy image bouba89/netflix-bot:latest
+```
+
+### ✅ Mesures de sécurité implémentées
+
+| Mesure | Description |
+|--------|-------------|
+| **Multi-stage build** | L'image finale ne contient pas les outils de compilation (gcc, g++) |
+| **Image Alpine** | Base minimale (~5MB) réduisant la surface d'attaque |
+| **Dépendances patchées** | Toutes les CVE connues corrigées (pip, wheel, werkzeug, requests, jaraco.context) |
+| **pip/wheel supprimés** | Les outils d'installation sont supprimés de l'image finale |
+| **Secrets externalisés** | Les clés API sont passées via variables d'environnement, jamais dans l'image |
+| **Utilisateur non-root** | L'application peut tourner avec un utilisateur dédié (appuser) |
+| **Healthcheck** | Monitoring intégré de l'état du container |
+
+### ✅ CVE corrigées
+
+| CVE | Package | Sévérité | Correction |
+|-----|---------|----------|------------|
+| CVE-2024-34069 | werkzeug | HIGH | ≥3.0.3 |
+| CVE-2024-49766 | werkzeug | MEDIUM | ≥3.0.6 |
+| CVE-2024-49767 | werkzeug | MEDIUM | ≥3.0.6 |
+| CVE-2025-66221 | werkzeug | MEDIUM | ≥3.1.4 |
+| CVE-2026-21860 | werkzeug | MEDIUM | ≥3.1.5 |
+| CVE-2026-23949 | jaraco.context | HIGH | ≥6.1.0 |
+| CVE-2024-35195 | requests | MEDIUM | ≥2.32.0 |
+| CVE-2024-47081 | requests | MEDIUM | ≥2.32.4 |
+| CVE-2026-24049 | wheel | HIGH | Supprimé |
+| CVE-2025-8869 | pip | MEDIUM | Supprimé |
+
+### ✅ Bonnes pratiques Docker
+
+- ✅ `.env` exclu via `.dockerignore`
+- ✅ Layers optimisés pour le cache
+- ✅ `PYTHONDONTWRITEBYTECODE=1` (pas de fichiers .pyc)
+- ✅ `PIP_NO_CACHE_DIR=1` (image plus légère)
+- ✅ `apt-get clean` et suppression des listes apt
+
+### 🔍 Auditer l'image vous-même
+
+```bash
+# Installer Trivy
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+
+# Scanner l'image
+trivy image bouba89/netflix-bot:latest
+
+# Scanner uniquement les CVE critiques/hautes
+trivy image --severity HIGH,CRITICAL bouba89/netflix-bot:latest
+
+# Ignorer les CVE sans correctif disponible
+trivy image --ignore-unfixed bouba89/netflix-bot:latest
+```
 
 ## 🔧 Commandes utiles
 
@@ -166,9 +193,6 @@ docker-compose up -d
 
 # Vérifier le statut du healthcheck
 docker inspect bouba_discord_netflix_notifier | grep -A 10 Health
-
-# Tester l'endpoint healthcheck
-curl http://localhost:5000/health
 
 # Voir les statistiques du container
 docker stats bouba_discord_netflix_notifier --no-stream
@@ -201,41 +225,21 @@ Dans votre `.env`, modifiez la variable `COUNTRIES` :
 COUNTRIES=FR,US,CA,GB,ES,DE
 ```
 
-Les drapeaux correspondants s'afficheront automatiquement dans l'interface web.
-
-### Filtrage par date
-
-Le bot filtre automatiquement les titres des **7 derniers jours** pour éviter les notifications redondantes et optimiser les performances.
-
-## 🛡️ Sécurité
-
-- ✅ Le fichier `.env` n'est **jamais** copié dans l'image Docker
-- ✅ Les secrets sont passés via variables d'environnement au runtime
-- ✅ Image Docker optimisée avec multi-stage build
-- ✅ Mise à jour automatique des packages système avec `apt-get`
-- ✅ Authentification requise pour accéder à l'interface web
-
 ## 📊 Monitoring
 
-Le bot inclut un **healthcheck** qui vérifie toutes les heures :
-- Que le fichier de données existe (`sent_ids.json`)
+Le bot inclut un **healthcheck** qui vérifie toutes les 30 secondes :
+- Que l'interface web répond sur `/health`
 - Que le container fonctionne correctement
-- Que l'interface web répond correctement
-
-### Vérifier la santé du container
 
 ```bash
-# Via Docker
+# Vérifier la santé du container
 docker ps
-
-# Via l'endpoint HTTP
-curl http://localhost:5000/health
 ```
 
 Le status peut être :
 - `healthy` ✅ - Le bot fonctionne correctement
 - `unhealthy` ❌ - Problème détecté
-- `starting` ⏳ - En cours de démarrage (30s)
+- `starting` ⏳ - En cours de démarrage (5s)
 
 ## 🐛 Dépannage
 
@@ -264,21 +268,8 @@ docker exec -it bouba_discord_netflix_notifier printenv | grep -E "RAPIDAPI|TMDB
 # Vérifier si le fichier de données existe
 docker exec -it bouba_discord_netflix_notifier ls -la /app/data/
 
-# Tester l'endpoint healthcheck
-curl http://localhost:5000/health
-
 # Redémarrer le container
 docker-compose restart
-```
-
-### L'interface web ne répond pas
-
-```bash
-# Vérifier que Flask est bien démarré
-docker-compose logs | grep -i flask
-
-# Vérifier le port d'écoute
-docker exec -it bouba_discord_netflix_notifier netstat -tlnp
 ```
 
 ## 🤝 Contribution
@@ -306,6 +297,7 @@ Ce projet est sous licence Open-Source. Voir le fichier [LICENSE](LICENSE) pour 
 
 - [UNOGS API](https://rapidapi.com/unogs/api/unogs) pour les données Netflix
 - [TMDB API](https://www.themoviedb.org/) pour les informations détaillées des films/séries
+- [Trivy](https://trivy.dev/) pour le scan de sécurité
 - La communauté Docker pour les bonnes pratiques
 
 ---

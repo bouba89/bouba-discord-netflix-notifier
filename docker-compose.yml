@@ -3,13 +3,32 @@ version: '3.9'
 services:
   netflix-notifier:
     build: .
-    image: bouba89/netflix-bot:latest  
-    container_name: bouba_discord_netflix_notifier
-    ports:
-      - "5000:5000"
+    image: bouba89/netflix-bot-v3:latest
+    container_name: bouba_netflix_notifier_v3
+    environment:
+      - DISCORD_WEBHOOK=${DISCORD_WEBHOOK}
+      - MDBLIST_API_KEY=${MDBLIST_API_KEY:-}
+      - TMDB_API_KEY=${TMDB_API_KEY:-}
+      - DAYS_BACK=${DAYS_BACK:-1}
+      - TZ=Europe/Paris
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:-netflix-bot-v3-change-me-in-production}
+    
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-    env_file:
-      - .env
+    
     restart: unless-stopped
+    
+    networks:
+      - npm-proxy  # ← Ajout du réseau NPM
+    
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5000/health || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  npm-proxy:
+    external: true  # ← Le réseau existe déjà

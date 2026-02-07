@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - Netflix Bot v3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #141414;
+            color: #fff;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #141414 0%, #E50914 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(229, 9, 20, 0.3);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .btn-primary {
+            background: #E50914;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #B20710;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 30px;
+        }
+        
+        .card {
+            background: #1f1f1f;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+        
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .config-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .config-item label {
+            margin: 0;
+            color: #666;
+        }
+        
+        .config-item .value {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .slider-container {
+            margin-top: 10px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        
+        .value-display {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #E50914;
+        }
+        
+        .current-schedule {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .schedule-time {
+            font-size: 48px;
+            font-weight: bold;
+            color: #E50914;
+            margin: 15px 0;
+        }
+        
+        .countdown-container {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .countdown-unit {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            min-width: 80px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .countdown-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #E50914;
+            display: block;
+        }
+        
+        .countdown-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E50914, #B20710);
+            border-radius: 10px;
+            transition: width 1s linear;
+        }
+        
+        .time-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>⚙️ Paramètres</h1>
+            <a href="/" class="btn btn-secondary">← Retour</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div id="alerts"></div>
+        
+        <!-- Configuration Crontab -->
+        <div class="card">
+            <h2>⏰ Planification automatique</h2>
+            
+            <div class="current-schedule" id="current-schedule">
+                <div class="loading">Chargement...</div>
+            </div>
+            
+            <form id="cron-form">
+                <div class="time-selector">
+                    <div class="form-group">
+                        <label for="hour">Heure (0-23)</label>
+                        <input type="number" id="hour" class="form-control" min="0" max="23" value="9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="minute">Minute (0-59)</label>
+                        <input type="number" id="minute" class="form-control" min="0" max="59" value="0" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="margin-top: 15px;">
+                    💾 Sauvegarder l'horaire
+                </button>
+            </form>
+            
+            <div class="info-box">
+                ℹ️ Le bot s'exécutera automatiquement tous les jours à l'heure définie pour vérifier les nouveautés Netflix.
+            </div>
+        </div>
+        
+        <!-- Configuration DAYS_BACK -->
+        <div class="card">
+            <h2>📅 Période de vérification</h2>
+            
+            <div class="form-group">
+                <label for="days_back">Nombre de jours à examiner (DAYS_BACK)</label>
+                <div class="slider-container">
+                    <input type="range" id="days_back" class="slider" min="1" max="30" value="1">
+                    <div class="value-display">
+                        <span id="days_value">1</span> jour(s)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                ℹ️ <strong>Comment ça marche :</strong><br>
+                • Le bot examine les <strong>N × 10 premiers items</strong> de chaque liste<br>
+                • DAYS_BACK = 1 → 10 items examinés (recommandé pour usage quotidien)<br>
+                • DAYS_BACK = 7 → 70 items examinés (pour usage hebdomadaire)<br>
+                • Plus la valeur est élevée, plus vous risquez de recevoir de notifications
+            </div>
+            
+            <button class="btn btn-primary" onclick="saveDaysBack()" style="margin-top: 20px;">
+                💾 Sauvegarder
+            </button>
+        </div>
+        
+        <!-- Configuration actuelle -->
+        <div class="card">
+            <h2>📋 Configuration actuelle</h2>
+            
+            <div class="config-item">
+                <label>Webhook Discord</label>
+                <div class="value" id="webhook-value">Chargement...</div>
+            </div>
+            
+            <div class="config-item">
+                <label>Clé API mdblist</label>
+                <div class="value" id="mdblist-value">Chargement...</div>
+            </div>
+            
+            <div class="config-item">
+                <label>Clé API TMDB</label>
+                <div class="value" id="tmdb-value">Chargement...</div>
+            </div>
+            
+            <div class="config-item">
+                <label>DAYS_BACK</label>
+                <div class="value" id="current-days-value">Chargement...</div>
+            </div>
+            
+            <div class="info-box">
+                ℹ️ Pour modifier le webhook ou les clés API, éditez le fichier <code>.env</code> et redémarrez le container.
+            </div>
+        </div>
+        
+        <!-- Changement de mot de passe -->
+        <div class="card">
+            <h2>🔒 Changer le mot de passe</h2>
+            
+            <form id="password-form">
+                <div class="form-group">
+                    <label for="current_password">Mot de passe actuel</label>
+                    <input type="password" id="current_password" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="new_password">Nouveau mot de passe</label>
+                    <input type="password" id="new_password" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">Confirmer le nouveau mot de passe</label>
+                    <input type="password" id="confirm_password" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    🔑 Changer le mot de passe
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        let countdownInterval = null;
+        let scheduledHour = 9;
+        let scheduledMinute = 0;
+        
+        // Charger la configuration au démarrage
+        window.onload = function() {
+            loadConfig();
+            loadDaysBack();
+            loadCronConfig();
+        };
+        
+        // Calculer le temps restant jusqu'à la prochaine exécution
+        function calculateTimeRemaining() {
+            const now = new Date();
+            const scheduled = new Date();
+            scheduled.setHours(scheduledHour, scheduledMinute, 0, 0);
+            
+            // Si l'heure est déjà passée aujourd'hui, planifier pour demain
+            if (scheduled <= now) {
+                scheduled.setDate(scheduled.getDate() + 1);
+            }
+            
+            const diff = scheduled - now;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // Calculer le pourcentage de progression (24h = 100%)
+            const totalSeconds = 24 * 60 * 60;
+            const remainingSeconds = hours * 3600 + minutes * 60 + seconds;
+            const progressPercent = ((totalSeconds - remainingSeconds) / totalSeconds) * 100;
+            
+            return { hours, minutes, seconds, progressPercent };
+        }
+        
+        // Mettre à jour le compteur
+        function updateCountdown() {
+            const { hours, minutes, seconds, progressPercent } = calculateTimeRemaining();
+            
+            return `
+                <div class="countdown">
+                    <div class="countdown-unit">
+                        <span class="countdown-value">${String(hours).padStart(2, '0')}</span>
+                        <span class="countdown-label">heures</span>
+                    </div>
+                    <div class="countdown-unit">
+                        <span class="countdown-value">${String(minutes).padStart(2, '0')}</span>
+                        <span class="countdown-label">minutes</span>
+                    </div>
+                    <div class="countdown-unit">
+                        <span class="countdown-value">${String(seconds).padStart(2, '0')}</span>
+                        <span class="countdown-label">secondes</span>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+            `;
+        }
+        
+        // Démarrer le compteur
+        function startCountdown() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            const countdownContainer = document.getElementById('countdown-display');
+            if (countdownContainer) {
+                countdownContainer.innerHTML = updateCountdown();
+            }
+            
+            countdownInterval = setInterval(() => {
+                const countdownContainer = document.getElementById('countdown-display');
+                if (countdownContainer) {
+                    countdownContainer.innerHTML = updateCountdown();
+                }
+            }, 1000);
+        }
+        
+        // Charger la configuration du cron
+        async function loadCronConfig() {
+            try {
+                const response = await fetch('/api/config/cron');
+                const data = await response.json();
+                
+                scheduledHour = data.hour || 9;
+                scheduledMinute = data.minute || 0;
+                
+                document.getElementById('hour').value = scheduledHour;
+                document.getElementById('minute').value = scheduledMinute;
+                
+                const schedule = document.getElementById('current-schedule');
+                schedule.innerHTML = `
+                    <p style="color: #666; margin-bottom: 10px; font-size: 14px;">⏰ Exécution programmée tous les jours à</p>
+                    <div class="schedule-time">${String(scheduledHour).padStart(2, '0')}:${String(scheduledMinute).padStart(2, '0')}</div>
+                    <p style="color: ${data.enabled ? '#46d369' : '#e74c3c'}; font-weight: 600; margin-top: 10px;">
+                        ${data.enabled ? '✅ Cron actif' : '⚠️ Cron inactif'}
+                    </p>
+                    <div class="countdown-container">
+                        <p style="color: #666; margin-bottom: 15px; font-size: 14px;">⏳ Temps restant avant la prochaine exécution</p>
+                        <div id="countdown-display"></div>
+                    </div>
+                `;
+                
+                startCountdown();
+            } catch (error) {
+                showAlert('Erreur lors du chargement de la configuration du cron', 'error');
+                console.error(error);
+            }
+        }
+        
+        // Sauvegarder la configuration du cron
+        document.getElementById('cron-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const hour = parseInt(document.getElementById('hour').value);
+            const minute = parseInt(document.getElementById('minute').value);
+            
+            try {
+                const response = await fetch('/api/config/cron', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ hour, minute })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    scheduledHour = hour;
+                    scheduledMinute = minute;
+                    showAlert(`Horaire mis à jour: ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`, 'success');
+                    loadCronConfig();
+                } else {
+                    showAlert('Erreur: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Erreur: ' + error.message, 'error');
+            }
+        });
+        
+        // Afficher une alerte
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `
+                <span>${type === 'success' ? '✅' : '❌'}</span>
+                <span>${message}</span>
+            `;
+            
+            document.getElementById('alerts').appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+        
+        // Mettre à jour l'affichage du slider
+        document.getElementById('days_back').addEventListener('input', function() {
+            document.getElementById('days_value').textContent = this.value;
+        });
+        
+        // Charger la configuration
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const data = await response.json();
+                
+                document.getElementById('webhook-value').textContent = data.DISCORD_WEBHOOK || 'Non configuré';
+                document.getElementById('mdblist-value').textContent = data.MDBLIST_API_KEY || 'Non configuré';
+                document.getElementById('tmdb-value').textContent = data.TMDB_API_KEY || 'Non configuré';
+            } catch (error) {
+                console.error('Erreur chargement config:', error);
+            }
+        }
+        
+        // Charger DAYS_BACK
+        async function loadDaysBack() {
+            try {
+                const response = await fetch('/api/config/days_back');
+                const data = await response.json();
+                
+                const days = data.days_back || 1;
+                document.getElementById('days_back').value = days;
+                document.getElementById('days_value').textContent = days;
+                document.getElementById('current-days-value').textContent = days + ' jour(s)';
+            } catch (error) {
+                console.error('Erreur chargement DAYS_BACK:', error);
+            }
+        }
+        
+        // Sauvegarder DAYS_BACK
+        async function saveDaysBack() {
+            const days = parseInt(document.getElementById('days_back').value);
+            
+            try {
+                const response = await fetch('/api/config/days_back', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ days_back: days })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert(`DAYS_BACK mis à jour: ${days} jour(s)`, 'success');
+                    document.getElementById('current-days-value').textContent = days + ' jour(s)';
+                } else {
+                    showAlert('Erreur: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Erreur: ' + error.message, 'error');
+            }
+        }
+        
+        // Changement de mot de passe
+        document.getElementById('password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current_password').value;
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (newPassword !== confirmPassword) {
+                showAlert('Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showAlert('Le mot de passe doit faire au moins 6 caractères', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Mot de passe changé avec succès !', 'success');
+                    document.getElementById('password-form').reset();
+                } else {
+                    showAlert('Erreur: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Erreur: ' + error.message, 'error');
+            }
+        });
+        
+        // Nettoyer l'interval au déchargement de la page
+        window.onbeforeunload = function() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,87 +1,59 @@
-# ============================================================================
-# Stage 1: Builder - Installation des dépendances
-# ============================================================================
-FROM python:3.11-slim AS builder
+FROM python:3.11-slim
 
+# Métadonnées
+LABEL maintainer="bouba89"
+LABEL description="Bot Discord Netflix Notifier - Version 3.0 (API mdblist complète)"
+LABEL version="3.0.0"
+
+# Variables d'environnement pour Python
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    DEBIAN_FRONTEND=noninteractive
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
+# Installation des dépendances système
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        gcc=4:14.2.0-1 \
-        g++=4:14.2.0-1 && \
-    rm -rf /var/lib/apt/lists/* && \
-    python -m venv /opt/venv
+    cron \
+    tzdata \
+    curl \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV PATH="/opt/venv/bin:$PATH"
+# Configuration du timezone
+ENV TZ=Europe/Paris
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install --upgrade pip==25.3 wheel==0.46.2 && \
-    pip install --no-cache-dir -r /tmp/requirements.txt
-
-# ============================================================================
-# Stage 2: Runtime - Image finale légère
-# ============================================================================
-FROM python:3.11-alpine
-
-LABEL maintainer="bouba89" \
-      description="Netflix Discord Notifier Bot with Web Interface" \
-      version="1.0.0"
-
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PATH="/opt/venv/bin:$PATH" \
-    LANG=C.UTF-8 \
-    LC_ALL=C.UTF-8 \
-    TZ=Europe/Paris
-
-# hadolint ignore=DL3018
-RUN apk add --no-cache \
-        bash \
-        curl \
-        nano \
-        tzdata \
-        dcron && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
-    echo $TZ > /etc/timezone && \
-    addgroup -g 1000 appuser && \
-    adduser -D -u 1000 -G appuser appuser && \
-    mkdir -p /app/data /app/logs /app/templates && \
-    chown -R appuser:appuser /app
-
+# Création du répertoire de travail
 WORKDIR /app
 
-COPY --from=builder /opt/venv /opt/venv
+# Copie des fichiers de requirements
+COPY requirements.txt .
 
-# Supprimer pip/wheel du système Alpine (on utilise le venv)
-RUN pip uninstall -y pip wheel setuptools || true && \
-    rm -rf /usr/local/lib/python3.11/site-packages/pip* \
-           /usr/local/lib/python3.11/site-packages/wheel* \
-           /usr/local/lib/python3.11/site-packages/setuptools*
+# Installation des dépendances Python
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY --chown=appuser:appuser netflix_bot.py \
-                              web_interface.py \
-                              run_netflix.sh \
-                              start.sh \
-                              crontab.txt \
-                              /app/
+# Copie des fichiers de l'application
+COPY netflix_bot_v3.py netflix_bot.py
+COPY web_interface.py .
+COPY templates/ templates/
+COPY crontab.txt .
+COPY start.sh .
 
-COPY --chown=appuser:appuser templates/ /app/templates/
+# Rendre le script start.sh exécutable
+RUN chmod +x /app/start.sh
 
-RUN chmod +x /app/start.sh /app/run_netflix.sh && \
-    touch /app/.env_for_cron && \
-    chown appuser:appuser /app/.env_for_cron
+# Création des répertoires nécessaires
+RUN mkdir -p /app/data /app/logs
 
-EXPOSE 5000
+# Configuration de cron
+RUN crontab crontab.txt
 
+# Exposition des volumes
 VOLUME ["/app/data", "/app/logs"]
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
+# Exposition du port Flask
+EXPOSE 5000
 
-USER root
-
-CMD ["bash", "/app/start.sh"]
+# Point d'entrée
+CMD ["/app/start.sh"]

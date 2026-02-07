@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Netflix Bot - Interface Web Flask avec Authentification
-Interface de monitoring et configuration du bot Netflix
+Netflix Bot v3 - Interface Web Flask avec Authentification
+Interface de monitoring et configuration du bot Netflix (API mdblist)
 """
 
 from flask import Flask, render_template, jsonify, request, send_file, session, redirect, url_for
@@ -10,6 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import os
 import json
+import logging
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -17,18 +18,28 @@ from pathlib import Path
 app = Flask(__name__)
 
 # Configuration de sécurité
-app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'netflix-bot-super-secret-key-change-me-in-production')
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'netflix-bot-v3-super-secret-key-change-me')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
 # Configuration
 DATA_DIR = "/app/data"
 LOGS_DIR = "/app/logs"
 MEMORY_FILE = f"{DATA_DIR}/sent_ids.json"
-DEBUG_API_FILE = f"{DATA_DIR}/api_responses_debug.json"
-LOG_FILE = f"{LOGS_DIR}/netflix_bot_debug.log"
+LOG_FILE = f"{LOGS_DIR}/netflix_bot.log"
 CRON_LOG_FILE = f"{LOGS_DIR}/cron.log"
 ENV_FILE = "/app/.env_for_cron"
 USERS_FILE = f"{DATA_DIR}/users.json"
+
+# Configurer le logging pour écrire dans le fichier de logs
+os.makedirs(LOGS_DIR, exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(LOG_FILE),
+        logging.StreamHandler()
+    ]
+)
 
 # Créer le fichier users.json s'il n'existe pas
 def init_users_file():
@@ -59,6 +70,9 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'username' not in session:
+            # Si c'est une route API, retourner JSON au lieu de rediriger
+            if request.path.startswith('/api/'):
+                return jsonify({'error': 'Non authentifié', 'redirect': '/login'}), 401
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -162,24 +176,25 @@ def health():
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
-        'service': 'netflix-bot-web'
+        'service': 'netflix-bot-v3-web',
+        'version': '3.0'
     }), 200
 
 @app.route('/api/status')
 @login_required
 def get_status():
-    """API: Récupérer le statut du bot"""
+    """API: Récupérer le statut du bot v3"""
     try:
-        # Vérifier si cron tourne (compatible Alpine)
-        import subprocess
+        # Vérifier si cron tourne (support cron et crond)
         try:
-            result = subprocess.run(['pgrep', 'crond'], capture_output=True, timeout=5)
+            # Essayer avec pgrep (cherche cron OU crond)
+            result = subprocess.run(['pgrep', '-f', 'cron'], capture_output=True, timeout=5)
             cron_running = result.returncode == 0
         except:
-            # Fallback : vérifier les fichiers PID classiques
+            # Fallback : vérifier les fichiers PID
             cron_running = os.path.exists('/var/run/crond.pid') or os.path.exists('/var/run/cron.pid')
         
-        # Récupérer les variables d'environnement
+        # Récupérer les variables d'environnement v3
         env_vars = {}
         if os.path.exists(ENV_FILE):
             with open(ENV_FILE, 'r') as f:
@@ -194,30 +209,34 @@ def get_status():
         # Récupérer les statistiques
         sent_count = 0
         if os.path.exists(MEMORY_FILE):
-            with open(MEMORY_FILE, 'r') as f:
-                sent_ids = json.load(f)
-                sent_count = len(sent_ids)
+            try:
+                with open(MEMORY_FILE, 'r') as f:
+                    sent_ids = json.load(f)
+                    if isinstance(sent_ids, (dict, list)):
+                        sent_count = len(sent_ids)
+            except:
+                sent_count = 0
         
-        # Dernière exécution depuis les logs (format propre)
+        # Dernière exécution depuis les logs
         last_run = "Jamais"
         if os.path.exists(LOG_FILE):
             with open(LOG_FILE, 'r') as f:
                 lines = f.readlines()
                 for line in reversed(lines):
-                    if "🏁 TERMINÉ" in line:
+                    if "✨ Traitement terminé" in line or "🏁 TERMINÉ" in line:
                         try:
-                            # Format original: 2026-02-01 03:06:18,418 - INFO - 🏁 TERMINÉ
                             timestamp_str = line.split(' - ')[0]
-                            # Parser et reformater proprement
                             dt = datetime.strptime(timestamp_str.split(',')[0], '%Y-%m-%d %H:%M:%S')
-                            last_run = dt.strftime('%d/%m/%Y %H:%M:%S')  # Format français propre
+                            last_run = dt.strftime('%d/%m/%Y %H:%M:%S')
                         except:
-                            last_run = timestamp_str  # Fallback si parsing échoue
+                            last_run = timestamp_str
                         break
         
         return jsonify({
             'status': 'running' if cron_running else 'stopped',
             'cron_active': cron_running,
+            'version': '3.0',
+            'api_source': 'mdblist.com',
             'environment': env_vars,
             'statistics': {
                 'total_sent': sent_count,
@@ -230,15 +249,14 @@ def get_status():
 @app.route('/api/stats')
 @login_required
 def get_stats():
-    """API: Récupérer les statistiques détaillées"""
+    """API: Récupérer les statistiques détaillées v3"""
     try:
         stats = {
             'total_content': 0,
-            'by_country': {},
-            'by_country_total': {},  # ← NOUVEAU : Stats cumulées par pays
             'recent_notifications': [],
             'last_run': {
-                'total_treated': 0,
+                'movies_found': 0,
+                'shows_found': 0,
                 'new_sent': 0,
                 'date': 'N/A'
             }
@@ -246,78 +264,48 @@ def get_stats():
         
         # Lire les IDs envoyés
         if os.path.exists(MEMORY_FILE):
-            with open(MEMORY_FILE, 'r') as f:
-                sent_ids = json.load(f)
-                stats['total_content'] = len(sent_ids)
+            try:
+                with open(MEMORY_FILE, 'r') as f:
+                    sent_ids = json.load(f)
+                    # Gérer dict ou list
+                    if isinstance(sent_ids, dict):
+                        stats['total_content'] = len(sent_ids)
+                    elif isinstance(sent_ids, list):
+                        stats['total_content'] = len(sent_ids)
+                    else:
+                        stats['total_content'] = 0
+            except:
+                stats['total_content'] = 0
         
-        # ✅ NOUVEAU : Analyser tous les logs pour stats cumulées par pays
+        # Analyser les logs du dernier run
         if os.path.exists(LOG_FILE):
             with open(LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.readlines()
             
-            # Stats cumulées (tous les runs)
-            country_totals = {}
-            
-            # Stats du dernier run uniquement
-            current_country = None
-            last_run_countries = {}
-            in_last_run = False
-            
-            for line in lines:
-                # Détecter le début du dernier run
-                if "🎬 Netflix Bot - " in line:
-                    in_last_run = True
-                    last_run_countries = {}
-                    current_country = None
-                
-                # Stats cumulées (tous les runs)
-                if "📨 ENVOI DISCORD POUR" in line:
+            # Parser le dernier run
+            for line in reversed(lines[-200:]):
+                if "✅ Trouvé" in line and "movies" in line:
                     try:
-                        country = line.split("📨 ENVOI DISCORD POUR")[1].strip()
-                        if country not in country_totals:
-                            country_totals[country] = 0
+                        count = int(line.split("✅ Trouvé")[1].split("movies")[0].strip())
+                        stats['last_run']['movies_found'] = count
                     except:
                         pass
                 
-                if "nouveaux titres (non envoyés)" in line and "✨" in line:
+                if "✅ Trouvé" in line and "shows" in line:
                     try:
-                        # Extraire le nombre
-                        count = int(line.split("✨")[1].split("nouveaux")[0].strip())
-                        
-                        # Pour le dernier run
-                        if in_last_run and current_country:
-                            last_run_countries[current_country] = count
-                        
-                        # Pour les stats cumulées
-                        if current_country and count > 0:
-                            if current_country not in country_totals:
-                                country_totals[current_country] = 0
-                            country_totals[current_country] += count
+                        count = int(line.split("✅ Trouvé")[1].split("shows")[0].strip())
+                        stats['last_run']['shows_found'] = count
                     except:
                         pass
                 
-                if "TRAITEMENT DU PAYS:" in line:
+                if "✅" in line and "notifications envoyées" in line:
                     try:
-                        country = line.split("TRAITEMENT DU PAYS:")[1].strip()
-                        current_country = country
-                    except:
-                        pass
-            
-            # Parser le dernier run pour infos détaillées
-            for line in reversed(lines[-500:]):
-                if "Contenus traités:" in line or "Pays traités:" in line:
-                    try:
-                        stats['last_run']['total_treated'] = int(line.split(":")[1].split()[0])
+                        count = int(line.split("✅")[1].split("notifications")[0].strip())
+                        stats['last_run']['new_sent'] = count
                     except:
                         pass
                 
-                if "Nouveaux envoyés:" in line:
-                    try:
-                        stats['last_run']['new_sent'] = int(line.split("Nouveaux envoyés:")[1].split()[0])
-                    except:
-                        pass
-                
-                if "🏁 TERMINÉ" in line:
+                if "✨ Traitement terminé" in line:
                     try:
                         timestamp_str = line.split(' - ')[0]
                         dt = datetime.strptime(timestamp_str.split(',')[0], '%Y-%m-%d %H:%M:%S')
@@ -325,9 +313,6 @@ def get_stats():
                     except:
                         stats['last_run']['date'] = timestamp_str
                     break
-            
-            stats['by_country'] = last_run_countries
-            stats['by_country_total'] = country_totals
         
         return jsonify(stats)
     except Exception as e:
@@ -350,7 +335,7 @@ def get_logs():
         if not os.path.exists(log_file):
             return jsonify({'logs': 'Aucun log disponible'})
         
-        with open(log_file, 'r') as f:
+        with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
             all_lines = f.readlines()
             last_lines = all_lines[-lines:] if len(all_lines) > lines else all_lines
             
@@ -364,7 +349,7 @@ def run_bot():
     """API: Exécuter le bot manuellement"""
     try:
         result = subprocess.run(
-            ['/app/run_netflix.sh'],
+            ['python', '/app/netflix_bot.py'],
             capture_output=True,
             text=True,
             timeout=300
@@ -383,13 +368,13 @@ def run_bot():
 @app.route('/api/config', methods=['GET', 'POST'])
 @login_required
 def config():
-    """API: Voir/Modifier la configuration"""
+    """API: Voir/Modifier la configuration v3"""
     if request.method == 'GET':
         try:
             config_data = {}
             
-            # Liste des variables à afficher (whitelist)
-            allowed_vars = ['COUNTRIES', 'DISCORD_WEBHOOK', 'RAPIDAPI_KEY', 'TMDB_API_KEY', 'FLASK_SECRET_KEY']
+            # Variables v3
+            allowed_vars = ['DISCORD_WEBHOOK', 'MDBLIST_API_KEY', 'TMDB_API_KEY', 'DAYS_BACK']
             
             if os.path.exists(ENV_FILE):
                 with open(ENV_FILE, 'r') as f:
@@ -397,10 +382,9 @@ def config():
                         if '=' in line:
                             key, value = line.strip().split('=', 1)
                             
-                            # Filtrer : garder uniquement les variables importantes
                             if key in allowed_vars:
                                 # Masquer les clés sensibles
-                                if 'KEY' in key or 'WEBHOOK' in key or 'SECRET' in key:
+                                if 'KEY' in key or 'WEBHOOK' in key:
                                     config_data[key] = value[:10] + '***' if len(value) > 10 else '***'
                                 else:
                                     config_data[key] = value
@@ -410,133 +394,57 @@ def config():
             return jsonify({'error': str(e)}), 500
     
     elif request.method == 'POST':
-        return jsonify({'error': 'Modification non implémentée pour la sécurité'}), 501
+        return jsonify({'error': 'Modification via API non implémentée pour la sécurité'}), 501
 
-@app.route('/api/config/countries', methods=['GET', 'POST'])
+@app.route('/api/config/days_back', methods=['GET', 'POST'])
 @login_required
-def config_countries():
-    """API: Gérer la configuration des pays"""
+def config_days_back():
+    """API: Gérer DAYS_BACK"""
     if request.method == 'GET':
         try:
-            countries = []
+            days_back = 1  # Défaut
             if os.path.exists(ENV_FILE):
                 with open(ENV_FILE, 'r') as f:
                     for line in f:
-                        if line.startswith('COUNTRIES='):
-                            countries_str = line.split('=', 1)[1].strip()
-                            countries = [c.strip() for c in countries_str.split(',')]
+                        if line.startswith('DAYS_BACK='):
+                            days_back = int(line.split('=')[1].strip())
                             break
-            return jsonify({'countries': countries})
+            return jsonify({'days_back': days_back})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
     
     elif request.method == 'POST':
         try:
-            new_countries = request.json.get('countries', [])
+            new_days = request.json.get('days_back', 1)
             
-            if not new_countries:
-                return jsonify({'success': False, 'error': 'Au moins un pays requis'}), 400
+            # Valider
+            try:
+                days_int = int(new_days)
+                if not (1 <= days_int <= 30):
+                    return jsonify({'success': False, 'error': 'DAYS_BACK doit être entre 1 et 30'}), 400
+            except:
+                return jsonify({'success': False, 'error': 'Valeur invalide'}), 400
             
-            # Valider les codes pays (2 lettres en majuscules)
-            for country in new_countries:
-                if not country.isalpha() or len(country) != 2:
-                    return jsonify({'success': False, 'error': f'Code pays invalide: {country}'}), 400
-            
-            # Lire le fichier .env
+            # Lire et mettre à jour
             env_lines = []
             if os.path.exists(ENV_FILE):
                 with open(ENV_FILE, 'r') as f:
                     env_lines = f.readlines()
             
-            # Mettre à jour la ligne COUNTRIES
-            countries_str = ','.join([c.upper() for c in new_countries])
             updated = False
             for i, line in enumerate(env_lines):
-                if line.startswith('COUNTRIES='):
-                    env_lines[i] = f'COUNTRIES={countries_str}\n'
+                if line.startswith('DAYS_BACK='):
+                    env_lines[i] = f'DAYS_BACK={days_int}\n'
                     updated = True
                     break
             
-            # Si COUNTRIES n'existe pas, l'ajouter
             if not updated:
-                env_lines.append(f'COUNTRIES={countries_str}\n')
+                env_lines.append(f'DAYS_BACK={days_int}\n')
             
-            # Sauvegarder
             with open(ENV_FILE, 'w') as f:
                 f.writelines(env_lines)
             
-            return jsonify({'success': True, 'countries': new_countries})
-        except Exception as e:
-            return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/config/cron', methods=['GET', 'POST'])
-@login_required
-def config_cron():
-    """API: Gérer la configuration du cron"""
-    if request.method == 'GET':
-        try:
-            # Lire le crontab actuel
-            result = subprocess.run(['crontab', '-l'], capture_output=True, text=True)
-            if result.returncode == 0:
-                lines = result.stdout.strip().split('\n')
-                for line in lines:
-                    if 'run_netflix.sh' in line and not line.startswith('#'):
-                        # Parser la ligne cron
-                        parts = line.split()
-                        if len(parts) >= 5:
-                            return jsonify({
-                                'minute': parts[0],
-                                'hour': parts[1],
-                                'enabled': True
-                            })
-            return jsonify({'minute': '0', 'hour': '8', 'enabled': False})
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500
-    
-    elif request.method == 'POST':
-        try:
-            hour = request.json.get('hour', '8')
-            minute = request.json.get('minute', '0')
-            
-            # Valider
-            try:
-                hour_int = int(hour)
-                minute_int = int(minute)
-                if not (0 <= hour_int <= 23) or not (0 <= minute_int <= 59):
-                    raise ValueError()
-            except:
-                return jsonify({'success': False, 'error': 'Heure invalide'}), 400
-            
-            # Lire le fichier crontab.txt
-            crontab_path = '/app/crontab.txt'
-            if os.path.exists(crontab_path):
-                with open(crontab_path, 'r') as f:
-                    lines = f.readlines()
-                
-                # Mettre à jour la ligne du cron
-                for i, line in enumerate(lines):
-                    if 'run_netflix.sh' in line and not line.strip().startswith('#'):
-                        # Remplacer les deux premiers champs (minute et heure)
-                        parts = line.split()
-                        if len(parts) >= 5:
-                            parts[0] = minute
-                            parts[1] = hour
-                            lines[i] = ' '.join(parts) + '\n'
-                            break
-                
-                # Sauvegarder
-                with open(crontab_path, 'w') as f:
-                    f.writelines(lines)
-                
-                # Réinstaller le crontab
-                subprocess.run(['crontab', crontab_path], check=True)
-                
-                # Redémarrer cron
-                subprocess.run(['service', 'cron', 'restart'], check=True)
-                
-                return jsonify({'success': True, 'hour': hour, 'minute': minute})
-            else:
-                return jsonify({'success': False, 'error': 'Fichier crontab.txt introuvable'}), 404
+            return jsonify({'success': True, 'days_back': days_int})
         except Exception as e:
             return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -544,26 +452,138 @@ def config_cron():
 @login_required
 def reset_memory():
     """API: Réinitialiser la mémoire (anti-doublons)"""
+    # Définir logger en premier
+    logger = logging.getLogger(__name__)
+    
     try:
+        # Compter combien d'IDs avant suppression
+        ids_before = 0
+        titles_deleted = []
+        
+        if os.path.exists(MEMORY_FILE):
+            try:
+                with open(MEMORY_FILE, 'r') as f:
+                    old_data = json.load(f)
+                    if isinstance(old_data, dict):
+                        ids_before = len(old_data)
+                        # Récupérer tous les titres
+                        titles_deleted = [v.get('title', 'Inconnu') for k, v in old_data.items() if isinstance(v, dict)]
+            except:
+                pass
+        
+        # Logger dans le fichier de logs
+        logger.info("=" * 60)
+        logger.info("🔄 RÉINITIALISATION DE LA MÉMOIRE")
+        logger.info("=" * 60)
+        logger.info(f"👤 Utilisateur: {session.get('username', 'inconnu')}")
+        logger.info(f"📊 IDs en mémoire: {ids_before}")
+        
+        if titles_deleted:
+            logger.info(f"🎬 Titres supprimés ({len(titles_deleted)}):")
+            for title in titles_deleted[:20]:  # Limiter à 20
+                logger.info(f"   • {title}")
+            if len(titles_deleted) > 20:
+                logger.info(f"   ... et {len(titles_deleted) - 20} autres")
+        
+        # Réinitialiser
         with open(MEMORY_FILE, 'w') as f:
-            json.dump([], f)
-        return jsonify({'success': True, 'message': 'Mémoire réinitialisée'})
+            json.dump({}, f)
+        
+        logger.info("✅ Mémoire réinitialisée avec succès")
+        logger.info("💡 Ces notifications seront renvoyées lors de la prochaine exécution")
+        logger.info("=" * 60)
+        
+        return jsonify({
+            'success': True, 
+            'message': f'Mémoire réinitialisée : {ids_before} IDs supprimés',
+            'details': {
+                'ids_deleted': ids_before,
+                'sample_titles': titles_deleted[:5]
+            }
+        })
     except Exception as e:
+        logger.error(f"❌ Erreur lors de la réinitialisation: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/debug')
+@app.route('/api/config/cron', methods=['GET', 'POST'])
 @login_required
-def get_debug():
-    """API: Récupérer les données de debug API"""
+def config_cron():
+    """API: Configurer le crontab"""
+    if request.method == 'GET':
+        try:
+            # Lire le crontab actuel
+            result = subprocess.run(['crontab', '-l'], capture_output=True, text=True, timeout=5)
+            
+            print(f"[DEBUG CRON] returncode: {result.returncode}")
+            print(f"[DEBUG CRON] stdout: {result.stdout}")
+            
+            if result.returncode == 0:
+                cron_lines = result.stdout.strip().split('\n')
+                print(f"[DEBUG CRON] nombre de lignes: {len(cron_lines)}")
+                
+                # Chercher la ligne du bot (ignorer les commentaires)
+                for line in cron_lines:
+                    print(f"[DEBUG CRON] ligne: {line}")
+                    if line.strip() and not line.strip().startswith('#'):
+                        # Si la ligne contient des mots-clés du bot
+                        keywords = ['netflix', 'run_netflix', '.env_for_cron', 'bot']
+                        found_keywords = [kw for kw in keywords if kw in line]
+                        print(f"[DEBUG CRON] mots-clés trouvés: {found_keywords}")
+                        
+                        if any(keyword in line for keyword in keywords):
+                            parts = line.split()
+                            print(f"[DEBUG CRON] parts: {parts[:5]}")
+                            if len(parts) >= 5:
+                                try:
+                                    minute = int(parts[0])
+                                    hour = int(parts[1])
+                                    print(f"[DEBUG CRON] SUCCÈS - heure: {hour}, minute: {minute}")
+                                    return jsonify({
+                                        'hour': hour,
+                                        'minute': minute,
+                                        'enabled': True
+                                    })
+                                except (ValueError, IndexError) as e:
+                                    print(f"[DEBUG CRON] erreur parsing: {e}")
+                                    pass
+            
+            # Par défaut 9h00
+            print("[DEBUG CRON] ÉCHEC - retour valeurs par défaut")
+            return jsonify({'hour': 9, 'minute': 0, 'enabled': False})
+        except Exception as e:
+            print(f"[DEBUG CRON] Exception: {e}")
+            return jsonify({'hour': 9, 'minute': 0, 'enabled': False, 'error': str(e)})
+    
     try:
-        if not os.path.exists(DEBUG_API_FILE):
-            return jsonify({'data': []})
+        data = request.json
+        hour = int(data.get('hour', 9))
+        minute = int(data.get('minute', 0))
         
-        with open(DEBUG_API_FILE, 'r') as f:
-            debug_data = json.load(f)
-            return jsonify({'data': debug_data[-20:]})
+        if hour < 0 or hour > 23:
+            return jsonify({'success': False, 'error': 'Heure invalide (0-23)'}), 400
+        
+        if minute < 0 or minute > 59:
+            return jsonify({'success': False, 'error': 'Minute invalide (0-59)'}), 400
+        
+        # Créer la nouvelle ligne crontab
+        cron_line = f"{minute} {hour} * * * cd /app && /usr/local/bin/python3 netflix_bot.py >> /app/logs/cron.log 2>&1"
+        
+        # Mettre à jour le crontab
+        with open('/tmp/new_crontab', 'w') as f:
+            f.write(cron_line + '\n')
+        
+        # Installer le nouveau crontab
+        result = subprocess.run(['crontab', '/tmp/new_crontab'], capture_output=True, timeout=5)
+        
+        if result.returncode == 0:
+            if os.path.exists('/tmp/new_crontab'):
+                os.remove('/tmp/new_crontab')
+            return jsonify({'success': True, 'hour': hour, 'minute': minute})
+        else:
+            return jsonify({'success': False, 'error': 'Erreur lors de la mise à jour du crontab'}), 500
+            
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/download/logs/<log_type>')
 @login_required
@@ -571,25 +591,17 @@ def download_logs(log_type):
     """Télécharger les logs"""
     try:
         if log_type == 'debug':
-            return send_file(LOG_FILE, as_attachment=True, download_name='netflix_bot_debug.log')
+            return send_file(LOG_FILE, as_attachment=True, download_name='netflix_bot_v3.log')
         elif log_type == 'cron':
             return send_file(CRON_LOG_FILE, as_attachment=True, download_name='cron.log')
-        elif log_type == 'api':
-            return send_file(DEBUG_API_FILE, as_attachment=True, download_name='api_debug.json')
         else:
             return "Type de log inconnu", 404
     except Exception as e:
         return str(e), 500
 
 # ============================================================================
-# TEMPLATE HTML
+# PAGES
 # ============================================================================
-
-@app.route('/templates/index.html')
-@login_required
-def serve_template():
-    """Servir le template (pour dev)"""
-    return render_template('index.html', username=session.get('username'))
 
 @app.route('/settings')
 @login_required
@@ -598,15 +610,18 @@ def settings():
     return render_template('settings.html', username=session.get('username'))
 
 if __name__ == '__main__':
-    # Créer le dossier templates s'il n'existe pas
+    # Créer les dossiers nécessaires
     os.makedirs('templates', exist_ok=True)
+    os.makedirs(DATA_DIR, exist_ok=True)
+    os.makedirs(LOGS_DIR, exist_ok=True)
     
-    # Lancer Flask en mode debug sur toutes les interfaces
+    # Lancer Flask
     print("=" * 60)
-    print("🎬 Netflix Bot - Interface Web")
+    print("🎬 Netflix Bot v3.0 - Interface Web")
     print("=" * 60)
-    print("🌐 Interface accessible sur: http://localhost:5000")
-    print("👤 Compte par défaut: admin / admin123")
-    print("⚠️  CHANGEZ LE MOT DE PASSE IMMÉDIATEMENT!")
+    print("🌐 Interface: http://localhost:5000")
+    print("👤 Login: admin / admin123")
+    print("📡 API: mdblist.com (gratuite)")
+    print("⚠️  CHANGEZ LE MOT DE PASSE!")
     print("=" * 60)
     app.run(host='0.0.0.0', port=5000, debug=True)

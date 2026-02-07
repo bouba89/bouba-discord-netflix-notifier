@@ -1,5 +1,0 @@
-Total titres récupérés: 100
-Aucune nouvelle sortie Netflix détectée pour FR.
-Aucune nouvelle sortie Netflix détectée pour US.
-Message Discord envoyé pour CA.
-Message Discord envoyé pour KR.

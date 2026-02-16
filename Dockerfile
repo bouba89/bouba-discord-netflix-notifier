@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11-alpine
 
 # Métadonnées
 LABEL maintainer="bouba89"
@@ -9,20 +9,18 @@ LABEL version="3.0.0"
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    TZ=Europe/Paris
 
-# Installation des dépendances système
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    cron \
+# Installation des dépendances système (Alpine)
+RUN apk add --no-cache \
+    dcron \
     tzdata \
     curl \
-    procps \
-    && rm -rf /var/lib/apt/lists/*
-
-# Configuration du timezone
-ENV TZ=Europe/Paris
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+    bash \
+    && cp /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone \
+    && apk del tzdata
 
 # Création du répertoire de travail
 WORKDIR /app
@@ -54,6 +52,10 @@ VOLUME ["/app/data", "/app/logs"]
 
 # Exposition du port Flask
 EXPOSE 5000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:5000/health || exit 1
 
 # Point d'entrée
 CMD ["/app/start.sh"]

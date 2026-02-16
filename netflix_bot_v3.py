@@ -216,10 +216,16 @@ class NetflixNotifier:
         tmdb_id = item.get("id") or item.get("tmdb_id")
         media_type = item.get("mediatype", "movie")
         
+        # Différencier films et séries
+        is_movie = media_type == "movie"
+        emoji = "🎬" if is_movie else "📺"
+        color = 0xE50914 if is_movie else 0x0099FF  # Rouge pour films, Bleu pour séries
+        type_badge = "Film" if is_movie else "Série"
+        
         # Construction de l'embed
         embed = {
-            "title": f"🎬 {title} ({year})",
-            "color": 0xE50914,  # Rouge Netflix
+            "title": f"{emoji} {title} ({year})",
+            "color": color,
             "timestamp": datetime.now().isoformat(),
         }
         
@@ -234,11 +240,16 @@ class NetflixNotifier:
         if not description:
             description = item.get("description", "")
         
+        # Ajouter le badge type au début de la description
+        description_prefix = f"**[{type_badge}]**\n\n"
+        
         # Limiter la longueur
         if description:
-            if len(description) > 300:
-                description = description[:297] + "..."
-            embed["description"] = description
+            if len(description) > 280:  # Réduit pour laisser place au badge
+                description = description[:277] + "..."
+            embed["description"] = description_prefix + description
+        else:
+            embed["description"] = description_prefix
         
         # Poster (si disponible) - IMAGE LARGE au lieu de thumbnail
         poster = item.get("poster")

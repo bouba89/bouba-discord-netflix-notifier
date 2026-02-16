@@ -68,25 +68,39 @@ EOF
 echo "✅ Configuration cron créée"
 echo ""
 
+# Créer le crontab par défaut s'il n'existe pas
+echo "⏰ Configuration du crontab..."
+if ! crontab -l 2>/dev/null | grep -q "netflix_bot.py"; then
+    echo "0 8 * * * cd /app && export \$(cat /app/.env_for_cron | xargs) && /usr/local/bin/python3 netflix_bot.py >> /app/logs/cron.log 2>&1" | crontab -
+    echo "✅ Crontab créé (exécution quotidienne à 8h00)"
+else
+    echo "✅ Crontab existant conservé"
+    crontab -l | grep "netflix_bot.py"
+fi
+echo ""
+
 # Démarrer le service cron
 echo "⏰ Démarrage du service cron..."
-service cron start
+
+# Alpine utilise crond, Debian utilise cron
+if command -v crond &> /dev/null; then
+    # Alpine
+    crond -b -l 2
+    echo "✅ Service crond (Alpine) démarré"
+elif command -v cron &> /dev/null; then
+    # Debian
+    service cron start
+    echo "✅ Service cron (Debian) démarré"
+else
+    echo "⚠️  Aucun service cron trouvé"
+fi
 
 # Vérifier que cron a démarré
 sleep 2
-if pgrep cron > /dev/null 2>&1; then
-    echo "✅ Service cron démarré avec succès"
-elif pgrep crond > /dev/null 2>&1; then
-    echo "✅ Service crond démarré"
+if pgrep -x crond > /dev/null 2>&1 || pgrep -x cron > /dev/null 2>&1; then
+    echo "✅ Cron actif et opérationnel"
 else
-    echo "⚠️  Tentative de démarrage de crond..."
-    crond
-    sleep 1
-    if pgrep crond > /dev/null 2>&1; then
-        echo "✅ crond démarré"
-    else
-        echo "⚠️  Cron non disponible (tâches planifiées désactivées)"
-    fi
+    echo "⚠️  Cron non disponible (tâches planifiées désactivées)"
 fi
 
 # Afficher le crontab actif

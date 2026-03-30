@@ -100,7 +100,7 @@ bouba-discord-netflix-notifier/
 
 📌 License
 
-Ce projet est open-source et libre d’utilisation — voir le fichier LICENSE.
+Ce projet est open-source et libre d’utilisation.
 
 🤝 Contribution
 

@@ -44,7 +44,9 @@
             font-size: 14px;
             transition: all 0.3s;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         
         .btn-secondary {
@@ -63,6 +65,29 @@
         
         .btn-primary:hover {
             background: #B20710;
+        }
+
+        .btn-warning {
+            background: #e67e22;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #ca6f1e;
+        }
+
+        .btn-danger {
+            background: #c0392b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a93226;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
         .container {
@@ -96,32 +121,39 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: #aaa;
             font-weight: 500;
         }
         
         .form-control {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #333;
             border-radius: 8px;
             font-size: 15px;
             transition: border-color 0.3s;
+            background: #2a2a2a;
+            color: #fff;
         }
         
         .form-control:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #E50914;
         }
         
         .info-box {
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
+            background: #2a2a2a;
+            border-left: 4px solid #555;
             padding: 15px;
             border-radius: 8px;
             margin-top: 15px;
             font-size: 14px;
-            color: #666;
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        .info-box.info-red {
+            border-left-color: #E50914;
         }
         
         .alert {
@@ -134,36 +166,38 @@
         }
         
         .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #1a3a28;
+            color: #46d369;
+            border: 1px solid #2ecc71;
         }
         
         .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #3a1a1a;
+            color: #ff6b6b;
+            border: 1px solid #c0392b;
         }
         
         .config-item {
-            background: #f8f9fa;
+            background: #2a2a2a;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid #333;
         }
         
         .config-item label {
             margin: 0;
-            color: #666;
+            color: #aaa;
         }
         
         .config-item .value {
             font-weight: 600;
-            color: #333;
-            font-size: 16px;
+            color: #fff;
+            font-size: 15px;
+            font-family: monospace;
         }
         
         .slider-container {
@@ -174,7 +208,7 @@
             width: 100%;
             height: 8px;
             border-radius: 5px;
-            background: #e0e0e0;
+            background: #333;
             outline: none;
             -webkit-appearance: none;
         }
@@ -185,7 +219,7 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #667eea;
+            background: #E50914;
             cursor: pointer;
         }
         
@@ -193,8 +227,9 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #667eea;
+            background: #E50914;
             cursor: pointer;
+            border: none;
         }
         
         .value-display {
@@ -206,8 +241,8 @@
         }
         
         .current-schedule {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border: 2px solid #667eea;
+            background: #2a2a2a;
+            border: 2px solid #333;
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 25px;
@@ -224,7 +259,7 @@
         .countdown-container {
             margin-top: 25px;
             padding-top: 20px;
-            border-top: 2px solid #e0e0e0;
+            border-top: 2px solid #333;
         }
         
         .countdown {
@@ -235,11 +270,11 @@
         }
         
         .countdown-unit {
-            background: white;
+            background: #1f1f1f;
             padding: 15px 20px;
             border-radius: 12px;
             min-width: 80px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #333;
         }
         
         .countdown-value {
@@ -251,7 +286,7 @@
         
         .countdown-label {
             font-size: 12px;
-            color: #999;
+            color: #777;
             margin-top: 5px;
             display: block;
         }
@@ -259,7 +294,7 @@
         .progress-bar {
             width: 100%;
             height: 10px;
-            background: #e0e0e0;
+            background: #333;
             border-radius: 10px;
             overflow: hidden;
             margin-top: 20px;
@@ -281,8 +316,126 @@
         .loading {
             text-align: center;
             padding: 20px;
-            color: #999;
+            color: #777;
         }
+
+        /* ── Purge section ── */
+        .purge-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .purge-stat {
+            background: #2a2a2a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .purge-stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .purge-stat-value.red   { color: #E50914; }
+        .purge-stat-value.green { color: #46d369; }
+        .purge-stat-value.orange{ color: #e67e22; }
+
+        .purge-stat-label {
+            font-size: 12px;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .purge-divider {
+            border: none;
+            border-top: 1px solid #333;
+            margin: 20px 0;
+        }
+
+        .purge-action {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 16px 0;
+        }
+
+        .purge-action-info p {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+
+        .purge-action-info span {
+            font-size: 13px;
+            color: #888;
+        }
+
+        /* ── Modal ── */
+        #purge-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 999;
+            place-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        #purge-modal-overlay.open {
+            display: grid;
+        }
+
+        #purge-modal {
+            background: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+        }
+
+        #purge-modal h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        #purge-modal p {
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        #purge-modal .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: none;
+        }
+
+        .btn.loading .spinner  { display: inline-block; }
+        .btn.loading .btn-text { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -352,6 +505,60 @@
                 💾 Sauvegarder
             </button>
         </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             PURGE DU CACHE  (section ajoutée)
+        ══════════════════════════════════════════════════════ -->
+        <div class="card">
+            <h2>🗑️ Purge du cache</h2>
+
+            <!-- Stats -->
+            <div class="purge-stats" id="purge-stats">
+                <div class="purge-stat">
+                    <span class="purge-stat-value red" id="cache-total">—</span>
+                    <span class="purge-stat-label">IDs total</span>
+                </div>
+                <div class="purge-stat">
+                    <span class="purge-stat-value green" id="cache-fresh">—</span>
+                    <span class="purge-stat-label">Récents</span>
+                </div>
+                <div class="purge-stat">
+                    <span class="purge-stat-value orange" id="cache-expired">—</span>
+                    <span class="purge-stat-label">Expirés</span>
+                </div>
+            </div>
+
+            <!-- Purge partielle -->
+            <hr class="purge-divider">
+            <div class="purge-action">
+                <div class="purge-action-info">
+                    <p>🧹 Purge des expirés</p>
+                    <span>Supprime uniquement les entrées plus vieilles que DAYS_BACK jours.<br>Les contenus récents restent en mémoire.</span>
+                </div>
+                <button class="btn btn-warning" id="btn-partial" onclick="openPurgeModal('partial')">
+                    <span class="btn-text">Purger les expirés</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+
+            <!-- Purge totale -->
+            <hr class="purge-divider">
+            <div class="purge-action">
+                <div class="purge-action-info">
+                    <p>💥 Vider tout le cache</p>
+                    <span>Efface tous les IDs mémorisés. Le prochain run renverra<br>toutes les nouveautés disponibles dans la liste.</span>
+                </div>
+                <button class="btn btn-danger" id="btn-full" onclick="openPurgeModal('full')">
+                    <span class="btn-text">Tout vider</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+
+            <div class="info-box info-red" style="margin-top: 8px;">
+                ℹ️ Si le bot ne log plus de nouvelles sorties, c'est souvent parce que le cache est saturé.
+                La purge des expirés suffit dans la plupart des cas.
+            </div>
+        </div>
         
         <!-- Configuration actuelle -->
         <div class="card">
@@ -408,48 +615,55 @@
             </form>
         </div>
     </div>
+
+    <!-- Modal confirmation purge -->
+    <div id="purge-modal-overlay">
+        <div id="purge-modal">
+            <h3 id="purge-modal-title"></h3>
+            <p id="purge-modal-desc"></p>
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="closePurgeModal()">Annuler</button>
+                <button class="btn btn-danger" id="purge-modal-confirm" onclick="executePurge()">
+                    <span class="btn-text" id="purge-modal-confirm-label">Confirmer</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+        </div>
+    </div>
     
     <script>
         let countdownInterval = null;
         let scheduledHour = 9;
         let scheduledMinute = 0;
-        
+        let pendingPurgeAction = null;
+
         // Charger la configuration au démarrage
         window.onload = function() {
             loadConfig();
             loadDaysBack();
             loadCronConfig();
+            loadCacheStats();
         };
         
-        // Calculer le temps restant jusqu'à la prochaine exécution
+        // ── COUNTDOWN ──────────────────────────────────────────────
+
         function calculateTimeRemaining() {
             const now = new Date();
             const scheduled = new Date();
             scheduled.setHours(scheduledHour, scheduledMinute, 0, 0);
-            
-            // Si l'heure est déjà passée aujourd'hui, planifier pour demain
-            if (scheduled <= now) {
-                scheduled.setDate(scheduled.getDate() + 1);
-            }
-            
+            if (scheduled <= now) scheduled.setDate(scheduled.getDate() + 1);
             const diff = scheduled - now;
-            
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            // Calculer le pourcentage de progression (24h = 100%)
             const totalSeconds = 24 * 60 * 60;
             const remainingSeconds = hours * 3600 + minutes * 60 + seconds;
             const progressPercent = ((totalSeconds - remainingSeconds) / totalSeconds) * 100;
-            
             return { hours, minutes, seconds, progressPercent };
         }
         
-        // Mettre à jour le compteur
         function updateCountdown() {
             const { hours, minutes, seconds, progressPercent } = calculateTimeRemaining();
-            
             return `
                 <div class="countdown">
                     <div class="countdown-unit">
@@ -471,75 +685,55 @@
             `;
         }
         
-        // Démarrer le compteur
         function startCountdown() {
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
-            
-            const countdownContainer = document.getElementById('countdown-display');
-            if (countdownContainer) {
-                countdownContainer.innerHTML = updateCountdown();
-            }
-            
+            if (countdownInterval) clearInterval(countdownInterval);
+            const el = document.getElementById('countdown-display');
+            if (el) el.innerHTML = updateCountdown();
             countdownInterval = setInterval(() => {
-                const countdownContainer = document.getElementById('countdown-display');
-                if (countdownContainer) {
-                    countdownContainer.innerHTML = updateCountdown();
-                }
+                const el = document.getElementById('countdown-display');
+                if (el) el.innerHTML = updateCountdown();
             }, 1000);
         }
+
+        // ── CRON ───────────────────────────────────────────────────
         
-        // Charger la configuration du cron
         async function loadCronConfig() {
             try {
                 const response = await fetch('/api/config/cron');
                 const data = await response.json();
-                
                 scheduledHour = data.hour || 9;
                 scheduledMinute = data.minute || 0;
-                
                 document.getElementById('hour').value = scheduledHour;
                 document.getElementById('minute').value = scheduledMinute;
-                
                 const schedule = document.getElementById('current-schedule');
                 schedule.innerHTML = `
-                    <p style="color: #666; margin-bottom: 10px; font-size: 14px;">⏰ Exécution programmée tous les jours à</p>
+                    <p style="color: #777; margin-bottom: 10px; font-size: 14px;">⏰ Exécution programmée tous les jours à</p>
                     <div class="schedule-time">${String(scheduledHour).padStart(2, '0')}:${String(scheduledMinute).padStart(2, '0')}</div>
                     <p style="color: ${data.enabled ? '#46d369' : '#e74c3c'}; font-weight: 600; margin-top: 10px;">
                         ${data.enabled ? '✅ Cron actif' : '⚠️ Cron inactif'}
                     </p>
                     <div class="countdown-container">
-                        <p style="color: #666; margin-bottom: 15px; font-size: 14px;">⏳ Temps restant avant la prochaine exécution</p>
+                        <p style="color: #777; margin-bottom: 15px; font-size: 14px;">⏳ Temps restant avant la prochaine exécution</p>
                         <div id="countdown-display"></div>
                     </div>
                 `;
-                
                 startCountdown();
             } catch (error) {
                 showAlert('Erreur lors du chargement de la configuration du cron', 'error');
-                console.error(error);
             }
         }
         
-        // Sauvegarder la configuration du cron
         document.getElementById('cron-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const hour = parseInt(document.getElementById('hour').value);
             const minute = parseInt(document.getElementById('minute').value);
-            
             try {
                 const response = await fetch('/api/config/cron', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ hour, minute })
                 });
-                
                 const data = await response.json();
-                
                 if (data.success) {
                     scheduledHour = hour;
                     scheduledMinute = minute;
@@ -552,48 +746,103 @@
                 showAlert('Erreur: ' + error.message, 'error');
             }
         });
+
+        // ── CACHE STATS ────────────────────────────────────────────
+
+        async function loadCacheStats() {
+            try {
+                const res = await fetch('/api/cache/stats');
+                const data = await res.json();
+                document.getElementById('cache-total').textContent   = data.total   ?? '—';
+                document.getElementById('cache-fresh').textContent   = data.fresh   ?? '—';
+                document.getElementById('cache-expired').textContent = data.expired ?? '—';
+            } catch (e) {
+                console.error('Erreur stats cache:', e);
+            }
+        }
+
+        // ── PURGE MODAL ────────────────────────────────────────────
+
+        function openPurgeModal(mode) {
+            pendingPurgeAction = mode;
+            if (mode === 'full') {
+                document.getElementById('purge-modal-title').textContent = '💥 Vider tout le cache ?';
+                document.getElementById('purge-modal-desc').textContent =
+                    'Cette action supprime tous les IDs mémorisés. Le prochain run du bot renverra toutes les nouveautés actuellement dans la liste. Cette action est irréversible.';
+                document.getElementById('purge-modal-confirm-label').textContent = 'Tout vider';
+            } else {
+                document.getElementById('purge-modal-title').textContent = '🧹 Purger les expirés ?';
+                document.getElementById('purge-modal-desc').textContent =
+                    'Les entrées plus vieilles que la période DAYS_BACK seront supprimées. Les contenus récents restent en mémoire.';
+                document.getElementById('purge-modal-confirm-label').textContent = 'Purger';
+            }
+            document.getElementById('purge-modal-overlay').classList.add('open');
+        }
+
+        function closePurgeModal() {
+            document.getElementById('purge-modal-overlay').classList.remove('open');
+            pendingPurgeAction = null;
+        }
+
+        async function executePurge() {
+            if (!pendingPurgeAction) return;
+            const confirmBtn = document.getElementById('purge-modal-confirm');
+            confirmBtn.classList.add('loading');
+            confirmBtn.disabled = true;
+
+            try {
+                const res = await fetch(`/api/cache/purge?mode=${pendingPurgeAction}`, { method: 'POST' });
+                const data = await res.json();
+                closePurgeModal();
+                if (data.success) {
+                    showAlert('✅ ' + data.message, 'success');
+                    loadCacheStats();
+                } else {
+                    showAlert('❌ ' + (data.error || 'Erreur inconnue'), 'error');
+                }
+            } catch (e) {
+                showAlert('❌ Erreur réseau', 'error');
+            } finally {
+                confirmBtn.classList.remove('loading');
+                confirmBtn.disabled = false;
+            }
+        }
+
+        // Fermer la modale en cliquant sur le fond
+        document.getElementById('purge-modal-overlay').addEventListener('click', function(e) {
+            if (e.target === this) closePurgeModal();
+        });
+
+        // ── CONFIG / DAYS_BACK ─────────────────────────────────────
         
-        // Afficher une alerte
         function showAlert(message, type = 'success') {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
-            alertDiv.innerHTML = `
-                <span>${type === 'success' ? '✅' : '❌'}</span>
-                <span>${message}</span>
-            `;
-            
+            alertDiv.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span><span>${message}</span>`;
             document.getElementById('alerts').appendChild(alertDiv);
-            
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
+            setTimeout(() => alertDiv.remove(), 5000);
         }
         
-        // Mettre à jour l'affichage du slider
         document.getElementById('days_back').addEventListener('input', function() {
             document.getElementById('days_value').textContent = this.value;
         });
         
-        // Charger la configuration
         async function loadConfig() {
             try {
                 const response = await fetch('/api/config');
                 const data = await response.json();
-                
-                document.getElementById('webhook-value').textContent = data.DISCORD_WEBHOOK || 'Non configuré';
-                document.getElementById('mdblist-value').textContent = data.MDBLIST_API_KEY || 'Non configuré';
-                document.getElementById('tmdb-value').textContent = data.TMDB_API_KEY || 'Non configuré';
+                document.getElementById('webhook-value').textContent  = data.DISCORD_WEBHOOK  || 'Non configuré';
+                document.getElementById('mdblist-value').textContent  = data.MDBLIST_API_KEY  || 'Non configuré';
+                document.getElementById('tmdb-value').textContent     = data.TMDB_API_KEY     || 'Non configuré';
             } catch (error) {
                 console.error('Erreur chargement config:', error);
             }
         }
         
-        // Charger DAYS_BACK
         async function loadDaysBack() {
             try {
                 const response = await fetch('/api/config/days_back');
                 const data = await response.json();
-                
                 const days = data.days_back || 1;
                 document.getElementById('days_back').value = days;
                 document.getElementById('days_value').textContent = days;
@@ -603,21 +852,15 @@
             }
         }
         
-        // Sauvegarder DAYS_BACK
         async function saveDaysBack() {
             const days = parseInt(document.getElementById('days_back').value);
-            
             try {
                 const response = await fetch('/api/config/days_back', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ days_back: days })
                 });
-                
                 const data = await response.json();
-                
                 if (data.success) {
                     showAlert(`DAYS_BACK mis à jour: ${days} jour(s)`, 'success');
                     document.getElementById('current-days-value').textContent = days + ' jour(s)';
@@ -629,38 +872,20 @@
             }
         }
         
-        // Changement de mot de passe
         document.getElementById('password-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const currentPassword = document.getElementById('current_password').value;
-            const newPassword = document.getElementById('new_password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-            
-            if (newPassword !== confirmPassword) {
-                showAlert('Les mots de passe ne correspondent pas', 'error');
-                return;
-            }
-            
-            if (newPassword.length < 6) {
-                showAlert('Le mot de passe doit faire au moins 6 caractères', 'error');
-                return;
-            }
-            
+            const currentPassword  = document.getElementById('current_password').value;
+            const newPassword      = document.getElementById('new_password').value;
+            const confirmPassword  = document.getElementById('confirm_password').value;
+            if (newPassword !== confirmPassword) { showAlert('Les mots de passe ne correspondent pas', 'error'); return; }
+            if (newPassword.length < 6)          { showAlert('Le mot de passe doit faire au moins 6 caractères', 'error'); return; }
             try {
                 const response = await fetch('/change-password', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        current_password: currentPassword,
-                        new_password: newPassword
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
                 });
-                
                 const data = await response.json();
-                
                 if (data.success) {
                     showAlert('Mot de passe changé avec succès !', 'success');
                     document.getElementById('password-form').reset();
@@ -672,11 +897,8 @@
             }
         });
         
-        // Nettoyer l'interval au déchargement de la page
         window.onbeforeunload = function() {
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
+            if (countdownInterval) clearInterval(countdownInterval);
         };
     </script>
 </body>

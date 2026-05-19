@@ -1,4 +1,4 @@
-FROM python:3.11-alpine
+FROM python:3.14-alpine
 
 LABEL maintainer="bouba89"
 LABEL description="Bot Discord Netflix Notifier - Version 3.0 (API mdblist complète)"

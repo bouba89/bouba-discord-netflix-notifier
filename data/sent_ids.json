@@ -1,1 +1,117 @@
-[]
+{
+  "netflix:1660612": {
+    "title": "Wanda Sykes: Legacy",
+    "platform": "netflix",
+    "sent_at": "2026-05-19T08:00:04.202729"
+  },
+  "netflix:1684244": {
+    "title": "Untold UK: Liverpool's\u200b Miracle\u200b of\u200b lstanbul",
+    "platform": "netflix",
+    "sent_at": "2026-05-19T08:00:04.471181"
+  },
+  "netflix:1638300": {
+    "title": "Ronda Rousey vs. Gina Carano",
+    "platform": "netflix",
+    "sent_at": "2026-05-19T08:00:04.691918"
+  },
+  "netflix:1667493": {
+    "title": "USA 94: Brazil's Return to Glory",
+    "platform": "netflix",
+    "sent_at": "2026-05-19T08:00:04.916467"
+  },
+  "disney:1447091": {
+    "title": "Meet the Pickles: The Making of \"Win or Lose\"",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:05.671054"
+  },
+  "disney:1275606": {
+    "title": "Marvel Studios Assembled: The Making of X-Men '97",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:05.884328"
+  },
+  "disney:1001884": {
+    "title": "Dashing Through the Snow",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:06.133963"
+  },
+  "disney:1165491": {
+    "title": "Black Belts",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:06.332605"
+  },
+  "disney:1164598": {
+    "title": "The Ghost",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:06.522978"
+  },
+  "disney:1139087": {
+    "title": "Once Upon a Studio",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:06.745298"
+  },
+  "disney:420808": {
+    "title": "Peter Pan & Wendy",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:06.966832"
+  },
+  "disney:1044343": {
+    "title": "Zen - Grogu and Dust Bunnies",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:07.175179"
+  },
+  "disney:1001912": {
+    "title": "Marvel Studios Assembled: The Making of Ms. Marvel",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:07.394410"
+  },
+  "disney:727306": {
+    "title": "Safety",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:07.605677"
+  },
+  "disney:512895": {
+    "title": "Lady and the Tramp",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:07.856612"
+  },
+  "disney:514754": {
+    "title": "Bao",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:08.054703"
+  },
+  "disney:309792": {
+    "title": "Agent P Under C",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:08.394942"
+  },
+  "disney:285889": {
+    "title": "Playback: Together We Are One",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:08.610598"
+  },
+  "disney:138503": {
+    "title": "Your Friendly Neighborhood Spider-Man",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:08.950020"
+  },
+  "disney:114461": {
+    "title": "Ahsoka",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:09.236288"
+  },
+  "disney:124958": {
+    "title": "Shipwreck Hunters Australia",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:09.453400"
+  },
+  "disney:114466": {
+    "title": "Baymax!",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:09.695142"
+  },
+  "disney:92830": {
+    "title": "Obi-Wan Kenobi",
+    "platform": "disney",
+    "sent_at": "2026-05-19T08:00:09.907192"
+  }
+}

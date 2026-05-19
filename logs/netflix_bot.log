@@ -1,0 +1,1234 @@
+2026-05-11 00:20:32,968 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.24.0.15:5000
+2026-05-11 00:20:32,968 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 00:20:32,969 - werkzeug - INFO -  * Restarting with stat
+2026-05-11 00:20:33,827 - werkzeug - WARNING -  * Debugger is active!
+2026-05-11 00:20:33,868 - werkzeug - INFO -  * Debugger PIN: 334-560-797
+2026-05-11 00:26:45,643 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.24.0.15:5000
+2026-05-11 00:26:45,658 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 00:26:45,659 - werkzeug - INFO -  * Restarting with stat
+2026-05-11 00:26:46,518 - werkzeug - WARNING -  * Debugger is active!
+2026-05-11 00:26:46,518 - werkzeug - INFO -  * Debugger PIN: 538-555-872
+2026-05-11 08:00:03,943 - __main__ - INFO - 🎬 Bouba Discord Netflix Notifier v3.2
+2026-05-11 08:00:03,950 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-11 08:00:03,956 - __main__ - INFO - ✅ Chargé 0 IDs depuis le fichier de mémoire
+2026-05-11 08:00:03,956 - __main__ - INFO - ============================================================
+2026-05-11 08:00:03,956 - __main__ - INFO - 🚀 Démarrage de la vérification des nouveautés Netflix
+2026-05-11 08:00:03,956 - __main__ - INFO - 📅 Mémoire active : 0 IDs déjà envoyés
+2026-05-11 08:00:03,956 - __main__ - INFO - ============================================================
+2026-05-11 08:00:03,956 - __main__ - INFO - 📽️ Traitement des films...
+2026-05-11 08:00:03,956 - __main__ - INFO - 🔍 Récupération de la liste Netflix (movies)...
+2026-05-11 08:00:04,088 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-11 08:00:04,293 - __main__ - ERROR - ❌ Erreur fatale: list indices must be integers or slices, not str
+Traceback (most recent call last):
+  File "/app/netflix_bot.py", line 468, in main
+    notifier.process_new_releases()
+  File "/app/netflix_bot.py", line 405, in process_new_releases
+    self.mark_as_sent(movie_id, movie.get("title", ""))
+  File "/app/netflix_bot.py", line 104, in mark_as_sent
+    self.sent_ids[str(item_id)] = {
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+TypeError: list indices must be integers or slices, not str
+2026-05-11 12:14:17,090 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:17] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-11 12:14:20,478 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:20] "[32mGET / HTTP/1.1[0m" 302 -
+2026-05-11 12:14:20,566 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:20] "GET /login HTTP/1.1" 200 -
+2026-05-11 12:14:27,790 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:27] "POST /login HTTP/1.1" 200 -
+2026-05-11 12:14:41,508 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:41] "[32mPOST /login HTTP/1.1[0m" 302 -
+2026-05-11 12:14:41,565 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:41] "GET / HTTP/1.1" 200 -
+2026-05-11 12:14:41,649 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:41] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-11 12:14:41,696 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:41] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:14:46,427 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:46] "GET /settings HTTP/1.1" 200 -
+2026-05-11 12:14:46,526 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:46] "GET /api/config HTTP/1.1" 200 -
+2026-05-11 12:14:46,526 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:46] "GET /api/config/days_back HTTP/1.1" 200 -
+2026-05-11 12:14:46,531 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:46] "GET /api/cache/stats HTTP/1.1" 200 -
+2026-05-11 12:14:46,539 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:14:46] "GET /api/config/cron HTTP/1.1" 200 -
+2026-05-11 12:15:15,105 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:15:15] "[31m[1mPOST /change-password HTTP/1.1[0m" 401 -
+2026-05-11 12:15:20,397 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:15:20] "[31m[1mPOST /change-password HTTP/1.1[0m" 401 -
+2026-05-11 12:15:30,697 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:15:30] "POST /change-password HTTP/1.1" 200 -
+2026-05-11 12:15:39,936 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:15:39] "GET / HTTP/1.1" 200 -
+2026-05-11 12:15:40,005 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:15:40] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-11 12:15:40,006 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:15:40] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:16:10,894 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:16:10] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:16:40,888 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:16:40] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:17:10,915 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:17:10] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:17:40,887 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:17:40] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:18:10,919 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:18:10] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:18:40,904 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:18:40] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:19:24,904 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:19:24] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:20:24,903 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:20:24] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:21:24,894 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:21:24] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:22:24,907 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:22:24] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:22:27,642 - werkzeug - INFO -  * Detected change in '/app/netflix_bot.py', reloading
+2026-05-11 12:22:28,914 - werkzeug - INFO -  * Restarting with stat
+2026-05-11 12:22:31,037 - werkzeug - WARNING -  * Debugger is active!
+2026-05-11 12:22:31,037 - werkzeug - INFO -  * Debugger PIN: 538-555-872
+2026-05-11 12:23:24,894 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:23:24] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:25:15,339 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.24.0.15:5000
+2026-05-11 12:25:15,347 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-11 12:25:15,348 - werkzeug - INFO -  * Restarting with stat
+2026-05-11 12:25:16,386 - werkzeug - WARNING -  * Debugger is active!
+2026-05-11 12:25:16,387 - werkzeug - INFO -  * Debugger PIN: 955-789-533
+2026-05-11 12:25:24,929 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:25:24] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:26:24,900 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:26:24] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:27:24,892 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:27:24] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:28:18,620 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:28:18] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:28:22,458 - __main__ - INFO - 🎬 Bouba Discord Netflix Notifier v3.2
+2026-05-11 12:28:22,458 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-11 12:28:22,459 - __main__ - INFO - ✅ Chargé 0 IDs depuis le fichier de mémoire
+2026-05-11 12:28:22,459 - __main__ - INFO - ============================================================
+2026-05-11 12:28:22,459 - __main__ - INFO - 🚀 Démarrage de la vérification des nouveautés Netflix
+2026-05-11 12:28:22,459 - __main__ - INFO - 📅 Mémoire active : 0 IDs déjà envoyés
+2026-05-11 12:28:22,459 - __main__ - INFO - ============================================================
+2026-05-11 12:28:22,459 - __main__ - INFO - 📽️ Traitement des films...
+2026-05-11 12:28:22,459 - __main__ - INFO - 🔍 Récupération de la liste Netflix (movies)...
+2026-05-11 12:28:22,503 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-11 12:28:22,705 - __main__ - INFO - ➕ Nouveau film: The Roast of Kevin Hart (2026)
+2026-05-11 12:28:22,912 - __main__ - INFO - ➕ Nouveau film: Remarkably Bright Creatures (2026)
+2026-05-11 12:28:23,125 - __main__ - INFO - ➕ Nouveau film: Countdown: Rousey vs. Carano (2026)
+2026-05-11 12:28:23,381 - __main__ - INFO - ➕ Nouveau film: My Dearest Assassin (2026)
+2026-05-11 12:28:23,633 - __main__ - INFO - ➕ Nouveau film: You, Always (2026)
+2026-05-11 12:28:23,849 - __main__ - INFO - ➕ Nouveau film: Swapped (2026)
+2026-05-11 12:28:24,060 - __main__ - INFO - ➕ Nouveau film: Je m'appelle Agneta (2026)
+2026-05-11 12:28:24,293 - __main__ - INFO - ➕ Nouveau film: Apex (2026)
+2026-05-11 12:28:24,505 - __main__ - INFO - ➕ Nouveau film: Lainey Wilson: Keepin' Country Cool (2026)
+2026-05-11 12:28:24,716 - __main__ - INFO - ➕ Nouveau film: Untold: The Shooting at Hawthorne Hill (2026)
+2026-05-11 12:28:24,897 - __main__ - INFO - ➕ Nouveau film: Beyond the Game: Samurai 2026 WORLD BASEBALL CLASSIC (2026)
+2026-05-11 12:28:25,089 - __main__ - INFO - ➕ Nouveau film: KillTonyMania (2026)
+2026-05-11 12:28:25,304 - __main__ - INFO - ➕ Nouveau film: Son-in-Law (2026)
+2026-05-11 12:28:25,519 - __main__ - INFO - ➕ Nouveau film: My Dearest Señorita (2026)
+2026-05-11 12:28:25,737 - __main__ - INFO - ➕ Nouveau film: Yiya Murano: Death at Tea Time (2026)
+2026-05-11 12:28:25,993 - __main__ - INFO - ➕ Nouveau film: 180 (2026)
+2026-05-11 12:28:26,208 - __main__ - INFO - ➕ Nouveau film: A Gorilla Story: Told by David Attenborough (2026)
+2026-05-11 12:28:26,477 - __main__ - INFO - ➕ Nouveau film: Toaster (2026)
+2026-05-11 12:28:26,696 - __main__ - INFO - ➕ Nouveau film: Trevor Noah: Joy in the Trenches (2026)
+2026-05-11 12:28:26,908 - __main__ - INFO - ➕ Nouveau film: Untold: Jail Blazers (2026)
+2026-05-11 12:28:27,118 - __main__ - INFO - ➕ Nouveau film: Roommates (2026)
+2026-05-11 12:28:27,332 - __main__ - INFO - ➕ Nouveau film: Thrash (2026)
+2026-05-11 12:28:27,551 - __main__ - INFO - ➕ Nouveau film: 18th Rose (2026)
+2026-05-11 12:28:27,758 - __main__ - INFO - ➕ Nouveau film: Untold: Chess Mates (2026)
+2026-05-11 12:28:28,007 - __main__ - INFO - ➕ Nouveau film: Sheng Wang: Purple (2026)
+2026-05-11 12:28:28,220 - __main__ - INFO - ➕ Nouveau film: Feel My Voice (2026)
+2026-05-11 12:28:28,444 - __main__ - INFO - ➕ Nouveau film: Raakaasa (2026)
+2026-05-11 12:28:28,663 - __main__ - INFO - ➕ Nouveau film: Biker (2026)
+2026-05-11 12:28:28,876 - __main__ - INFO - ➕ Nouveau film: Eat Pray Bark (2026)
+2026-05-11 12:28:29,086 - __main__ - INFO - ➕ Nouveau film: It Takes a Village (2026)
+2026-05-11 12:28:29,295 - __main__ - INFO - ➕ Nouveau film: The Giant Falls (2026)
+2026-05-11 12:28:29,503 - __main__ - INFO - ➕ Nouveau film: Aaron Chen: Funny Garden (2026)
+2026-05-11 12:28:29,727 - __main__ - INFO - ➕ Nouveau film: Untold: The Death & Life of Lamar Odom (2026)
+2026-05-11 12:28:29,941 - __main__ - INFO - ➕ Nouveau film: Nee Forever (2026)
+2026-05-11 12:28:30,172 - __main__ - INFO - ➕ Nouveau film: BTS: THE RETURN (2026)
+2026-05-11 12:28:30,382 - __main__ - INFO - ➕ Nouveau film: Love At Last (2026)
+2026-05-11 12:28:30,574 - __main__ - INFO - ➕ Nouveau film: 53 Sundays (2026)
+2026-05-11 12:28:30,787 - __main__ - INFO - ➕ Nouveau film: Jeff Ross: Take a Banana for the Ride (2026)
+2026-05-11 12:28:31,000 - __main__ - INFO - ➕ Nouveau film: The Red Line (2026)
+2026-05-11 12:28:31,212 - __main__ - INFO - ➕ Nouveau film: BTS THE COMEBACK LIVE | ARIRANG (2026)
+2026-05-11 12:28:31,439 - __main__ - INFO - ➕ Nouveau film: The Truth and Tragedy of Moriah Wilson (2026)
+2026-05-11 12:28:31,651 - __main__ - INFO - ➕ Nouveau film: Youth (2026)
+2026-05-11 12:28:31,909 - __main__ - INFO - ➕ Nouveau film: Ustaad Bhagat Singh (2026)
+2026-05-11 12:28:32,118 - __main__ - INFO - ➕ Nouveau film: Mark Normand: None Too Pleased (2026)
+2026-05-11 12:28:32,324 - __main__ - INFO - ➕ Nouveau film: The Plastic Detox (2026)
+2026-05-11 12:28:32,546 - __main__ - INFO - ➕ Nouveau film: Noah Kahan: Out of Body (2026)
+2026-05-11 12:28:32,760 - __main__ - INFO - ➕ Nouveau film: The Rise of the Red Hot Chili Peppers: Our Brother, Hillel (2026)
+2026-05-11 12:28:32,974 - __main__ - INFO - ➕ Nouveau film: Barbara - Becoming Shirin David (2026)
+2026-05-11 12:28:33,187 - __main__ - INFO - ➕ Nouveau film: Made in Korea (2026)
+2026-05-11 12:28:33,405 - __main__ - INFO - ➕ Nouveau film: Love Is Blind: The Reunion (2026)
+2026-05-11 12:28:33,633 - __main__ - INFO - ➕ Nouveau film: Derrick Stroup: Nostalgic (2026)
+2026-05-11 12:28:33,853 - __main__ - INFO - ➕ Nouveau film: Louis Theroux: Inside the Manosphere (2026)
+2026-05-11 12:28:34,067 - __main__ - INFO - ➕ Nouveau film: Harry Styles. One Night in Manchester. (2026)
+2026-05-11 12:28:34,284 - __main__ - INFO - ➕ Nouveau film: Mrithyunjay (2026)
+2026-05-11 12:28:34,497 - __main__ - INFO - ➕ Nouveau film: Peaky Blinders: The Immortal Man (2026)
+2026-05-11 12:28:34,706 - __main__ - INFO - ➕ Nouveau film: Street Flow 3 (2026)
+2026-05-11 12:28:34,899 - __main__ - INFO - ➕ Nouveau film: Bruce Bruce: I Ain't Playin' (2026)
+2026-05-11 12:28:35,079 - __main__ - INFO - ➕ Nouveau film: Masthishka Maranam (2026)
+2026-05-11 12:28:35,287 - __main__ - INFO - ➕ Nouveau film: Nukkad Naatak (2026)
+2026-05-11 12:28:35,504 - __main__ - INFO - ➕ Nouveau film: Accused (2026)
+2026-05-11 12:28:35,719 - __main__ - INFO - ➕ Nouveau film: Making of Lord of the Flies (2026)
+2026-05-11 12:28:35,930 - __main__ - INFO - ➕ Nouveau film: Taylor Tomlinson: Prodigal Daughter (2026)
+2026-05-11 12:28:36,141 - __main__ - INFO - ➕ Nouveau film: Do Deewane Seher Mein (2026)
+2026-05-11 12:28:36,354 - __main__ - INFO - ➕ Nouveau film: Famous Last Words: Eric Dane (2026)
+2026-05-11 12:28:36,571 - __main__ - INFO - ➕ Nouveau film: Strangers in the Park (2026)
+2026-05-11 12:28:36,799 - __main__ - INFO - ➕ Nouveau film: Firebreak (2026)
+2026-05-11 12:28:37,010 - __main__ - INFO - ➕ Nouveau film: Pavane (2026)
+2026-05-11 12:28:37,221 - __main__ - INFO - ➕ Nouveau film: Sommore: Chandelier Fly (2026)
+2026-05-11 12:28:37,449 - __main__ - INFO - ➕ Nouveau film: The Singers (2026)
+2026-05-11 12:28:37,665 - __main__ - INFO - ➕ Nouveau film: The Swedish Connection (2026)
+2026-05-11 12:28:37,880 - __main__ - INFO - ➕ Nouveau film: Funky (2026)
+2026-05-11 12:28:38,093 - __main__ - INFO - ➕ Nouveau film: Pennum Porattum (2026)
+2026-05-11 12:28:38,299 - __main__ - INFO - ➕ Nouveau film: Sampradayaini Suppini Suddapusaani (2026)
+2026-05-11 12:28:38,499 - __main__ - INFO - ➕ Nouveau film: War Machine (2026)
+2026-05-11 12:28:38,715 - __main__ - INFO - ➕ Nouveau film: Joe's College Road Trip (2026)
+2026-05-11 12:28:38,924 - __main__ - INFO - ➕ Nouveau film: Tu Yaa Main (2026)
+2026-05-11 12:28:39,136 - __main__ - INFO - ➕ Nouveau film: Humint (2026)
+2026-05-11 12:28:39,349 - __main__ - INFO - ➕ Nouveau film: Katt Williams: The Last Report (2026)
+2026-05-11 12:28:39,566 - __main__ - INFO - ➕ Nouveau film: This Is I (2026)
+2026-05-11 12:28:39,780 - __main__ - INFO - ➕ Nouveau film: State of Fear (2026)
+2026-05-11 12:28:39,993 - __main__ - INFO - ➕ Nouveau film: Yoh! Bestie (2026)
+2026-05-11 12:28:40,010 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:28:40] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:28:40,210 - __main__ - INFO - ➕ Nouveau film: Vadh 2 (2026)
+2026-05-11 12:28:40,419 - __main__ - INFO - ➕ Nouveau film: With Love (2026)
+2026-05-11 12:28:40,614 - __main__ - INFO - ➕ Nouveau film: The Investigation of Lucy Letby (2026)
+2026-05-11 12:28:40,818 - __main__ - INFO - ➕ Nouveau film: Mo Gilligan: In the Moment (2026)
+2026-05-11 12:28:41,025 - __main__ - INFO - ➕ Nouveau film: Is It Cake? Valentines (2026)
+2026-05-11 12:28:41,237 - __main__ - INFO - ➕ Nouveau film: Miracle: The Boys of '80 (2026)
+2026-05-11 12:28:41,455 - __main__ - INFO - ➕ Nouveau film: Mardaani 3 (2026)
+2026-05-11 12:28:41,685 - __main__ - INFO - ➕ Nouveau film: A Letter to My Youth (2026)
+2026-05-11 12:28:41,889 - __main__ - INFO - ➕ Nouveau film: Deaw Still Alive (2026)
+2026-05-11 12:28:42,097 - __main__ - INFO - ➕ Nouveau film: Mike Epps: Delusional (2026)
+2026-05-11 12:28:42,314 - __main__ - INFO - ➕ Nouveau film: Queen of Chess (2026)
+2026-05-11 12:28:42,516 - __main__ - INFO - ➕ Nouveau film: Skyscraper Live (2026)
+2026-05-11 12:28:42,725 - __main__ - INFO - ➕ Nouveau film: Border 2 (2026)
+2026-05-11 12:28:42,946 - __main__ - INFO - ➕ Nouveau film: Cosmic Princess Kaguya! (2026)
+2026-05-11 12:28:43,136 - __main__ - INFO - ➕ Nouveau film: Clika (2026)
+2026-05-11 12:28:43,370 - __main__ - INFO - ➕ Nouveau film: Chatha Pacha: The Ring of Rowdies (2026)
+2026-05-11 12:28:43,590 - __main__ - INFO - ➕ Nouveau film: From the Ashes: The Pit (2026)
+2026-05-11 12:28:43,810 - __main__ - INFO - ➕ Nouveau film: Kidnapped: Elizabeth Smart (2026)
+2026-05-11 12:28:44,023 - __main__ - INFO - ➕ Nouveau film: Happy Patel: Khatarnak Jasoos (2026)
+2026-05-11 12:28:44,023 - __main__ - INFO - 📺 Traitement des séries...
+2026-05-11 12:28:44,023 - __main__ - INFO - 🔍 Récupération de la liste Netflix (shows)...
+2026-05-11 12:28:44,145 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-11 12:28:44,361 - __main__ - INFO - ➕ Nouvelle série: Manager Kim (2026)
+2026-05-11 12:28:44,540 - __main__ - INFO - ➕ Nouvelle série: Legends (2026)
+2026-05-11 12:28:44,758 - __main__ - INFO - ➕ Nouvelle série: Love Is Blind: Poland (2026)
+2026-05-11 12:28:44,938 - __main__ - INFO - ➕ Nouvelle série: Glory (2026)
+2026-05-11 12:28:45,140 - __main__ - INFO - ➕ Nouvelle série: Man on Fire (2026)
+2026-05-11 12:28:45,367 - __main__ - INFO - ➕ Nouvelle série: Should I Marry A Murderer? (2026)
+2026-05-11 12:28:45,583 - __main__ - INFO - ➕ Nouvelle série: Straight to Hell (2026)
+2026-05-11 12:28:45,794 - __main__ - INFO - ➕ Nouvelle série: If Wishes Could Kill (2026)
+2026-05-11 12:28:46,006 - __main__ - INFO - ➕ Nouvelle série: Flunked (2026)
+2026-05-11 12:28:46,229 - __main__ - INFO - ➕ Nouvelle série: Stranger Things: Tales from '85 (2026)
+2026-05-11 12:28:46,450 - __main__ - INFO - ➕ Nouvelle série: Hulk Hogan: Real American (2026)
+2026-05-11 12:28:46,662 - __main__ - INFO - ➕ Nouvelle série: This Is a Gardening Show (2026)
+2026-05-11 12:28:46,864 - __main__ - INFO - ➕ Nouvelle série: Santita (2026)
+2026-05-11 12:28:47,073 - __main__ - INFO - ➕ Nouvelle série: Sold Out on You (2026)
+2026-05-11 12:28:47,284 - __main__ - INFO - ➕ Nouvelle série: Unchosen (2026)
+2026-05-11 12:28:47,501 - __main__ - INFO - ➕ Nouvelle série: Funny AF with Kevin Hart (2026)
+2026-05-11 12:28:47,709 - __main__ - INFO - ➕ Nouvelle série: We Are All Trying Here (2026)
+2026-05-11 12:28:47,920 - __main__ - INFO - ➕ Nouvelle série: TAGUSARI bros. (2026)
+2026-05-11 12:28:48,123 - __main__ - INFO - ➕ Nouvelle série: Ronaldinho: The One and Only (2026)
+2026-05-11 12:28:48,335 - __main__ - INFO - ➕ Nouvelle série: Dandelion (2026)
+2026-05-11 12:28:48,562 - __main__ - INFO - ➕ Nouvelle série: Made with Love (2026)
+2026-05-11 12:28:48,773 - __main__ - INFO - ➕ Nouvelle série: Reborn (2026)
+2026-05-11 12:28:48,989 - __main__ - INFO - ➕ Nouvelle série: Tatsuki: Too Kind for School (2026)
+2026-05-11 12:28:49,276 - __main__ - INFO - ➕ Nouvelle série: Salish & Jordan Matter (2026)
+2026-05-11 12:28:49,494 - __main__ - INFO - ➕ Nouvelle série: KILL BLUE (2026)
+2026-05-11 12:28:49,703 - __main__ - INFO - ➕ Nouvelle série: Big Mistakes (2026)
+2026-05-11 12:28:49,915 - __main__ - INFO - ➕ Nouvelle série: Bandi (2026)
+2026-05-11 12:28:50,126 - __main__ - INFO - ➕ Nouvelle série: LOVED ONE (2026)
+2026-05-11 12:28:50,309 - __main__ - INFO - ➕ Nouvelle série: Trust Me: The False Prophet (2026)
+2026-05-11 12:28:50,514 - __main__ - INFO - ➕ Nouvelle série: Alkhallat+: The Series (2026)
+2026-05-11 12:28:50,743 - __main__ - INFO - ➕ Nouvelle série: Sins of Kujo (2026)
+2026-05-11 12:28:50,951 - __main__ - INFO - ➕ Nouvelle série: The Ramparts of Ice (2026)
+2026-05-11 12:28:51,168 - __main__ - INFO - ➕ Nouvelle série: Agent from Above (2026)
+2026-05-11 12:28:51,387 - __main__ - INFO - ➕ Nouvelle série: Veil of Shadows (2026)
+2026-05-11 12:28:51,596 - __main__ - INFO - ➕ Nouvelle série: The Predator of Seville (2026)
+2026-05-11 12:28:51,811 - __main__ - INFO - ➕ Nouvelle série: I Changed My Mind with Dan Souza (2026)
+2026-05-11 12:28:52,020 - __main__ - INFO - ➕ Nouvelle série: The Prosecutor (2026)
+2026-05-11 12:28:52,234 - __main__ - INFO - ➕ Nouvelle série: Something Very Bad Is Going to Happen (2026)
+2026-05-11 12:28:52,436 - __main__ - INFO - ➕ Nouvelle série: Detective Hole (2026)
+2026-05-11 12:28:52,620 - __main__ - INFO - ➕ Nouvelle série: Ready or Not: Texas (2026)
+2026-05-11 12:28:52,829 - __main__ - INFO - ➕ Nouvelle série: Unicorn Academy: Secrets Revealed (2026)
+2026-05-11 12:28:53,026 - __main__ - INFO - ➕ Nouvelle série: Radioactive Emergency (2026)
+2026-05-11 12:28:53,236 - __main__ - INFO - ➕ Nouvelle série: Dynasty: The Murdochs (2026)
+2026-05-11 12:28:53,450 - __main__ - INFO - ➕ Nouvelle série: That Night (2026)
+2026-05-11 12:28:53,662 - __main__ - INFO - ➕ Nouvelle série: Phantom Lawyer (2026)
+2026-05-11 12:28:53,869 - __main__ - INFO - ➕ Nouvelle série: Age of Attraction (2026)
+2026-05-11 12:28:54,084 - __main__ - INFO - ➕ Nouvelle série: The TikTok Killer (2026)
+2026-05-11 12:28:54,305 - __main__ - INFO - ➕ Nouvelle série: The Dinosaurs (2026)
+2026-05-11 12:28:54,521 - __main__ - INFO - ➕ Nouvelle série: Hello Bachhon (2026)
+2026-05-11 12:28:54,735 - __main__ - INFO - ➕ Nouvelle série: Boyfriend on Demand (2026)
+2026-05-11 12:28:54,914 - __main__ - INFO - ➕ Nouvelle série: Pursuit of Jade (2026)
+2026-05-11 12:28:55,101 - __main__ - INFO - ➕ Nouvelle série: Still Shining (2026)
+2026-05-11 12:28:55,317 - __main__ - INFO - ➕ Nouvelle série: A Friend, a Murderer (2026)
+2026-05-11 12:28:55,544 - __main__ - INFO - ➕ Nouvelle série: Vladimir (2026)
+2026-05-11 12:28:55,755 - __main__ - INFO - ➕ Nouvelle série: Blue Therapy (2026)
+2026-05-11 12:28:55,970 - __main__ - INFO - ➕ Nouvelle série: Girl from Nowhere: The Reset (2026)
+2026-05-11 12:28:56,181 - __main__ - INFO - ➕ Nouvelle série: Love Like a Bike (2026)
+2026-05-11 12:28:56,485 - __main__ - INFO - ➕ Nouvelle série: BAKI-DOU: The Invincible Samurai (2026)
+2026-05-11 12:28:56,700 - __main__ - INFO - ➕ Nouvelle série: Crap Happens (2026)
+2026-05-11 12:28:56,914 - __main__ - INFO - ➕ Nouvelle série: Strip Law (2026)
+2026-05-11 12:28:57,129 - __main__ - INFO - ➕ Nouvelle série: Being Gordon Ramsay (2026)
+2026-05-11 12:28:57,350 - __main__ - INFO - ➕ Nouvelle série: Reality Check: Inside America's Next Top Model (2026)
+2026-05-11 12:28:57,560 - __main__ - INFO - ➕ Nouvelle série: Single's Inferno Reunion (2026)
+2026-05-11 12:28:57,768 - __main__ - INFO - ➕ Nouvelle série: Keluarga Yang Tak Dirindukan (2026)
+2026-05-11 12:28:57,976 - __main__ - INFO - ➕ Nouvelle série: Museum of Innocence (2026)
+2026-05-11 12:28:58,204 - __main__ - INFO - ➕ Nouvelle série: The Art of Sarah (2026)
+2026-05-11 12:28:58,424 - __main__ - INFO - ➕ Nouvelle série: Million-Follower Detective (2026)
+2026-05-11 12:28:58,644 - __main__ - INFO - ➕ Nouvelle série: How to Get to Heaven from Belfast (2026)
+2026-05-11 12:28:58,849 - __main__ - INFO - ➕ Nouvelle série: Lead Children (2026)
+2026-05-11 12:28:59,068 - __main__ - INFO - ➕ Nouvelle série: Motorvalley (2026)
+2026-05-11 12:28:59,280 - __main__ - INFO - ➕ Nouvelle série: Lord of the Flies (2026)
+2026-05-11 12:28:59,479 - __main__ - INFO - ➕ Nouvelle série: Salvador (2026)
+2026-05-11 12:28:59,695 - __main__ - INFO - ➕ Nouvelle série: Unveil: Jadewind (2026)
+2026-05-11 12:28:59,900 - __main__ - INFO - ➕ Nouvelle série: Unfamiliar (2026)
+2026-05-11 12:29:00,116 - __main__ - INFO - ➕ Nouvelle série: Cash Queens (2026)
+2026-05-11 12:29:00,345 - __main__ - INFO - ➕ Nouvelle série: Glitter & Gold: Ice Dancing (2026)
+2026-05-11 12:29:00,572 - __main__ - INFO - ➕ Nouvelle série: Take That (2026)
+2026-05-11 12:29:00,786 - __main__ - INFO - ➕ Nouvelle série: Skip Intro (2026)
+2026-05-11 12:29:00,983 - __main__ - INFO - ➕ Nouvelle série: Free Bert (2026)
+2026-05-11 12:29:01,198 - __main__ - INFO - ➕ Nouvelle série: Finding Her Edge (2026)
+2026-05-11 12:29:01,426 - __main__ - INFO - ➕ Nouvelle série: Matori & Kyoken Men in the Back Alleys (2026)
+2026-05-11 12:29:01,635 - __main__ - INFO - ➕ Nouvelle série: Star Search (2026)
+2026-05-11 12:29:01,849 - __main__ - INFO - ➕ Nouvelle série: Undercover Miss Hong (2026)
+2026-05-11 12:29:02,070 - __main__ - INFO - ➕ Nouvelle série: No Tail to Tell (2026)
+2026-05-11 12:29:02,280 - __main__ - INFO - ➕ Nouvelle série: Can This Love Be Translated? (2026)
+2026-05-11 12:29:02,492 - __main__ - INFO - ➕ Nouvelle série: To Love, To Lose (2026)
+2026-05-11 12:29:02,699 - __main__ - INFO - ➕ Nouvelle série: Love Through a Prism (2026)
+2026-05-11 12:29:02,913 - __main__ - INFO - ➕ Nouvelle série: Agatha Christie's Seven Dials (2026)
+2026-05-11 12:29:03,120 - __main__ - INFO - ➕ Nouvelle série: Taskaree: The Smuggler's Web (2026)
+2026-05-11 12:29:03,334 - __main__ - INFO - ➕ Nouvelle série: Sounds of Winter (2026)
+2026-05-11 12:29:03,545 - __main__ - INFO - ➕ Nouvelle série: Soda Master (2026)
+2026-05-11 12:29:03,758 - __main__ - INFO - ➕ Nouvelle série: Silent Truth (2026)
+2026-05-11 12:29:03,970 - __main__ - INFO - ➕ Nouvelle série: Gimbap and Onigiri (2026)
+2026-05-11 12:29:04,183 - __main__ - INFO - ➕ Nouvelle série: Paparazzi King (2026)
+2026-05-11 12:29:04,403 - __main__ - INFO - ➕ Nouvelle série: HIS & HERS (2026)
+2026-05-11 12:29:04,617 - __main__ - INFO - ➕ Nouvelle série: SHIBOYUGI: Playing Death Games to Put Food on the Table (2026)
+2026-05-11 12:29:04,820 - __main__ - INFO - ➕ Nouvelle série: Raw Weekly Recap (2026)
+2026-05-11 12:29:05,021 - __main__ - INFO - ➕ Nouvelle série: Defying Destiny (2026)
+2026-05-11 12:29:05,219 - __main__ - INFO - ➕ Nouvelle série: Defying Destiny (2026)
+2026-05-11 12:29:05,435 - __main__ - INFO - ➕ Nouvelle série: Land of Sin (2026)
+2026-05-11 12:29:05,435 - __main__ - INFO - 📤 Envoi de 200 nouvelles notifications...
+2026-05-11 12:29:05,652 - __main__ - INFO - ✅ Batch 1/20 envoyé (10 embeds)
+2026-05-11 12:29:07,876 - __main__ - INFO - ✅ Batch 2/20 envoyé (10 embeds)
+2026-05-11 12:29:10,004 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:29:10] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:29:10,233 - __main__ - INFO - ✅ Batch 3/20 envoyé (10 embeds)
+2026-05-11 12:29:12,481 - __main__ - INFO - ✅ Batch 4/20 envoyé (10 embeds)
+2026-05-11 12:29:14,738 - __main__ - INFO - ✅ Batch 5/20 envoyé (10 embeds)
+2026-05-11 12:29:17,002 - __main__ - INFO - ✅ Batch 6/20 envoyé (10 embeds)
+2026-05-11 12:29:19,322 - __main__ - INFO - ✅ Batch 7/20 envoyé (10 embeds)
+2026-05-11 12:29:21,559 - __main__ - INFO - ✅ Batch 8/20 envoyé (10 embeds)
+2026-05-11 12:29:23,803 - __main__ - INFO - ✅ Batch 9/20 envoyé (10 embeds)
+2026-05-11 12:29:26,004 - __main__ - INFO - ✅ Batch 10/20 envoyé (10 embeds)
+2026-05-11 12:29:28,196 - __main__ - INFO - ✅ Batch 11/20 envoyé (10 embeds)
+2026-05-11 12:29:30,406 - __main__ - INFO - ✅ Batch 12/20 envoyé (10 embeds)
+2026-05-11 12:29:32,595 - __main__ - INFO - ✅ Batch 13/20 envoyé (10 embeds)
+2026-05-11 12:29:34,797 - __main__ - INFO - ✅ Batch 14/20 envoyé (10 embeds)
+2026-05-11 12:29:37,009 - __main__ - INFO - ✅ Batch 15/20 envoyé (10 embeds)
+2026-05-11 12:29:39,226 - __main__ - INFO - ✅ Batch 16/20 envoyé (10 embeds)
+2026-05-11 12:29:41,445 - __main__ - INFO - ✅ Batch 17/20 envoyé (10 embeds)
+2026-05-11 12:29:43,662 - __main__ - INFO - ✅ Batch 18/20 envoyé (10 embeds)
+2026-05-11 12:29:45,865 - __main__ - INFO - ✅ Batch 19/20 envoyé (10 embeds)
+2026-05-11 12:29:48,058 - __main__ - INFO - ✅ Batch 20/20 envoyé (10 embeds)
+2026-05-11 12:29:48,064 - __main__ - INFO - ✅ Sauvegardé 200 IDs (mémoire complète)
+2026-05-11 12:29:48,064 - __main__ - INFO - ✅ 200 nouveautés envoyées avec succès!
+2026-05-11 12:29:48,064 - __main__ - INFO - ============================================================
+2026-05-11 12:29:48,064 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-11 12:29:48,064 - __main__ - INFO - ============================================================
+2026-05-11 12:29:48,114 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:29:48] "POST /api/run HTTP/1.1" 200 -
+2026-05-11 12:30:13,444 - __main__ - INFO - 🎬 Bouba Discord Netflix Notifier v3.2
+2026-05-11 12:30:13,444 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-11 12:30:13,445 - __main__ - INFO - ✅ Chargé 200 IDs depuis le fichier de mémoire
+2026-05-11 12:30:13,445 - __main__ - INFO - ============================================================
+2026-05-11 12:30:13,445 - __main__ - INFO - 🚀 Démarrage de la vérification des nouveautés Netflix
+2026-05-11 12:30:13,445 - __main__ - INFO - 📅 Mémoire active : 200 IDs déjà envoyés
+2026-05-11 12:30:13,445 - __main__ - INFO - ============================================================
+2026-05-11 12:30:13,445 - __main__ - INFO - 📽️ Traitement des films...
+2026-05-11 12:30:13,445 - __main__ - INFO - 🔍 Récupération de la liste Netflix (movies)...
+2026-05-11 12:30:13,555 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-11 12:30:13,557 - __main__ - INFO - 📺 Traitement des séries...
+2026-05-11 12:30:13,557 - __main__ - INFO - 🔍 Récupération de la liste Netflix (shows)...
+2026-05-11 12:30:13,598 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-11 12:30:13,600 - __main__ - INFO - ✅ Aucune nouvelle sortie à notifier
+2026-05-11 12:30:13,600 - __main__ - INFO - ============================================================
+2026-05-11 12:30:13,600 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-11 12:30:13,600 - __main__ - INFO - ============================================================
+2026-05-11 12:30:30,977 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:30:30] "GET / HTTP/1.1" 200 -
+2026-05-11 12:30:31,087 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:30:31] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-11 12:30:31,120 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:30:31] "GET /api/status HTTP/1.1" 200 -
+2026-05-11 12:31:01,888 - werkzeug - INFO - 172.24.0.18 - - [11/May/2026 12:31:01] "GET /api/status HTTP/1.1" 200 -
+2026-05-12 04:48:25,893 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.24.0.16:5000
+2026-05-12 04:48:25,976 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-12 04:48:26,047 - werkzeug - INFO -  * Restarting with stat
+2026-05-12 04:48:26,964 - werkzeug - WARNING -  * Debugger is active!
+2026-05-12 04:48:26,965 - werkzeug - INFO -  * Debugger PIN: 173-019-586
+2026-05-12 08:00:02,750 - __main__ - INFO - 🎬 Bouba Discord Netflix Notifier v3.2
+2026-05-12 08:00:02,760 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-12 08:00:02,773 - __main__ - INFO - ✅ Chargé 200 IDs depuis le fichier de mémoire
+2026-05-12 08:00:02,773 - __main__ - INFO - ============================================================
+2026-05-12 08:00:02,774 - __main__ - INFO - 🚀 Démarrage de la vérification des nouveautés Netflix
+2026-05-12 08:00:02,774 - __main__ - INFO - 📅 Mémoire active : 200 IDs déjà envoyés
+2026-05-12 08:00:02,774 - __main__ - INFO - ============================================================
+2026-05-12 08:00:02,774 - __main__ - INFO - 📽️ Traitement des films...
+2026-05-12 08:00:02,774 - __main__ - INFO - 🔍 Récupération de la liste Netflix (movies)...
+2026-05-12 08:00:02,982 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-12 08:00:03,325 - __main__ - INFO - ➕ Nouveau film: Oru Durooha Saahacharyathil (2026)
+2026-05-12 08:00:03,326 - __main__ - INFO - 📺 Traitement des séries...
+2026-05-12 08:00:03,326 - __main__ - INFO - 🔍 Récupération de la liste Netflix (shows)...
+2026-05-12 08:00:03,464 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-12 08:00:03,467 - __main__ - INFO - 📤 Envoi de 1 nouvelles notifications...
+2026-05-12 08:00:04,247 - __main__ - INFO - ✅ Batch 1/1 envoyé (1 embeds)
+2026-05-12 08:00:04,252 - __main__ - INFO - ✅ Sauvegardé 201 IDs (mémoire complète)
+2026-05-12 08:00:04,253 - __main__ - INFO - ✅ 1 nouveautés envoyées avec succès!
+2026-05-12 08:00:04,253 - __main__ - INFO - ============================================================
+2026-05-12 08:00:04,253 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-12 08:00:04,253 - __main__ - INFO - ============================================================
+2026-05-12 15:49:36,226 - werkzeug - INFO - 172.24.0.17 - - [12/May/2026 15:49:36] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-12 15:49:37,571 - werkzeug - INFO - 172.24.0.17 - - [12/May/2026 15:49:37] "[32mGET / HTTP/1.1[0m" 302 -
+2026-05-12 15:49:37,816 - werkzeug - INFO - 172.24.0.17 - - [12/May/2026 15:49:37] "GET /login HTTP/1.1" 200 -
+2026-05-12 15:49:52,525 - werkzeug - INFO - 172.24.0.17 - - [12/May/2026 15:49:52] "POST /login HTTP/1.1" 200 -
+2026-05-12 15:50:07,685 - werkzeug - INFO - 172.24.0.17 - - [12/May/2026 15:50:07] "[32mPOST /login HTTP/1.1[0m" 302 -
+2026-05-12 15:50:07,812 - werkzeug - INFO - 172.24.0.17 - - [12/May/2026 15:50:07] "GET / HTTP/1.1" 200 -
+2026-05-12 15:50:08,037 - werkzeug - INFO - 172.24.0.17 - - [12/May/2026 15:50:08] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-12 15:50:08,385 - werkzeug - INFO - 172.24.0.17 - - [12/May/2026 15:50:08] "GET /api/status HTTP/1.1" 200 -
+2026-05-12 15:50:37,965 - werkzeug - INFO - 172.24.0.17 - - [12/May/2026 15:50:37] "GET /api/status HTTP/1.1" 200 -
+2026-05-13 08:00:04,035 - __main__ - INFO - 🎬 Bouba Discord Netflix Notifier v3.2
+2026-05-13 08:00:04,060 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-13 08:00:04,070 - __main__ - INFO - ✅ Chargé 201 IDs depuis le fichier de mémoire
+2026-05-13 08:00:04,071 - __main__ - INFO - ============================================================
+2026-05-13 08:00:04,071 - __main__ - INFO - 🚀 Démarrage de la vérification des nouveautés Netflix
+2026-05-13 08:00:04,071 - __main__ - INFO - 📅 Mémoire active : 201 IDs déjà envoyés
+2026-05-13 08:00:04,071 - __main__ - INFO - ============================================================
+2026-05-13 08:00:04,071 - __main__ - INFO - 📽️ Traitement des films...
+2026-05-13 08:00:04,071 - __main__ - INFO - 🔍 Récupération de la liste Netflix (movies)...
+2026-05-13 08:00:04,265 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-13 08:00:04,267 - __main__ - INFO - 📺 Traitement des séries...
+2026-05-13 08:00:04,268 - __main__ - INFO - 🔍 Récupération de la liste Netflix (shows)...
+2026-05-13 08:00:04,403 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-13 08:00:04,630 - __main__ - INFO - ➕ Nouvelle série: My Royal Nemesis (2026)
+2026-05-13 08:00:04,631 - __main__ - INFO - 📤 Envoi de 1 nouvelles notifications...
+2026-05-13 08:00:05,142 - __main__ - INFO - ✅ Batch 1/1 envoyé (1 embeds)
+2026-05-13 08:00:05,158 - __main__ - INFO - ✅ Sauvegardé 202 IDs (mémoire complète)
+2026-05-13 08:00:05,158 - __main__ - INFO - ✅ 1 nouveautés envoyées avec succès!
+2026-05-13 08:00:05,158 - __main__ - INFO - ============================================================
+2026-05-13 08:00:05,158 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-13 08:00:05,158 - __main__ - INFO - ============================================================
+2026-05-14 08:00:04,083 - __main__ - INFO - 🎬 Bouba Discord Netflix Notifier v3.2
+2026-05-14 08:00:04,256 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-14 08:00:04,257 - __main__ - INFO - ✅ Chargé 202 IDs depuis le fichier de mémoire
+2026-05-14 08:00:04,257 - __main__ - INFO - ============================================================
+2026-05-14 08:00:04,257 - __main__ - INFO - 🚀 Démarrage de la vérification des nouveautés Netflix
+2026-05-14 08:00:04,257 - __main__ - INFO - 📅 Mémoire active : 202 IDs déjà envoyés
+2026-05-14 08:00:04,257 - __main__ - INFO - ============================================================
+2026-05-14 08:00:04,257 - __main__ - INFO - 📽️ Traitement des films...
+2026-05-14 08:00:04,258 - __main__ - INFO - 🔍 Récupération de la liste Netflix (movies)...
+2026-05-14 08:00:04,806 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-14 08:00:05,022 - __main__ - INFO - ➕ Nouveau film: Bharathanatyam 2 Mohiniyattam (2026)
+2026-05-14 08:00:05,022 - __main__ - INFO - 📺 Traitement des séries...
+2026-05-14 08:00:05,023 - __main__ - INFO - 🔍 Récupération de la liste Netflix (shows)...
+2026-05-14 08:00:05,144 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-14 08:00:05,146 - __main__ - INFO - 📤 Envoi de 1 nouvelles notifications...
+2026-05-14 08:00:05,605 - __main__ - INFO - ✅ Batch 1/1 envoyé (1 embeds)
+2026-05-14 08:00:05,638 - __main__ - INFO - ✅ Sauvegardé 203 IDs (mémoire complète)
+2026-05-14 08:00:05,638 - __main__ - INFO - ✅ 1 nouveautés envoyées avec succès!
+2026-05-14 08:00:05,639 - __main__ - INFO - ============================================================
+2026-05-14 08:00:05,639 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-14 08:00:05,639 - __main__ - INFO - ============================================================
+2026-05-14 23:42:27,541 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.24.0.3:5000
+2026-05-14 23:42:27,711 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-14 23:42:27,762 - werkzeug - INFO -  * Restarting with stat
+2026-05-14 23:42:28,673 - werkzeug - WARNING -  * Debugger is active!
+2026-05-14 23:42:28,674 - werkzeug - INFO -  * Debugger PIN: 111-696-717
+2026-05-15 08:00:02,918 - __main__ - INFO - 🎬 Bouba Discord Netflix Notifier v3.2
+2026-05-15 08:00:02,925 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-15 08:00:02,937 - __main__ - INFO - ✅ Chargé 203 IDs depuis le fichier de mémoire
+2026-05-15 08:00:02,937 - __main__ - INFO - ============================================================
+2026-05-15 08:00:02,937 - __main__ - INFO - 🚀 Démarrage de la vérification des nouveautés Netflix
+2026-05-15 08:00:02,937 - __main__ - INFO - 📅 Mémoire active : 203 IDs déjà envoyés
+2026-05-15 08:00:02,937 - __main__ - INFO - ============================================================
+2026-05-15 08:00:02,937 - __main__ - INFO - 📽️ Traitement des films...
+2026-05-15 08:00:02,937 - __main__ - INFO - 🔍 Récupération de la liste Netflix (movies)...
+2026-05-15 08:00:03,503 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-15 08:00:03,791 - __main__ - INFO - ➕ Nouveau film: The Crash (2026)
+2026-05-15 08:00:04,007 - __main__ - INFO - ➕ Nouveau film: Kartavya (2026)
+2026-05-15 08:00:04,243 - __main__ - INFO - ➕ Nouveau film: The Bus: A French Football Mutiny (2026)
+2026-05-15 08:00:04,451 - __main__ - INFO - ➕ Nouveau film: Marty, Life Is Short (2026)
+2026-05-15 08:00:04,738 - __main__ - INFO - ➕ Nouveau film: Dhurandhar: The Revenge (2026)
+2026-05-15 08:00:04,739 - __main__ - INFO - 📺 Traitement des séries...
+2026-05-15 08:00:04,739 - __main__ - INFO - 🔍 Récupération de la liste Netflix (shows)...
+2026-05-15 08:00:04,877 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-15 08:00:04,879 - __main__ - INFO - 📤 Envoi de 5 nouvelles notifications...
+2026-05-15 08:00:05,144 - __main__ - INFO - ✅ Batch 1/1 envoyé (5 embeds)
+2026-05-15 08:00:05,149 - __main__ - INFO - ✅ Sauvegardé 208 IDs (mémoire complète)
+2026-05-15 08:00:05,150 - __main__ - INFO - ✅ 5 nouveautés envoyées avec succès!
+2026-05-15 08:00:05,150 - __main__ - INFO - ============================================================
+2026-05-15 08:00:05,150 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-15 08:00:05,150 - __main__ - INFO - ============================================================
+2026-05-16 08:00:04,062 - __main__ - INFO - 🎬 Bouba Discord Netflix Notifier v3.2
+2026-05-16 08:00:04,081 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-16 08:00:04,092 - __main__ - INFO - ✅ Chargé 208 IDs depuis le fichier de mémoire
+2026-05-16 08:00:04,093 - __main__ - INFO - ============================================================
+2026-05-16 08:00:04,093 - __main__ - INFO - 🚀 Démarrage de la vérification des nouveautés Netflix
+2026-05-16 08:00:04,093 - __main__ - INFO - 📅 Mémoire active : 208 IDs déjà envoyés
+2026-05-16 08:00:04,093 - __main__ - INFO - ============================================================
+2026-05-16 08:00:04,093 - __main__ - INFO - 📽️ Traitement des films...
+2026-05-16 08:00:04,093 - __main__ - INFO - 🔍 Récupération de la liste Netflix (movies)...
+2026-05-16 08:00:04,267 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-16 08:00:04,269 - __main__ - INFO - 📺 Traitement des séries...
+2026-05-16 08:00:04,269 - __main__ - INFO - 🔍 Récupération de la liste Netflix (shows)...
+2026-05-16 08:00:04,382 - __main__ - INFO - 📊 Total items dans la liste: 100 (liste complète, pas de troncature)
+2026-05-16 08:00:04,594 - __main__ - INFO - ➕ Nouvelle série: Between Father and Son (2026)
+2026-05-16 08:00:04,846 - __main__ - INFO - ➕ Nouvelle série: The Pete Davidson Show (2026)
+2026-05-16 08:00:04,846 - __main__ - INFO - 📤 Envoi de 2 nouvelles notifications...
+2026-05-16 08:00:05,083 - __main__ - INFO - ✅ Batch 1/1 envoyé (2 embeds)
+2026-05-16 08:00:05,106 - __main__ - INFO - ✅ Sauvegardé 210 IDs (mémoire complète)
+2026-05-16 08:00:05,106 - __main__ - INFO - ✅ 2 nouveautés envoyées avec succès!
+2026-05-16 08:00:05,106 - __main__ - INFO - ============================================================
+2026-05-16 08:00:05,106 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-16 08:00:05,106 - __main__ - INFO - ============================================================
+2026-05-17 01:50:33,688 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.24.0.3:5000
+2026-05-17 01:50:33,712 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-17 01:50:33,713 - werkzeug - INFO -  * Restarting with stat
+2026-05-17 01:50:34,557 - werkzeug - WARNING -  * Debugger is active!
+2026-05-17 01:50:34,569 - werkzeug - INFO -  * Debugger PIN: 515-103-819
+2026-05-17 01:52:16,190 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:52:16] "[32mGET / HTTP/1.1[0m" 302 -
+2026-05-17 01:52:16,223 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:52:16] "GET /login HTTP/1.1" 200 -
+2026-05-17 01:52:16,361 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:52:16] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-17 01:52:18,402 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:52:18] "[32mPOST /login HTTP/1.1[0m" 302 -
+2026-05-17 01:52:18,445 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:52:18] "GET / HTTP/1.1" 200 -
+2026-05-17 01:52:18,556 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:52:18] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-17 01:52:18,612 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:52:18] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 01:52:25,626 - __main__ - INFO - 🎬 Bouba Discord Netflix + Disney Notifier v4.0
+2026-05-17 01:52:25,626 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-17 01:52:25,626 - __main__ - INFO - ✅ Chargé 210 IDs depuis le fichier de mémoire
+2026-05-17 01:52:25,626 - __main__ - INFO - ============================================================
+2026-05-17 01:52:25,626 - __main__ - INFO - 🎬 Démarrage — Netflix + Disney+
+2026-05-17 01:52:25,627 - __main__ - INFO - 📅 Mémoire active : 210 IDs déjà envoyés
+2026-05-17 01:52:25,627 - __main__ - INFO - ============================================================
+2026-05-17 01:52:25,627 - __main__ - INFO - 
+============================================================
+2026-05-17 01:52:25,627 - __main__ - INFO - 🚀 [Netflix] Vérification des nouveautés...
+2026-05-17 01:52:25,627 - __main__ - INFO - ============================================================
+2026-05-17 01:52:25,627 - __main__ - INFO - 📽️ [Netflix] Traitement des films...
+2026-05-17 01:52:25,627 - __main__ - INFO - 🔍 [netflix] Récupération liste movies (thebirdod/new-on-netflix-movies)...
+2026-05-17 01:52:25,769 - __main__ - INFO - 📊 [netflix] 100 items dans la liste movies
+2026-05-17 01:52:25,995 - __main__ - INFO - ➕ Nouveau(elle) movie: The Crash (2026)
+2026-05-17 01:52:26,201 - __main__ - INFO - ➕ Nouveau(elle) movie: Kartavya (2026)
+2026-05-17 01:52:26,397 - __main__ - INFO - ➕ Nouveau(elle) movie: The Bus: A French Football Mutiny (2026)
+2026-05-17 01:52:26,613 - __main__ - INFO - ➕ Nouveau(elle) movie: Marty, Life Is Short (2026)
+2026-05-17 01:52:26,831 - __main__ - INFO - ➕ Nouveau(elle) movie: The Roast of Kevin Hart (2026)
+2026-05-17 01:52:27,028 - __main__ - INFO - ➕ Nouveau(elle) movie: Remarkably Bright Creatures (2026)
+2026-05-17 01:52:27,230 - __main__ - INFO - ➕ Nouveau(elle) movie: Countdown: Rousey vs. Carano (2026)
+2026-05-17 01:52:27,423 - __main__ - INFO - ➕ Nouveau(elle) movie: My Dearest Assassin (2026)
+2026-05-17 01:52:27,612 - __main__ - INFO - ➕ Nouveau(elle) movie: You, Always (2026)
+2026-05-17 01:52:27,872 - __main__ - INFO - ➕ Nouveau(elle) movie: Swapped (2026)
+2026-05-17 01:52:28,052 - __main__ - INFO - ➕ Nouveau(elle) movie: Je m'appelle Agneta (2026)
+2026-05-17 01:52:28,295 - __main__ - INFO - ➕ Nouveau(elle) movie: Apex (2026)
+2026-05-17 01:52:28,508 - __main__ - INFO - ➕ Nouveau(elle) movie: Lainey Wilson: Keepin' Country Cool (2026)
+2026-05-17 01:52:28,722 - __main__ - INFO - ➕ Nouveau(elle) movie: Untold: The Shooting at Hawthorne Hill (2026)
+2026-05-17 01:52:28,935 - __main__ - INFO - ➕ Nouveau(elle) movie: Beyond the Game: Samurai 2026 WORLD BASEBALL CLASSIC (2026)
+2026-05-17 01:52:29,145 - __main__ - INFO - ➕ Nouveau(elle) movie: KillTonyMania (2026)
+2026-05-17 01:52:29,354 - __main__ - INFO - ➕ Nouveau(elle) movie: Son-in-Law (2026)
+2026-05-17 01:52:29,563 - __main__ - INFO - ➕ Nouveau(elle) movie: My Dearest Señorita (2026)
+2026-05-17 01:52:29,770 - __main__ - INFO - ➕ Nouveau(elle) movie: Yiya Murano: Death at Tea Time (2026)
+2026-05-17 01:52:30,015 - __main__ - INFO - ➕ Nouveau(elle) movie: 180 (2026)
+2026-05-17 01:52:30,240 - __main__ - INFO - ➕ Nouveau(elle) movie: A Gorilla Story: Told by David Attenborough (2026)
+2026-05-17 01:52:30,451 - __main__ - INFO - ➕ Nouveau(elle) movie: Toaster (2026)
+2026-05-17 01:52:30,661 - __main__ - INFO - ➕ Nouveau(elle) movie: Oru Durooha Saahacharyathil (2026)
+2026-05-17 01:52:30,873 - __main__ - INFO - ➕ Nouveau(elle) movie: Trevor Noah: Joy in the Trenches (2026)
+2026-05-17 01:52:31,087 - __main__ - INFO - ➕ Nouveau(elle) movie: Untold: Jail Blazers (2026)
+2026-05-17 01:52:31,306 - __main__ - INFO - ➕ Nouveau(elle) movie: Roommates (2026)
+2026-05-17 01:52:31,520 - __main__ - INFO - ➕ Nouveau(elle) movie: Bharathanatyam 2 Mohiniyattam (2026)
+2026-05-17 01:52:31,730 - __main__ - INFO - ➕ Nouveau(elle) movie: Thrash (2026)
+2026-05-17 01:52:31,939 - __main__ - INFO - ➕ Nouveau(elle) movie: 18th Rose (2026)
+2026-05-17 01:52:32,155 - __main__ - INFO - ➕ Nouveau(elle) movie: Untold: Chess Mates (2026)
+2026-05-17 01:52:32,360 - __main__ - INFO - ➕ Nouveau(elle) movie: Sheng Wang: Purple (2026)
+2026-05-17 01:52:32,542 - __main__ - INFO - ➕ Nouveau(elle) movie: Feel My Voice (2026)
+2026-05-17 01:52:32,733 - __main__ - INFO - ➕ Nouveau(elle) movie: Raakaasa (2026)
+2026-05-17 01:52:32,944 - __main__ - INFO - ➕ Nouveau(elle) movie: Biker (2026)
+2026-05-17 01:52:33,160 - __main__ - INFO - ➕ Nouveau(elle) movie: Eat Pray Bark (2026)
+2026-05-17 01:52:33,368 - __main__ - INFO - ➕ Nouveau(elle) movie: It Takes a Village (2026)
+2026-05-17 01:52:33,585 - __main__ - INFO - ➕ Nouveau(elle) movie: The Giant Falls (2026)
+2026-05-17 01:52:33,797 - __main__ - INFO - ➕ Nouveau(elle) movie: Aaron Chen: Funny Garden (2026)
+2026-05-17 01:52:34,021 - __main__ - INFO - ➕ Nouveau(elle) movie: Untold: The Death & Life of Lamar Odom (2026)
+2026-05-17 01:52:34,235 - __main__ - INFO - ➕ Nouveau(elle) movie: Nee Forever (2026)
+2026-05-17 01:52:34,442 - __main__ - INFO - ➕ Nouveau(elle) movie: BTS: THE RETURN (2026)
+2026-05-17 01:52:34,653 - __main__ - INFO - ➕ Nouveau(elle) movie: Love At Last (2026)
+2026-05-17 01:52:34,865 - __main__ - INFO - ➕ Nouveau(elle) movie: 53 Sundays (2026)
+2026-05-17 01:52:35,078 - __main__ - INFO - ➕ Nouveau(elle) movie: Jeff Ross: Take a Banana for the Ride (2026)
+2026-05-17 01:52:35,292 - __main__ - INFO - ➕ Nouveau(elle) movie: The Red Line (2026)
+2026-05-17 01:52:35,501 - __main__ - INFO - ➕ Nouveau(elle) movie: BTS THE COMEBACK LIVE | ARIRANG (2026)
+2026-05-17 01:52:35,712 - __main__ - INFO - ➕ Nouveau(elle) movie: The Truth and Tragedy of Moriah Wilson (2026)
+2026-05-17 01:52:35,922 - __main__ - INFO - ➕ Nouveau(elle) movie: Youth (2026)
+2026-05-17 01:52:36,141 - __main__ - INFO - ➕ Nouveau(elle) movie: Dhurandhar: The Revenge (2026)
+2026-05-17 01:52:36,355 - __main__ - INFO - ➕ Nouveau(elle) movie: Ustaad Bhagat Singh (2026)
+2026-05-17 01:52:36,564 - __main__ - INFO - ➕ Nouveau(elle) movie: Mark Normand: None Too Pleased (2026)
+2026-05-17 01:52:36,776 - __main__ - INFO - ➕ Nouveau(elle) movie: The Plastic Detox (2026)
+2026-05-17 01:52:36,988 - __main__ - INFO - ➕ Nouveau(elle) movie: Noah Kahan: Out of Body (2026)
+2026-05-17 01:52:37,200 - __main__ - INFO - ➕ Nouveau(elle) movie: The Rise of the Red Hot Chili Peppers: Our Brother, Hillel (2026)
+2026-05-17 01:52:37,376 - __main__ - INFO - ➕ Nouveau(elle) movie: Barbara - Becoming Shirin David (2026)
+2026-05-17 01:52:37,556 - __main__ - INFO - ➕ Nouveau(elle) movie: Made in Korea (2026)
+2026-05-17 01:52:37,762 - __main__ - INFO - ➕ Nouveau(elle) movie: Love Is Blind: The Reunion (2026)
+2026-05-17 01:52:37,953 - __main__ - INFO - ➕ Nouveau(elle) movie: Derrick Stroup: Nostalgic (2026)
+2026-05-17 01:52:38,156 - __main__ - INFO - ➕ Nouveau(elle) movie: Louis Theroux: Inside the Manosphere (2026)
+2026-05-17 01:52:38,364 - __main__ - INFO - ➕ Nouveau(elle) movie: Harry Styles. One Night in Manchester. (2026)
+2026-05-17 01:52:38,574 - __main__ - INFO - ➕ Nouveau(elle) movie: Mrithyunjay (2026)
+2026-05-17 01:52:38,788 - __main__ - INFO - ➕ Nouveau(elle) movie: Peaky Blinders: The Immortal Man (2026)
+2026-05-17 01:52:38,997 - __main__ - INFO - ➕ Nouveau(elle) movie: Street Flow 3 (2026)
+2026-05-17 01:52:39,208 - __main__ - INFO - ➕ Nouveau(elle) movie: Bruce Bruce: I Ain't Playin' (2026)
+2026-05-17 01:52:39,421 - __main__ - INFO - ➕ Nouveau(elle) movie: Masthishka Maranam (2026)
+2026-05-17 01:52:39,625 - __main__ - INFO - ➕ Nouveau(elle) movie: Nukkad Naatak (2026)
+2026-05-17 01:52:39,838 - __main__ - INFO - ➕ Nouveau(elle) movie: Accused (2026)
+2026-05-17 01:52:40,047 - __main__ - INFO - ➕ Nouveau(elle) movie: Making of Lord of the Flies (2026)
+2026-05-17 01:52:40,259 - __main__ - INFO - ➕ Nouveau(elle) movie: Taylor Tomlinson: Prodigal Daughter (2026)
+2026-05-17 01:52:40,470 - __main__ - INFO - ➕ Nouveau(elle) movie: Do Deewane Seher Mein (2026)
+2026-05-17 01:52:40,687 - __main__ - INFO - ➕ Nouveau(elle) movie: Famous Last Words: Eric Dane (2026)
+2026-05-17 01:52:40,901 - __main__ - INFO - ➕ Nouveau(elle) movie: Strangers in the Park (2026)
+2026-05-17 01:52:41,111 - __main__ - INFO - ➕ Nouveau(elle) movie: Firebreak (2026)
+2026-05-17 01:52:41,320 - __main__ - INFO - ➕ Nouveau(elle) movie: Pavane (2026)
+2026-05-17 01:52:41,516 - __main__ - INFO - ➕ Nouveau(elle) movie: Sommore: Chandelier Fly (2026)
+2026-05-17 01:52:41,714 - __main__ - INFO - ➕ Nouveau(elle) movie: The Singers (2026)
+2026-05-17 01:52:41,943 - __main__ - INFO - ➕ Nouveau(elle) movie: The Swedish Connection (2026)
+2026-05-17 01:52:42,178 - __main__ - INFO - ➕ Nouveau(elle) movie: Funky (2026)
+2026-05-17 01:52:42,401 - __main__ - INFO - ➕ Nouveau(elle) movie: Pennum Porattum (2026)
+2026-05-17 01:52:42,627 - __main__ - INFO - ➕ Nouveau(elle) movie: Sampradayaini Suppini Suddapusaani (2026)
+2026-05-17 01:52:42,846 - __main__ - INFO - ➕ Nouveau(elle) movie: War Machine (2026)
+2026-05-17 01:52:43,055 - __main__ - INFO - ➕ Nouveau(elle) movie: Joe's College Road Trip (2026)
+2026-05-17 01:52:43,268 - __main__ - INFO - ➕ Nouveau(elle) movie: Tu Yaa Main (2026)
+2026-05-17 01:52:43,474 - __main__ - INFO - ➕ Nouveau(elle) movie: Humint (2026)
+2026-05-17 01:52:43,657 - __main__ - INFO - ➕ Nouveau(elle) movie: Katt Williams: The Last Report (2026)
+2026-05-17 01:52:43,866 - __main__ - INFO - ➕ Nouveau(elle) movie: This Is I (2026)
+2026-05-17 01:52:44,073 - __main__ - INFO - ➕ Nouveau(elle) movie: State of Fear (2026)
+2026-05-17 01:52:44,284 - __main__ - INFO - ➕ Nouveau(elle) movie: Yoh! Bestie (2026)
+2026-05-17 01:52:44,493 - __main__ - INFO - ➕ Nouveau(elle) movie: Vadh 2 (2026)
+2026-05-17 01:52:44,736 - __main__ - INFO - ➕ Nouveau(elle) movie: With Love (2026)
+2026-05-17 01:52:44,956 - __main__ - INFO - ➕ Nouveau(elle) movie: The Investigation of Lucy Letby (2026)
+2026-05-17 01:52:45,203 - __main__ - INFO - ➕ Nouveau(elle) movie: Mo Gilligan: In the Moment (2026)
+2026-05-17 01:52:45,442 - __main__ - INFO - ➕ Nouveau(elle) movie: Is It Cake? Valentines (2026)
+2026-05-17 01:52:45,650 - __main__ - INFO - ➕ Nouveau(elle) movie: Miracle: The Boys of '80 (2026)
+2026-05-17 01:52:45,869 - __main__ - INFO - ➕ Nouveau(elle) movie: Mardaani 3 (2026)
+2026-05-17 01:52:46,084 - __main__ - INFO - ➕ Nouveau(elle) movie: A Letter to My Youth (2026)
+2026-05-17 01:52:46,280 - __main__ - INFO - ➕ Nouveau(elle) movie: Deaw Still Alive (2026)
+2026-05-17 01:52:46,472 - __main__ - INFO - ➕ Nouveau(elle) movie: Mike Epps: Delusional (2026)
+2026-05-17 01:52:46,734 - __main__ - INFO - ➕ Nouveau(elle) movie: Queen of Chess (2026)
+2026-05-17 01:52:46,950 - __main__ - INFO - ➕ Nouveau(elle) movie: Skyscraper Live (2026)
+2026-05-17 01:52:46,951 - __main__ - INFO - 📽️ [Netflix] Traitement des séries...
+2026-05-17 01:52:46,951 - __main__ - INFO - 🔍 [netflix] Récupération liste shows (thebirdod/new-on-netflix-shows)...
+2026-05-17 01:52:47,073 - __main__ - INFO - 📊 [netflix] 100 items dans la liste shows
+2026-05-17 01:52:47,280 - __main__ - INFO - ➕ Nouveau(elle) show: Manager Kim (2026)
+2026-05-17 01:52:47,465 - __main__ - INFO - ➕ Nouveau(elle) show: Between Father and Son (2026)
+2026-05-17 01:52:47,652 - __main__ - INFO - ➕ Nouveau(elle) show: My Royal Nemesis (2026)
+2026-05-17 01:52:47,862 - __main__ - INFO - ➕ Nouveau(elle) show: Legends (2026)
+2026-05-17 01:52:48,068 - __main__ - INFO - ➕ Nouveau(elle) show: Love Is Blind: Poland (2026)
+2026-05-17 01:52:48,284 - __main__ - INFO - ➕ Nouveau(elle) show: Glory (2026)
+2026-05-17 01:52:48,499 - __main__ - INFO - ➕ Nouveau(elle) show: Man on Fire (2026)
+2026-05-17 01:52:48,507 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:52:48] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 01:52:48,699 - __main__ - INFO - ➕ Nouveau(elle) show: Should I Marry A Murderer? (2026)
+2026-05-17 01:52:48,909 - __main__ - INFO - ➕ Nouveau(elle) show: Straight to Hell (2026)
+2026-05-17 01:52:49,090 - __main__ - INFO - ➕ Nouveau(elle) show: If Wishes Could Kill (2026)
+2026-05-17 01:52:49,285 - __main__ - INFO - ➕ Nouveau(elle) show: Flunked (2026)
+2026-05-17 01:52:49,497 - __main__ - INFO - ➕ Nouveau(elle) show: Stranger Things: Tales from '85 (2026)
+2026-05-17 01:52:49,697 - __main__ - INFO - ➕ Nouveau(elle) show: Hulk Hogan: Real American (2026)
+2026-05-17 01:52:49,906 - __main__ - INFO - ➕ Nouveau(elle) show: This Is a Gardening Show (2026)
+2026-05-17 01:52:50,113 - __main__ - INFO - ➕ Nouveau(elle) show: Santita (2026)
+2026-05-17 01:52:50,322 - __main__ - INFO - ➕ Nouveau(elle) show: Sold Out on You (2026)
+2026-05-17 01:52:50,528 - __main__ - INFO - ➕ Nouveau(elle) show: Unchosen (2026)
+2026-05-17 01:52:50,736 - __main__ - INFO - ➕ Nouveau(elle) show: Funny AF with Kevin Hart (2026)
+2026-05-17 01:52:50,946 - __main__ - INFO - ➕ Nouveau(elle) show: We Are All Trying Here (2026)
+2026-05-17 01:52:51,167 - __main__ - INFO - ➕ Nouveau(elle) show: TAGUSARI bros. (2026)
+2026-05-17 01:52:51,371 - __main__ - INFO - ➕ Nouveau(elle) show: Ronaldinho: The One and Only (2026)
+2026-05-17 01:52:51,583 - __main__ - INFO - ➕ Nouveau(elle) show: Dandelion (2026)
+2026-05-17 01:52:51,817 - __main__ - INFO - ➕ Nouveau(elle) show: Made with Love (2026)
+2026-05-17 01:52:52,029 - __main__ - INFO - ➕ Nouveau(elle) show: Someone Has to Know (2026)
+2026-05-17 01:52:52,235 - __main__ - INFO - ➕ Nouveau(elle) show: Reborn (2026)
+2026-05-17 01:52:52,444 - __main__ - INFO - ➕ Nouveau(elle) show: Tatsuki: Too Kind for School (2026)
+2026-05-17 01:52:52,655 - __main__ - INFO - ➕ Nouveau(elle) show: Salish & Jordan Matter (2026)
+2026-05-17 01:52:52,863 - __main__ - INFO - ➕ Nouveau(elle) show: KILL BLUE (2026)
+2026-05-17 01:52:53,077 - __main__ - INFO - ➕ Nouveau(elle) show: Big Mistakes (2026)
+2026-05-17 01:52:53,284 - __main__ - INFO - ➕ Nouveau(elle) show: Bandi (2026)
+2026-05-17 01:52:53,464 - __main__ - INFO - ➕ Nouveau(elle) show: LOVED ONE (2026)
+2026-05-17 01:52:53,639 - __main__ - INFO - ➕ Nouveau(elle) show: Trust Me: The False Prophet (2026)
+2026-05-17 01:52:53,814 - __main__ - INFO - ➕ Nouveau(elle) show: Alkhallat+: The Series (2026)
+2026-05-17 01:52:53,999 - __main__ - INFO - ➕ Nouveau(elle) show: Sins of Kujo (2026)
+2026-05-17 01:52:54,215 - __main__ - INFO - ➕ Nouveau(elle) show: The Ramparts of Ice (2026)
+2026-05-17 01:52:54,419 - __main__ - INFO - ➕ Nouveau(elle) show: Agent from Above (2026)
+2026-05-17 01:52:54,605 - __main__ - INFO - ➕ Nouveau(elle) show: Veil of Shadows (2026)
+2026-05-17 01:52:54,801 - __main__ - INFO - ➕ Nouveau(elle) show: The Predator of Seville (2026)
+2026-05-17 01:52:55,005 - __main__ - INFO - ➕ Nouveau(elle) show: I Changed My Mind with Dan Souza (2026)
+2026-05-17 01:52:55,212 - __main__ - INFO - ➕ Nouveau(elle) show: The Prosecutor (2026)
+2026-05-17 01:52:55,425 - __main__ - INFO - ➕ Nouveau(elle) show: Something Very Bad Is Going to Happen (2026)
+2026-05-17 01:52:55,628 - __main__ - INFO - ➕ Nouveau(elle) show: Detective Hole (2026)
+2026-05-17 01:52:55,829 - __main__ - INFO - ➕ Nouveau(elle) show: Ready or Not: Texas (2026)
+2026-05-17 01:52:56,022 - __main__ - INFO - ➕ Nouveau(elle) show: Unicorn Academy: Secrets Revealed (2026)
+2026-05-17 01:52:56,228 - __main__ - INFO - ➕ Nouveau(elle) show: Radioactive Emergency (2026)
+2026-05-17 01:52:56,432 - __main__ - INFO - ➕ Nouveau(elle) show: Dynasty: The Murdochs (2026)
+2026-05-17 01:52:56,619 - __main__ - INFO - ➕ Nouveau(elle) show: That Night (2026)
+2026-05-17 01:52:56,823 - __main__ - INFO - ➕ Nouveau(elle) show: Phantom Lawyer (2026)
+2026-05-17 01:52:57,041 - __main__ - INFO - ➕ Nouveau(elle) show: Age of Attraction (2026)
+2026-05-17 01:52:57,246 - __main__ - INFO - ➕ Nouveau(elle) show: The TikTok Killer (2026)
+2026-05-17 01:52:57,423 - __main__ - INFO - ➕ Nouveau(elle) show: The Dinosaurs (2026)
+2026-05-17 01:52:57,608 - __main__ - INFO - ➕ Nouveau(elle) show: Hello Bachhon (2026)
+2026-05-17 01:52:57,811 - __main__ - INFO - ➕ Nouveau(elle) show: Boyfriend on Demand (2026)
+2026-05-17 01:52:58,014 - __main__ - INFO - ➕ Nouveau(elle) show: Pursuit of Jade (2026)
+2026-05-17 01:52:58,208 - __main__ - INFO - ➕ Nouveau(elle) show: Still Shining (2026)
+2026-05-17 01:52:58,398 - __main__ - INFO - ➕ Nouveau(elle) show: A Friend, a Murderer (2026)
+2026-05-17 01:52:58,582 - __main__ - INFO - ➕ Nouveau(elle) show: Vladimir (2026)
+2026-05-17 01:52:58,783 - __main__ - INFO - ➕ Nouveau(elle) show: Blue Therapy (2026)
+2026-05-17 01:52:58,993 - __main__ - INFO - ➕ Nouveau(elle) show: Girl from Nowhere: The Reset (2026)
+2026-05-17 01:52:59,205 - __main__ - INFO - ➕ Nouveau(elle) show: Love Like a Bike (2026)
+2026-05-17 01:52:59,412 - __main__ - INFO - ➕ Nouveau(elle) show: BAKI-DOU: The Invincible Samurai (2026)
+2026-05-17 01:52:59,634 - __main__ - INFO - ➕ Nouveau(elle) show: Crap Happens (2026)
+2026-05-17 01:52:59,848 - __main__ - INFO - ➕ Nouveau(elle) show: Strip Law (2026)
+2026-05-17 01:53:00,034 - __main__ - INFO - ➕ Nouveau(elle) show: Being Gordon Ramsay (2026)
+2026-05-17 01:53:00,252 - __main__ - INFO - ➕ Nouveau(elle) show: Reality Check: Inside America's Next Top Model (2026)
+2026-05-17 01:53:00,472 - __main__ - INFO - ➕ Nouveau(elle) show: Single's Inferno Reunion (2026)
+2026-05-17 01:53:00,659 - __main__ - INFO - ➕ Nouveau(elle) show: Keluarga Yang Tak Dirindukan (2026)
+2026-05-17 01:53:00,870 - __main__ - INFO - ➕ Nouveau(elle) show: Museum of Innocence (2026)
+2026-05-17 01:53:01,079 - __main__ - INFO - ➕ Nouveau(elle) show: The Art of Sarah (2026)
+2026-05-17 01:53:01,292 - __main__ - INFO - ➕ Nouveau(elle) show: Million-Follower Detective (2026)
+2026-05-17 01:53:01,510 - __main__ - INFO - ➕ Nouveau(elle) show: How to Get to Heaven from Belfast (2026)
+2026-05-17 01:53:01,721 - __main__ - INFO - ➕ Nouveau(elle) show: Lead Children (2026)
+2026-05-17 01:53:01,914 - __main__ - INFO - ➕ Nouveau(elle) show: Motorvalley (2026)
+2026-05-17 01:53:02,133 - __main__ - INFO - ➕ Nouveau(elle) show: Lord of the Flies (2026)
+2026-05-17 01:53:02,346 - __main__ - INFO - ➕ Nouveau(elle) show: Salvador (2026)
+2026-05-17 01:53:02,560 - __main__ - INFO - ➕ Nouveau(elle) show: Unveil: Jadewind (2026)
+2026-05-17 01:53:02,771 - __main__ - INFO - ➕ Nouveau(elle) show: Unfamiliar (2026)
+2026-05-17 01:53:02,977 - __main__ - INFO - ➕ Nouveau(elle) show: Cash Queens (2026)
+2026-05-17 01:53:03,183 - __main__ - INFO - ➕ Nouveau(elle) show: Glitter & Gold: Ice Dancing (2026)
+2026-05-17 01:53:03,396 - __main__ - INFO - ➕ Nouveau(elle) show: The Pete Davidson Show (2026)
+2026-05-17 01:53:03,611 - __main__ - INFO - ➕ Nouveau(elle) show: Take That (2026)
+2026-05-17 01:53:03,851 - __main__ - INFO - ➕ Nouveau(elle) show: Skip Intro (2026)
+2026-05-17 01:53:04,063 - __main__ - INFO - ➕ Nouveau(elle) show: Free Bert (2026)
+2026-05-17 01:53:04,273 - __main__ - INFO - ➕ Nouveau(elle) show: Finding Her Edge (2026)
+2026-05-17 01:53:04,485 - __main__ - INFO - ➕ Nouveau(elle) show: Matori & Kyoken Men in the Back Alleys (2026)
+2026-05-17 01:53:04,703 - __main__ - INFO - ➕ Nouveau(elle) show: Star Search (2026)
+2026-05-17 01:53:04,911 - __main__ - INFO - ➕ Nouveau(elle) show: Undercover Miss Hong (2026)
+2026-05-17 01:53:05,115 - __main__ - INFO - ➕ Nouveau(elle) show: No Tail to Tell (2026)
+2026-05-17 01:53:05,354 - __main__ - INFO - ➕ Nouveau(elle) show: Can This Love Be Translated? (2026)
+2026-05-17 01:53:05,537 - __main__ - INFO - ➕ Nouveau(elle) show: To Love, To Lose (2026)
+2026-05-17 01:53:05,735 - __main__ - INFO - ➕ Nouveau(elle) show: Love Through a Prism (2026)
+2026-05-17 01:53:06,009 - __main__ - INFO - ➕ Nouveau(elle) show: Agatha Christie's Seven Dials (2026)
+2026-05-17 01:53:06,229 - __main__ - INFO - ➕ Nouveau(elle) show: Taskaree: The Smuggler's Web (2026)
+2026-05-17 01:53:06,437 - __main__ - INFO - ➕ Nouveau(elle) show: Sounds of Winter (2026)
+2026-05-17 01:53:06,632 - __main__ - INFO - ➕ Nouveau(elle) show: Soda Master (2026)
+2026-05-17 01:53:06,844 - __main__ - INFO - ➕ Nouveau(elle) show: Silent Truth (2026)
+2026-05-17 01:53:07,100 - __main__ - INFO - ➕ Nouveau(elle) show: Gimbap and Onigiri (2026)
+2026-05-17 01:53:07,324 - __main__ - INFO - ➕ Nouveau(elle) show: Paparazzi King (2026)
+2026-05-17 01:53:07,507 - __main__ - INFO - ➕ Nouveau(elle) show: HIS & HERS (2026)
+2026-05-17 01:53:07,760 - __main__ - INFO - ➕ Nouveau(elle) show: SHIBOYUGI: Playing Death Games to Put Food on the Table (2026)
+2026-05-17 01:53:07,760 - __main__ - INFO - 📤 [Netflix] Envoi de 200 notifications...
+2026-05-17 01:53:08,011 - __main__ - INFO - ✅ [Netflix] Batch 1/20 envoyé (10 embeds)
+2026-05-17 01:53:10,216 - __main__ - INFO - ✅ [Netflix] Batch 2/20 envoyé (10 embeds)
+2026-05-17 01:53:12,408 - __main__ - INFO - ✅ [Netflix] Batch 3/20 envoyé (10 embeds)
+2026-05-17 01:53:14,619 - __main__ - INFO - ✅ [Netflix] Batch 4/20 envoyé (10 embeds)
+2026-05-17 01:53:16,896 - __main__ - INFO - ✅ [Netflix] Batch 5/20 envoyé (10 embeds)
+2026-05-17 01:53:18,516 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:53:18] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 01:53:19,109 - __main__ - INFO - ✅ [Netflix] Batch 6/20 envoyé (10 embeds)
+2026-05-17 01:53:21,369 - __main__ - INFO - ✅ [Netflix] Batch 7/20 envoyé (10 embeds)
+2026-05-17 01:53:23,570 - __main__ - INFO - ✅ [Netflix] Batch 8/20 envoyé (10 embeds)
+2026-05-17 01:53:25,785 - __main__ - INFO - ✅ [Netflix] Batch 9/20 envoyé (10 embeds)
+2026-05-17 01:53:27,994 - __main__ - INFO - ✅ [Netflix] Batch 10/20 envoyé (10 embeds)
+2026-05-17 01:53:30,274 - __main__ - INFO - ✅ [Netflix] Batch 11/20 envoyé (10 embeds)
+2026-05-17 01:53:32,644 - __main__ - INFO - ✅ [Netflix] Batch 12/20 envoyé (10 embeds)
+2026-05-17 01:53:34,941 - __main__ - INFO - ✅ [Netflix] Batch 13/20 envoyé (10 embeds)
+2026-05-17 01:53:37,156 - __main__ - INFO - ✅ [Netflix] Batch 14/20 envoyé (10 embeds)
+2026-05-17 01:53:39,524 - __main__ - INFO - ✅ [Netflix] Batch 15/20 envoyé (10 embeds)
+2026-05-17 01:53:41,778 - __main__ - INFO - ✅ [Netflix] Batch 16/20 envoyé (10 embeds)
+2026-05-17 01:53:44,010 - __main__ - INFO - ✅ [Netflix] Batch 17/20 envoyé (10 embeds)
+2026-05-17 01:53:46,271 - __main__ - INFO - ✅ [Netflix] Batch 18/20 envoyé (10 embeds)
+2026-05-17 01:53:48,463 - __main__ - INFO - ✅ [Netflix] Batch 19/20 envoyé (10 embeds)
+2026-05-17 01:53:48,645 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:53:48] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 01:53:50,739 - __main__ - INFO - ✅ [Netflix] Batch 20/20 envoyé (10 embeds)
+2026-05-17 01:53:50,742 - __main__ - INFO - ✅ [Netflix] 200 nouveautés envoyées!
+2026-05-17 01:53:50,744 - __main__ - INFO - 
+============================================================
+2026-05-17 01:53:50,744 - __main__ - INFO - 🚀 [Disney+] Vérification des nouveautés...
+2026-05-17 01:53:50,745 - __main__ - INFO - ============================================================
+2026-05-17 01:53:50,745 - __main__ - INFO - 📽️ [Disney+] Traitement des films...
+2026-05-17 01:53:50,745 - __main__ - INFO - 🔍 [disney] Récupération liste movies (thebirdod/new-on-disney-movies)...
+2026-05-17 01:53:50,868 - __main__ - INFO - 📊 [disney] 84 items dans la liste movies
+2026-05-17 01:53:51,162 - __main__ - INFO - ➕ Nouveau(elle) movie: The Punisher: One Last Kill (2026)
+2026-05-17 01:53:51,388 - __main__ - INFO - ➕ Nouveau(elle) movie: Diary of a Wimpy Kid: The Last Straw (2025)
+2026-05-17 01:53:51,717 - __main__ - INFO - ➕ Nouveau(elle) movie: The Fantastic 4: First Steps (2025)
+2026-05-17 01:53:51,971 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of Echo (2024)
+2026-05-17 01:53:52,238 - __main__ - INFO - ➕ Nouveau(elle) movie: Ahsoka: Sabine's Loth-Cat (2023)
+2026-05-17 01:53:52,446 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of Loki Season 2 (2023)
+2026-05-17 01:53:52,680 - __main__ - INFO - ➕ Nouveau(elle) movie: Project CC (2023)
+2026-05-17 01:53:52,886 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of Secret Invasion (2023)
+2026-05-17 01:53:53,102 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of the Guardians of the Galaxy Vol. 3 (2023)
+2026-05-17 01:53:53,356 - __main__ - INFO - ➕ Nouveau(elle) movie: Haunted Mansion: Enter If You Dare (2023)
+2026-05-17 01:53:53,570 - __main__ - INFO - ➕ Nouveau(elle) movie: Haunted Mansion: Swinging Wake (2023)
+2026-05-17 01:53:53,763 - __main__ - INFO - ➕ Nouveau(elle) movie: The Roof (2023)
+2026-05-17 01:53:53,978 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of Ant-Man and the Wasp: Quantumania (2023)
+2026-05-17 01:53:54,232 - __main__ - INFO - ➕ Nouveau(elle) movie: Elemental (2023)
+2026-05-17 01:53:54,492 - __main__ - INFO - ➕ Nouveau(elle) movie: Chang Can Dunk (2023)
+2026-05-17 01:53:54,697 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of Black Panther: Wakanda Forever (2023)
+2026-05-17 01:53:54,893 - __main__ - INFO - ➕ Nouveau(elle) movie: Diary of a Wimpy Kid: Rodrick Rules (2022)
+2026-05-17 01:53:55,182 - __main__ - INFO - ➕ Nouveau(elle) movie: Andor: A Disney+ Day Special Look (2022)
+2026-05-17 01:53:55,450 - __main__ - INFO - ➕ Nouveau(elle) movie: Thor: Love and Thunder (2022)
+2026-05-17 01:53:55,683 - __main__ - INFO - ➕ Nouveau(elle) movie: Rise (2022)
+2026-05-17 01:53:55,943 - __main__ - INFO - ➕ Nouveau(elle) movie: Lightyear (2022)
+2026-05-17 01:53:56,120 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios' 2021 Disney+ Day Special (2021)
+2026-05-17 01:53:56,432 - __main__ - INFO - ➕ Nouveau(elle) movie: Under the Helmet: The Legacy of Boba Fett (2021)
+2026-05-17 01:53:56,647 - __main__ - INFO - ➕ Nouveau(elle) movie: Twenty Something (2021)
+2026-05-17 01:53:56,877 - __main__ - INFO - ➕ Nouveau(elle) movie: Loop (2020)
+2026-05-17 01:53:57,171 - __main__ - INFO - ➕ Nouveau(elle) movie: The Nutcracker and the Four Realms (2018)
+2026-05-17 01:53:57,376 - __main__ - INFO - ➕ Nouveau(elle) movie: Auntie Edna (2018)
+2026-05-17 01:53:57,560 - __main__ - INFO - ➕ Nouveau(elle) movie: Lou (2017)
+2026-05-17 01:53:57,773 - __main__ - INFO - ➕ Nouveau(elle) movie: Team Thor: Part 2 (2017)
+2026-05-17 01:53:57,991 - __main__ - INFO - ➕ Nouveau(elle) movie: Riley's First Date? (2015)
+2026-05-17 01:53:58,208 - __main__ - INFO - ➕ Nouveau(elle) movie: Muppets Most Wanted (2014)
+2026-05-17 01:53:58,425 - __main__ - INFO - ➕ Nouveau(elle) movie: Toy Story of Terror! (2013)
+2026-05-17 01:53:58,725 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel One-Shot: Agent Carter (2013)
+2026-05-17 01:53:58,944 - __main__ - INFO - ➕ Nouveau(elle) movie: The Blue Umbrella (2013)
+2026-05-17 01:53:59,150 - __main__ - INFO - ➕ Nouveau(elle) movie: The Odd Life of Timothy Green (2012)
+2026-05-17 01:53:59,349 - __main__ - INFO - ➕ Nouveau(elle) movie: The Muppets (2011)
+2026-05-17 01:53:59,553 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel One-Shot: A Funny Thing Happened on the Way to Thor's Hammer (2011)
+2026-05-17 01:53:59,769 - __main__ - INFO - ➕ Nouveau(elle) movie: Hawaiian Vacation (2011)
+2026-05-17 01:53:59,969 - __main__ - INFO - ➕ Nouveau(elle) movie: The Ballad of Nessie (2011)
+2026-05-17 01:54:00,261 - __main__ - INFO - ➕ Nouveau(elle) movie: Mars Needs Moms (2011)
+2026-05-17 01:54:00,511 - __main__ - INFO - ➕ Nouveau(elle) movie: Prep & Landing Stocking Stuffer: Operation: Secret Santa (2010)
+2026-05-17 01:54:00,694 - __main__ - INFO - ➕ Nouveau(elle) movie: Heavy Metal Mater (2010)
+2026-05-17 01:54:00,929 - __main__ - INFO - ➕ Nouveau(elle) movie: The Sorcerer's Apprentice (2010)
+2026-05-17 01:54:01,147 - __main__ - INFO - ➕ Nouveau(elle) movie: Unidentified Flying Mater (2009)
+2026-05-17 01:54:01,434 - __main__ - INFO - ➕ Nouveau(elle) movie: Hannah Montana: The Movie (2009)
+2026-05-17 01:54:01,648 - __main__ - INFO - ➕ Nouveau(elle) movie: Tokyo Mater (2008)
+2026-05-17 01:54:01,871 - __main__ - INFO - ➕ Nouveau(elle) movie: Bolt (2008)
+2026-05-17 01:54:02,063 - __main__ - INFO - ➕ Nouveau(elle) movie: El Materdor (2008)
+2026-05-17 01:54:02,268 - __main__ - INFO - ➕ Nouveau(elle) movie: Mater the Greater (2008)
+2026-05-17 01:54:02,486 - __main__ - INFO - ➕ Nouveau(elle) movie: Rescue Squad Mater (2008)
+2026-05-17 01:54:02,727 - __main__ - INFO - ➕ Nouveau(elle) movie: High School Musical 3: Senior Year (2008)
+2026-05-17 01:54:02,942 - __main__ - INFO - ➕ Nouveau(elle) movie: Beverly Hills Chihuahua (2008)
+2026-05-17 01:54:03,303 - __main__ - INFO - ➕ Nouveau(elle) movie: Star Wars: The Clone Wars (2008)
+2026-05-17 01:54:03,539 - __main__ - INFO - ➕ Nouveau(elle) movie: National Treasure: Book of Secrets (2007)
+2026-05-17 01:54:03,763 - __main__ - INFO - ➕ Nouveau(elle) movie: Underdog (2007)
+2026-05-17 01:54:03,975 - __main__ - INFO - ➕ Nouveau(elle) movie: Mater and the Ghostlight (2006)
+2026-05-17 01:54:04,230 - __main__ - INFO - ➕ Nouveau(elle) movie: The Greatest Game Ever Played (2005)
+2026-05-17 01:54:04,450 - __main__ - INFO - ➕ Nouveau(elle) movie: Ice Princess (2005)
+2026-05-17 01:54:04,659 - __main__ - INFO - ➕ Nouveau(elle) movie: The Princess Diaries 2: Royal Engagement (2004)
+2026-05-17 01:54:04,964 - __main__ - INFO - ➕ Nouveau(elle) movie: Home on the Range (2004)
+2026-05-17 01:54:05,195 - __main__ - INFO - ➕ Nouveau(elle) movie: The Haunted Mansion (2003)
+2026-05-17 01:54:05,434 - __main__ - INFO - ➕ Nouveau(elle) movie: Pirates of the Caribbean: The Curse of the Black Pearl (2003)
+2026-05-17 01:54:05,650 - __main__ - INFO - ➕ Nouveau(elle) movie: The Lizzie McGuire Movie (2003)
+2026-05-17 01:54:05,934 - __main__ - INFO - ➕ Nouveau(elle) movie: Tuck Everlasting (2002)
+2026-05-17 01:54:06,128 - __main__ - INFO - ➕ Nouveau(elle) movie: The Santa Clause 2 (2002)
+2026-05-17 01:54:06,389 - __main__ - INFO - ➕ Nouveau(elle) movie: Lilo & Stitch (2002)
+2026-05-17 01:54:06,612 - __main__ - INFO - ➕ Nouveau(elle) movie: The Rookie (2002)
+2026-05-17 01:54:06,832 - __main__ - INFO - ➕ Nouveau(elle) movie: Return to Never Land (2002)
+2026-05-17 01:54:07,135 - __main__ - INFO - ➕ Nouveau(elle) movie: Recess: School's Out (2001)
+2026-05-17 01:54:07,374 - __main__ - INFO - ➕ Nouveau(elle) movie: For the Birds (2000)
+2026-05-17 01:54:07,592 - __main__ - INFO - ➕ Nouveau(elle) movie: The Kid (2000)
+2026-05-17 01:54:07,978 - __main__ - INFO - ➕ Nouveau(elle) movie: Inspector Gadget (1999)
+2026-05-17 01:54:08,195 - __main__ - INFO - ➕ Nouveau(elle) movie: Winnie the Pooh: A Valentine for You (1999)
+2026-05-17 01:54:08,485 - __main__ - INFO - ➕ Nouveau(elle) movie: My Favorite Martian (1999)
+2026-05-17 01:54:08,821 - __main__ - INFO - ➕ Nouveau(elle) movie: Toy Story (1995)
+2026-05-17 01:54:09,047 - __main__ - INFO - ➕ Nouveau(elle) movie: A Kid in King Arthur's Court (1995)
+2026-05-17 01:54:09,288 - __main__ - INFO - ➕ Nouveau(elle) movie: The Three Musketeers (1993)
+2026-05-17 01:54:09,626 - __main__ - INFO - ➕ Nouveau(elle) movie: White Fang (1991)
+2026-05-17 01:54:09,893 - __main__ - INFO - ➕ Nouveau(elle) movie: The Prince and the Pauper (1990)
+2026-05-17 01:54:10,116 - __main__ - INFO - ➕ Nouveau(elle) movie: Shipwrecked (1990)
+2026-05-17 01:54:10,409 - __main__ - INFO - ➕ Nouveau(elle) movie: Luxo Jr. (1986)
+2026-05-17 01:54:10,710 - __main__ - INFO - ➕ Nouveau(elle) movie: The Ewok Adventure (1984)
+2026-05-17 01:54:10,967 - __main__ - INFO - ➕ Nouveau(elle) movie: The Adventures of André and Wally B. (1984)
+2026-05-17 01:54:11,211 - __main__ - INFO - ➕ Nouveau(elle) movie: Star Wars (1977)
+2026-05-17 01:54:11,212 - __main__ - INFO - 📽️ [Disney+] Traitement des séries...
+2026-05-17 01:54:11,212 - __main__ - INFO - 🔍 [disney] Récupération liste shows (thebirdod/new-on-disney-shows)...
+2026-05-17 01:54:11,331 - __main__ - INFO - 📊 [disney] 35 items dans la liste shows
+2026-05-17 01:54:11,522 - __main__ - INFO - ➕ Nouveau(elle) show: Marvel Zombies (2025)
+2026-05-17 01:54:11,739 - __main__ - INFO - ➕ Nouveau(elle) show: LEGO Star Wars: Rebuild the Galaxy - Pieces of the Past (2025)
+2026-05-17 01:54:11,968 - __main__ - INFO - ➕ Nouveau(elle) show: Eyes of Wakanda (2025)
+2026-05-17 01:54:12,177 - __main__ - INFO - ➕ Nouveau(elle) show: 20,000 Leagues Under the Sea (2025)
+2026-05-17 01:54:12,416 - __main__ - INFO - ➕ Nouveau(elle) show: Ironheart (2025)
+2026-05-17 01:54:12,639 - __main__ - INFO - ➕ Nouveau(elle) show: LEGO Star Wars: Rebuild the Galaxy (2024)
+2026-05-17 01:54:12,870 - __main__ - INFO - ➕ Nouveau(elle) show: Renegade Nell (2024)
+2026-05-17 01:54:13,094 - __main__ - INFO - ➕ Nouveau(elle) show: Choir (2024)
+2026-05-17 01:54:13,349 - __main__ - INFO - ➕ Nouveau(elle) show: Isabel Preysler: My Christmas (2023)
+2026-05-17 01:54:13,560 - __main__ - INFO - ➕ Nouveau(elle) show: 4Ever (2023)
+2026-05-17 01:54:13,866 - __main__ - INFO - ➕ Nouveau(elle) show: Doc McStuffins: The Doc and Bella Are In! (2023)
+2026-05-17 01:54:14,076 - __main__ - INFO - ➕ Nouveau(elle) show: C.H.U.E.C.O (2023)
+2026-05-17 01:54:14,310 - __main__ - INFO - ➕ Nouveau(elle) show: Matildas: The World at Our Feet (2023)
+2026-05-17 01:54:14,545 - __main__ - INFO - ➕ Nouveau(elle) show: Voices Rising: The Music of Wakanda Forever (2023)
+2026-05-17 01:54:14,758 - __main__ - INFO - ➕ Nouveau(elle) show: National Treasure: Edge of History (2022)
+2026-05-17 01:54:14,994 - __main__ - INFO - ➕ Nouveau(elle) show: Donna Hay Christmas (2022)
+2026-05-17 01:54:15,212 - __main__ - INFO - ➕ Nouveau(elle) show: Sumo Do, Sumo Don't (2022)
+2026-05-17 01:54:15,431 - __main__ - INFO - ➕ Nouveau(elle) show: Star Wars: Tales of the Jedi (2022)
+2026-05-17 01:54:15,648 - __main__ - INFO - ➕ Nouveau(elle) show: Growing Up (2022)
+2026-05-17 01:54:15,913 - __main__ - INFO - ➕ Nouveau(elle) show: Cars on the Road (2022)
+2026-05-17 01:54:16,148 - __main__ - INFO - ➕ Nouveau(elle) show: Sketchbook (2022)
+2026-05-17 01:54:16,368 - __main__ - INFO - ➕ Nouveau(elle) show: The Book of Boba Fett (2021)
+2026-05-17 01:54:16,588 - __main__ - INFO - ➕ Nouveau(elle) show: Growing Up Animal (2021)
+2026-05-17 01:54:16,839 - __main__ - INFO - ➕ Nouveau(elle) show: Turning the Tables with Robin Roberts (2021)
+2026-05-17 01:54:17,052 - __main__ - INFO - ➕ Nouveau(elle) show: Star Wars Vehicle Flythroughs (2021)
+2026-05-17 01:54:17,240 - __main__ - INFO - ➕ Nouveau(elle) show: Earth Moods (2021)
+2026-05-17 01:54:17,484 - __main__ - INFO - ➕ Nouveau(elle) show: Pixar Popcorn (2021)
+2026-05-17 01:54:17,687 - __main__ - INFO - ➕ Nouveau(elle) show: Disney Parks Sunrise Series (2020)
+2026-05-17 01:54:17,904 - __main__ - INFO - ➕ Nouveau(elle) show: The Wonderful World of Mickey Mouse (2020)
+2026-05-17 01:54:18,148 - __main__ - INFO - ➕ Nouveau(elle) show: The Knights of Castelcorvo (2020)
+2026-05-17 01:54:18,362 - __main__ - INFO - ➕ Nouveau(elle) show: Meet the Chimps (2020)
+2026-05-17 01:54:18,614 - __main__ - INFO - ➕ Nouveau(elle) show: Becoming (2020)
+2026-05-17 01:54:18,620 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:54:18] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 01:54:18,814 - __main__ - INFO - ➕ Nouveau(elle) show: Disney Insider (2020)
+2026-05-17 01:54:19,016 - __main__ - INFO - ➕ Nouveau(elle) show: Walt Disney Animation Studios: Short Circuit Experimental Films (2020)
+2026-05-17 01:54:19,226 - __main__ - INFO - ➕ Nouveau(elle) show: Pixar in Real Life (2019)
+2026-05-17 01:54:19,226 - __main__ - INFO - 📤 [Disney+] Envoi de 119 notifications...
+2026-05-17 01:54:19,451 - __main__ - INFO - ✅ [Disney+] Batch 1/12 envoyé (10 embeds)
+2026-05-17 01:54:21,652 - __main__ - INFO - ✅ [Disney+] Batch 2/12 envoyé (10 embeds)
+2026-05-17 01:54:23,855 - __main__ - INFO - ✅ [Disney+] Batch 3/12 envoyé (10 embeds)
+2026-05-17 01:54:26,150 - __main__ - INFO - ✅ [Disney+] Batch 4/12 envoyé (10 embeds)
+2026-05-17 01:54:28,383 - __main__ - INFO - ✅ [Disney+] Batch 5/12 envoyé (10 embeds)
+2026-05-17 01:54:30,641 - __main__ - INFO - ✅ [Disney+] Batch 6/12 envoyé (10 embeds)
+2026-05-17 01:54:32,854 - __main__ - INFO - ✅ [Disney+] Batch 7/12 envoyé (10 embeds)
+2026-05-17 01:54:35,072 - __main__ - INFO - ✅ [Disney+] Batch 8/12 envoyé (10 embeds)
+2026-05-17 01:54:37,305 - __main__ - INFO - ✅ [Disney+] Batch 9/12 envoyé (10 embeds)
+2026-05-17 01:54:39,600 - __main__ - INFO - ✅ [Disney+] Batch 10/12 envoyé (10 embeds)
+2026-05-17 01:54:41,860 - __main__ - INFO - ✅ [Disney+] Batch 11/12 envoyé (10 embeds)
+2026-05-17 01:54:44,066 - __main__ - INFO - ✅ [Disney+] Batch 12/12 envoyé (9 embeds)
+2026-05-17 01:54:44,069 - __main__ - INFO - ✅ [Disney+] 119 nouveautés envoyées!
+2026-05-17 01:54:44,079 - __main__ - INFO - ✅ Sauvegardé 529 IDs (mémoire complète)
+2026-05-17 01:54:44,079 - __main__ - INFO - ============================================================
+2026-05-17 01:54:44,079 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-17 01:54:44,079 - __main__ - INFO - ============================================================
+2026-05-17 01:54:44,125 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:54:44] "POST /api/run HTTP/1.1" 200 -
+2026-05-17 01:54:48,633 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:54:48] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 01:55:18,622 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:55:18] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 01:55:40,360 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:55:40] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-17 01:55:48,514 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:55:48] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 01:56:02,313 - __main__ - INFO - 🎬 Bouba Discord Netflix + Disney Notifier v4.0
+2026-05-17 01:56:02,313 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-17 01:56:02,314 - __main__ - INFO - ✅ Chargé 529 IDs depuis le fichier de mémoire
+2026-05-17 01:56:02,314 - __main__ - INFO - ============================================================
+2026-05-17 01:56:02,314 - __main__ - INFO - 🎬 Démarrage — Netflix + Disney+
+2026-05-17 01:56:02,314 - __main__ - INFO - 📅 Mémoire active : 529 IDs déjà envoyés
+2026-05-17 01:56:02,314 - __main__ - INFO - ============================================================
+2026-05-17 01:56:02,314 - __main__ - INFO - 
+============================================================
+2026-05-17 01:56:02,314 - __main__ - INFO - 🚀 [Netflix] Vérification des nouveautés...
+2026-05-17 01:56:02,314 - __main__ - INFO - ============================================================
+2026-05-17 01:56:02,314 - __main__ - INFO - 📽️ [Netflix] Traitement des films...
+2026-05-17 01:56:02,314 - __main__ - INFO - 🔍 [netflix] Récupération liste movies (thebirdod/new-on-netflix-movies)...
+2026-05-17 01:56:02,384 - __main__ - INFO - 📊 [netflix] 100 items dans la liste movies
+2026-05-17 01:56:02,385 - __main__ - INFO - 📽️ [Netflix] Traitement des séries...
+2026-05-17 01:56:02,386 - __main__ - INFO - 🔍 [netflix] Récupération liste shows (thebirdod/new-on-netflix-shows)...
+2026-05-17 01:56:02,422 - __main__ - INFO - 📊 [netflix] 100 items dans la liste shows
+2026-05-17 01:56:02,423 - __main__ - INFO - ✅ [Netflix] Aucune nouvelle sortie à notifier
+2026-05-17 01:56:02,423 - __main__ - INFO - 
+============================================================
+2026-05-17 01:56:02,424 - __main__ - INFO - 🚀 [Disney+] Vérification des nouveautés...
+2026-05-17 01:56:02,424 - __main__ - INFO - ============================================================
+2026-05-17 01:56:02,424 - __main__ - INFO - 📽️ [Disney+] Traitement des films...
+2026-05-17 01:56:02,424 - __main__ - INFO - 🔍 [disney] Récupération liste movies (thebirdod/new-on-disney-movies)...
+2026-05-17 01:56:02,462 - __main__ - INFO - 📊 [disney] 84 items dans la liste movies
+2026-05-17 01:56:02,464 - __main__ - INFO - 📽️ [Disney+] Traitement des séries...
+2026-05-17 01:56:02,464 - __main__ - INFO - 🔍 [disney] Récupération liste shows (thebirdod/new-on-disney-shows)...
+2026-05-17 01:56:02,508 - __main__ - INFO - 📊 [disney] 35 items dans la liste shows
+2026-05-17 01:56:02,509 - __main__ - INFO - ✅ [Disney+] Aucune nouvelle sortie à notifier
+2026-05-17 01:56:02,515 - __main__ - INFO - ✅ Sauvegardé 529 IDs (mémoire complète)
+2026-05-17 01:56:02,515 - __main__ - INFO - ============================================================
+2026-05-17 01:56:02,515 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-17 01:56:02,515 - __main__ - INFO - ============================================================
+2026-05-17 01:56:02,548 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:56:02] "POST /api/run HTTP/1.1" 200 -
+2026-05-17 01:56:04,611 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:56:04] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-17 01:56:04,616 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:56:04] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 01:56:18,510 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:56:18] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 01:56:35,648 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:56:35] "GET /settings HTTP/1.1" 200 -
+2026-05-17 01:56:35,758 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:56:35] "GET /api/config HTTP/1.1" 200 -
+2026-05-17 01:56:35,766 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:56:35] "GET /api/config/days_back HTTP/1.1" 200 -
+2026-05-17 01:56:35,768 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:56:35] "GET /api/cache/stats HTTP/1.1" 200 -
+2026-05-17 01:56:35,790 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 01:56:35] "GET /api/config/cron HTTP/1.1" 200 -
+2026-05-17 08:00:03,314 - __main__ - INFO - 🎬 Bouba Discord Netflix + Disney Notifier v4.0
+2026-05-17 08:00:03,336 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-17 08:00:03,349 - __main__ - INFO - ✅ Chargé 529 IDs depuis le fichier de mémoire
+2026-05-17 08:00:03,349 - __main__ - INFO - ============================================================
+2026-05-17 08:00:03,349 - __main__ - INFO - 🎬 Démarrage — Netflix + Disney+
+2026-05-17 08:00:03,350 - __main__ - INFO - 📅 Mémoire active : 529 IDs déjà envoyés
+2026-05-17 08:00:03,350 - __main__ - INFO - ============================================================
+2026-05-17 08:00:03,350 - __main__ - INFO - 
+============================================================
+2026-05-17 08:00:03,350 - __main__ - INFO - 🚀 [Netflix] Vérification des nouveautés...
+2026-05-17 08:00:03,350 - __main__ - INFO - ============================================================
+2026-05-17 08:00:03,350 - __main__ - INFO - 📽️ [Netflix] Traitement des films...
+2026-05-17 08:00:03,350 - __main__ - INFO - 🔍 [netflix] Récupération liste movies (thebirdod/new-on-netflix-movies)...
+2026-05-17 08:00:03,464 - __main__ - INFO - 📊 [netflix] 100 items dans la liste movies
+2026-05-17 08:00:03,466 - __main__ - INFO - 📽️ [Netflix] Traitement des séries...
+2026-05-17 08:00:03,467 - __main__ - INFO - 🔍 [netflix] Récupération liste shows (thebirdod/new-on-netflix-shows)...
+2026-05-17 08:00:03,513 - __main__ - INFO - 📊 [netflix] 100 items dans la liste shows
+2026-05-17 08:00:03,515 - __main__ - INFO - ✅ [Netflix] Aucune nouvelle sortie à notifier
+2026-05-17 08:00:03,515 - __main__ - INFO - 
+============================================================
+2026-05-17 08:00:03,516 - __main__ - INFO - 🚀 [Disney+] Vérification des nouveautés...
+2026-05-17 08:00:03,516 - __main__ - INFO - ============================================================
+2026-05-17 08:00:03,516 - __main__ - INFO - 📽️ [Disney+] Traitement des films...
+2026-05-17 08:00:03,516 - __main__ - INFO - 🔍 [disney] Récupération liste movies (thebirdod/new-on-disney-movies)...
+2026-05-17 08:00:03,652 - __main__ - INFO - 📊 [disney] 99 items dans la liste movies
+2026-05-17 08:00:03,899 - __main__ - INFO - ➕ Nouveau(elle) movie: Alexander and the Terrible, Horrible, No Good, Very Bad Road Trip (2025)
+2026-05-17 08:00:04,149 - __main__ - INFO - ➕ Nouveau(elle) movie: Snow White (2025)
+2026-05-17 08:00:04,362 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of Deadpool & Wolverine (2024)
+2026-05-17 08:00:04,542 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of The Marvels (2024)
+2026-05-17 08:00:04,789 - __main__ - INFO - ➕ Nouveau(elle) movie: LEGO Star Wars Summer Vacation (2022)
+2026-05-17 08:00:05,047 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of Doctor Strange in the Multiverse of Madness (2022)
+2026-05-17 08:00:05,264 - __main__ - INFO - ➕ Nouveau(elle) movie: Trevor: The Musical (2022)
+2026-05-17 08:00:05,473 - __main__ - INFO - ➕ Nouveau(elle) movie: A Fan's Guide to Ms. Marvel (2022)
+2026-05-17 08:00:05,683 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of Moon Knight (2022)
+2026-05-17 08:00:05,899 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of Hawkeye (2022)
+2026-05-17 08:00:06,108 - __main__ - INFO - ➕ Nouveau(elle) movie: The Legend of Mor'du (2012)
+2026-05-17 08:00:06,337 - __main__ - INFO - ➕ Nouveau(elle) movie: La luna (2012)
+2026-05-17 08:00:06,548 - __main__ - INFO - ➕ Nouveau(elle) movie: Red Tails (2012)
+2026-05-17 08:00:06,751 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel One-Shot: The Consultant (2011)
+2026-05-17 08:00:06,955 - __main__ - INFO - ➕ Nouveau(elle) movie: 102 Dalmatians (2000)
+2026-05-17 08:00:06,955 - __main__ - INFO - 📽️ [Disney+] Traitement des séries...
+2026-05-17 08:00:06,956 - __main__ - INFO - 🔍 [disney] Récupération liste shows (thebirdod/new-on-disney-shows)...
+2026-05-17 08:00:06,996 - __main__ - INFO - 📊 [disney] 35 items dans la liste shows
+2026-05-17 08:00:06,998 - __main__ - INFO - 📤 [Disney+] Envoi de 15 notifications...
+2026-05-17 08:00:07,324 - __main__ - INFO - ✅ [Disney+] Batch 1/2 envoyé (10 embeds)
+2026-05-17 08:00:09,621 - __main__ - INFO - ✅ [Disney+] Batch 2/2 envoyé (5 embeds)
+2026-05-17 08:00:09,622 - __main__ - INFO - ✅ [Disney+] 15 nouveautés envoyées!
+2026-05-17 08:00:09,626 - __main__ - INFO - ✅ Sauvegardé 544 IDs (mémoire complète)
+2026-05-17 08:00:09,626 - __main__ - INFO - ============================================================
+2026-05-17 08:00:09,626 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-17 08:00:09,627 - __main__ - INFO - ============================================================
+2026-05-17 21:58:29,999 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:58:29] "[32mGET / HTTP/1.1[0m" 302 -
+2026-05-17 21:58:30,439 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:58:30] "GET /login HTTP/1.1" 200 -
+2026-05-17 21:58:30,795 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:58:30] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-17 21:58:33,562 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:58:33] "[32mPOST /login HTTP/1.1[0m" 302 -
+2026-05-17 21:58:33,723 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:58:33] "GET / HTTP/1.1" 200 -
+2026-05-17 21:58:34,780 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:58:34] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-17 21:58:35,024 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:58:35] "GET /api/status HTTP/1.1" 200 -
+2026-05-17 21:59:00,591 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:59:00] "GET /settings HTTP/1.1" 200 -
+2026-05-17 21:59:00,767 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:59:00] "GET /api/config/days_back HTTP/1.1" 200 -
+2026-05-17 21:59:00,772 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:59:00] "GET /api/config HTTP/1.1" 200 -
+2026-05-17 21:59:00,803 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:59:00] "GET /api/cache/stats HTTP/1.1" 200 -
+2026-05-17 21:59:00,853 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:59:00] "GET /api/config/cron HTTP/1.1" 200 -
+2026-05-17 21:59:09,245 - __main__ - INFO - 🧹 PURGE PARTIELLE par admin — 210 expirés, 334 conservés
+2026-05-17 21:59:09,253 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:59:09] "POST /api/cache/purge?mode=partial HTTP/1.1" 200 -
+2026-05-17 21:59:09,292 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:59:09] "GET /api/cache/stats HTTP/1.1" 200 -
+2026-05-17 21:59:23,341 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:59:23] "GET / HTTP/1.1" 200 -
+2026-05-17 21:59:23,443 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:59:23] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-17 21:59:23,448 - werkzeug - INFO - 172.24.0.8 - - [17/May/2026 21:59:23] "GET /api/status HTTP/1.1" 200 -
+2026-05-18 08:00:03,868 - __main__ - INFO - 🎬 Bouba Discord Netflix + Disney Notifier v4.0
+2026-05-18 08:00:03,909 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-18 08:00:03,920 - __main__ - INFO - ✅ Chargé 334 IDs depuis le fichier de mémoire
+2026-05-18 08:00:03,920 - __main__ - INFO - ============================================================
+2026-05-18 08:00:03,920 - __main__ - INFO - 🎬 Démarrage — Netflix + Disney+
+2026-05-18 08:00:03,921 - __main__ - INFO - 📅 Mémoire active : 334 IDs déjà envoyés
+2026-05-18 08:00:03,921 - __main__ - INFO - ============================================================
+2026-05-18 08:00:03,921 - __main__ - INFO - 
+============================================================
+2026-05-18 08:00:03,921 - __main__ - INFO - 🚀 [Netflix] Vérification des nouveautés...
+2026-05-18 08:00:03,921 - __main__ - INFO - ============================================================
+2026-05-18 08:00:03,921 - __main__ - INFO - 📽️ [Netflix] Traitement des films...
+2026-05-18 08:00:03,921 - __main__ - INFO - 🔍 [netflix] Récupération liste movies (thebirdod/new-on-netflix-movies)...
+2026-05-18 08:00:04,340 - __main__ - INFO - 📊 [netflix] 100 items dans la liste movies
+2026-05-18 08:00:04,729 - __main__ - INFO - ➕ Nouveau(elle) movie: Bride of the Year (2026)
+2026-05-18 08:00:05,084 - __main__ - INFO - ➕ Nouveau(elle) movie: GOAT (2026)
+2026-05-18 08:00:05,084 - __main__ - INFO - 📽️ [Netflix] Traitement des séries...
+2026-05-18 08:00:05,084 - __main__ - INFO - 🔍 [netflix] Récupération liste shows (thebirdod/new-on-netflix-shows)...
+2026-05-18 08:00:05,203 - __main__ - INFO - 📊 [netflix] 100 items dans la liste shows
+2026-05-18 08:00:05,457 - __main__ - INFO - ➕ Nouveau(elle) show: Berlin and the Lady with an Ermine (2026)
+2026-05-18 08:00:05,652 - __main__ - INFO - ➕ Nouveau(elle) show: The WONDERfools (2026)
+2026-05-18 08:00:05,861 - __main__ - INFO - ➕ Nouveau(elle) show: Nemesis (2026)
+2026-05-18 08:00:06,071 - __main__ - INFO - ➕ Nouveau(elle) show: Soul Mate (2026)
+2026-05-18 08:00:06,071 - __main__ - INFO - 📤 [Netflix] Envoi de 6 notifications...
+2026-05-18 08:00:06,366 - __main__ - INFO - ✅ [Netflix] Batch 1/1 envoyé (6 embeds)
+2026-05-18 08:00:06,368 - __main__ - INFO - ✅ [Netflix] 6 nouveautés envoyées!
+2026-05-18 08:00:06,369 - __main__ - INFO - 
+============================================================
+2026-05-18 08:00:06,369 - __main__ - INFO - 🚀 [Disney+] Vérification des nouveautés...
+2026-05-18 08:00:06,369 - __main__ - INFO - ============================================================
+2026-05-18 08:00:06,369 - __main__ - INFO - 📽️ [Disney+] Traitement des films...
+2026-05-18 08:00:06,370 - __main__ - INFO - 🔍 [disney] Récupération liste movies (thebirdod/new-on-disney-movies)...
+2026-05-18 08:00:06,542 - __main__ - INFO - 📊 [disney] 100 items dans la liste movies
+2026-05-18 08:00:06,858 - __main__ - INFO - ➕ Nouveau(elle) movie: TRON: Ares (2025)
+2026-05-18 08:00:07,110 - __main__ - INFO - ➕ Nouveau(elle) movie: Freakier Friday (2025)
+2026-05-18 08:00:07,344 - __main__ - INFO - ➕ Nouveau(elle) movie: Thunderbolts* (2025)
+2026-05-18 08:00:07,656 - __main__ - INFO - ➕ Nouveau(elle) movie: Captain America: Brave New World (2025)
+2026-05-18 08:00:07,966 - __main__ - INFO - ➕ Nouveau(elle) movie: Deadpool & Wolverine (2024)
+2026-05-18 08:00:08,168 - __main__ - INFO - ➕ Nouveau(elle) movie: Self (2024)
+2026-05-18 08:00:08,398 - __main__ - INFO - ➕ Nouveau(elle) movie: Timeless Heroes: Indiana Jones and Harrison Ford (2023)
+2026-05-18 08:00:08,706 - __main__ - INFO - ➕ Nouveau(elle) movie: The Marvels (2023)
+2026-05-18 08:00:08,971 - __main__ - INFO - ➕ Nouveau(elle) movie: Haunted Mansion (2023)
+2026-05-18 08:00:09,202 - __main__ - INFO - ➕ Nouveau(elle) movie: Maxine (2023)
+2026-05-18 08:00:09,465 - __main__ - INFO - ➕ Nouveau(elle) movie: Indiana Jones and the Dial of Destiny (2023)
+2026-05-18 08:00:09,700 - __main__ - INFO - ➕ Nouveau(elle) movie: World's Best (2023)
+2026-05-18 08:00:09,921 - __main__ - INFO - ➕ Nouveau(elle) movie: Stan Lee (2023)
+2026-05-18 08:00:10,167 - __main__ - INFO - ➕ Nouveau(elle) movie: The Little Mermaid (2023)
+2026-05-18 08:00:10,420 - __main__ - INFO - ➕ Nouveau(elle) movie: Guardians of the Galaxy Vol. 3 (2023)
+2026-05-18 08:00:10,686 - __main__ - INFO - ➕ Nouveau(elle) movie: Ant-Man and the Wasp: Quantumania (2023)
+2026-05-18 08:00:10,954 - __main__ - INFO - ➕ Nouveau(elle) movie: The Guardians of the Galaxy Holiday Special (2022)
+2026-05-18 08:00:11,242 - __main__ - INFO - ➕ Nouveau(elle) movie: Black Panther: Wakanda Forever (2022)
+2026-05-18 08:00:11,463 - __main__ - INFO - ➕ Nouveau(elle) movie: Director by Night (2022)
+2026-05-18 08:00:11,705 - __main__ - INFO - ➕ Nouveau(elle) movie: Werewolf by Night (2022)
+2026-05-18 08:00:11,934 - __main__ - INFO - ➕ Nouveau(elle) movie: Obi-Wan Kenobi: A Jedi's Return (2022)
+2026-05-18 08:00:12,185 - __main__ - INFO - ➕ Nouveau(elle) movie: Turning Red (2022)
+2026-05-18 08:00:12,461 - __main__ - INFO - ➕ Nouveau(elle) movie: The Ice Age Adventures of Buck Wild (2022)
+2026-05-18 08:00:12,704 - __main__ - INFO - ➕ Nouveau(elle) movie: Spider-Man: No Way Home (2021)
+2026-05-18 08:00:13,021 - __main__ - INFO - ➕ Nouveau(elle) movie: Shang-Chi and the Legend of the Ten Rings (2021)
+2026-05-18 08:00:13,273 - __main__ - INFO - ➕ Nouveau(elle) movie: Luca (2021)
+2026-05-18 08:00:13,471 - __main__ - INFO - ➕ Nouveau(elle) movie: Dinner Is Served (2021)
+2026-05-18 08:00:13,755 - __main__ - INFO - ➕ Nouveau(elle) movie: Cruella (2021)
+2026-05-18 08:00:13,979 - __main__ - INFO - ➕ Nouveau(elle) movie: Us Again (2021)
+2026-05-18 08:00:14,242 - __main__ - INFO - ➕ Nouveau(elle) movie: Soul (2020)
+2026-05-18 08:00:14,515 - __main__ - INFO - ➕ Nouveau(elle) movie: LEGO Star Wars Holiday Special (2020)
+2026-05-18 08:00:14,770 - __main__ - INFO - ➕ Nouveau(elle) movie: Mulan (2020)
+2026-05-18 08:00:15,024 - __main__ - INFO - ➕ Nouveau(elle) movie: Onward (2020)
+2026-05-18 08:00:15,271 - __main__ - INFO - ➕ Nouveau(elle) movie: Star Wars: The Rise of Skywalker (2019)
+2026-05-18 08:00:15,530 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios: Expanding the Universe (2019)
+2026-05-18 08:00:15,786 - __main__ - INFO - ➕ Nouveau(elle) movie: The Lion King (2019)
+2026-05-18 08:00:16,057 - __main__ - INFO - ➕ Nouveau(elle) movie: Toy Story 4 (2019)
+2026-05-18 08:00:16,331 - __main__ - INFO - ➕ Nouveau(elle) movie: Aladdin (2019)
+2026-05-18 08:00:16,557 - __main__ - INFO - ➕ Nouveau(elle) movie: Smash and Grab (2019)
+2026-05-18 08:00:16,844 - __main__ - INFO - ➕ Nouveau(elle) movie: Christopher Robin (2018)
+2026-05-18 08:00:17,071 - __main__ - INFO - ➕ Nouveau(elle) movie: Ant-Man and the Wasp (2018)
+2026-05-18 08:00:17,282 - __main__ - INFO - ➕ Nouveau(elle) movie: Black Panther (2018)
+2026-05-18 08:00:17,597 - __main__ - INFO - ➕ Nouveau(elle) movie: Star Wars: The Last Jedi (2017)
+2026-05-18 08:00:17,852 - __main__ - INFO - ➕ Nouveau(elle) movie: Coco (2017)
+2026-05-18 08:00:18,174 - __main__ - INFO - ➕ Nouveau(elle) movie: Spider-Man: Homecoming (2017)
+2026-05-18 08:00:18,422 - __main__ - INFO - ➕ Nouveau(elle) movie: Cars 3 (2017)
+2026-05-18 08:00:18,761 - __main__ - INFO - ➕ Nouveau(elle) movie: Pirates of the Caribbean: Dead Men Tell No Tales (2017)
+2026-05-18 08:00:18,988 - __main__ - INFO - ➕ Nouveau(elle) movie: Guardians of the Galaxy Vol. 2 (2017)
+2026-05-18 08:00:19,269 - __main__ - INFO - ➕ Nouveau(elle) movie: Beauty and the Beast (2017)
+2026-05-18 08:00:19,534 - __main__ - INFO - ➕ Nouveau(elle) movie: Rogue One: A Star Wars Story (2016)
+2026-05-18 08:00:19,791 - __main__ - INFO - ➕ Nouveau(elle) movie: The BFG (2016)
+2026-05-18 08:00:20,074 - __main__ - INFO - ➕ Nouveau(elle) movie: The Jungle Book (2016)
+2026-05-18 08:00:20,341 - __main__ - INFO - ➕ Nouveau(elle) movie: Star Wars: The Force Awakens (2015)
+2026-05-18 08:00:20,604 - __main__ - INFO - ➕ Nouveau(elle) movie: The Good Dinosaur (2015)
+2026-05-18 08:00:20,844 - __main__ - INFO - ➕ Nouveau(elle) movie: Inside Out (2015)
+2026-05-18 08:00:21,105 - __main__ - INFO - ➕ Nouveau(elle) movie: Avengers: Age of Ultron (2015)
+2026-05-18 08:00:21,356 - __main__ - INFO - ➕ Nouveau(elle) movie: Cinderella (2015)
+2026-05-18 08:00:21,607 - __main__ - INFO - ➕ Nouveau(elle) movie: Into the Woods (2014)
+2026-05-18 08:00:21,883 - __main__ - INFO - ➕ Nouveau(elle) movie: Guardians of the Galaxy (2014)
+2026-05-18 08:00:22,126 - __main__ - INFO - ➕ Nouveau(elle) movie: Maleficent (2014)
+2026-05-18 08:00:22,126 - __main__ - INFO - 📽️ [Disney+] Traitement des séries...
+2026-05-18 08:00:22,127 - __main__ - INFO - 🔍 [disney] Récupération liste shows (thebirdod/new-on-disney-shows)...
+2026-05-18 08:00:22,257 - __main__ - INFO - 📊 [disney] 64 items dans la liste shows
+2026-05-18 08:00:22,479 - __main__ - INFO - ➕ Nouveau(elle) show: Gold Land (2026)
+2026-05-18 08:00:22,736 - __main__ - INFO - ➕ Nouveau(elle) show: Star Wars: Maul - Shadow Lord (2026)
+2026-05-18 08:00:22,952 - __main__ - INFO - ➕ Nouveau(elle) show: Donna Hay Coastal Celebrations (2026)
+2026-05-18 08:00:23,153 - __main__ - INFO - ➕ Nouveau(elle) show: The End of an Era (2025)
+2026-05-18 08:00:23,385 - __main__ - INFO - ➕ Nouveau(elle) show: Fire and Water: Making the Avatar Films (2025)
+2026-05-18 08:00:23,590 - __main__ - INFO - ➕ Nouveau(elle) show: Agatha All Along (2024)
+2026-05-18 08:00:23,809 - __main__ - INFO - ➕ Nouveau(elle) show: LEGO Pixar: BrickToons (2024)
+2026-05-18 08:00:24,043 - __main__ - INFO - ➕ Nouveau(elle) show: Are You Sure?! (2024)
+2026-05-18 08:00:24,258 - __main__ - INFO - ➕ Nouveau(elle) show: The Acolyte (2024)
+2026-05-18 08:00:24,491 - __main__ - INFO - ➕ Nouveau(elle) show: X-Men '97 (2024)
+2026-05-18 08:00:24,693 - __main__ - INFO - ➕ Nouveau(elle) show: A Real Bug's Life (2024)
+2026-05-18 08:00:24,916 - __main__ - INFO - ➕ Nouveau(elle) show: BTS Monuments: Beyond the Star (2023)
+2026-05-18 08:00:25,158 - __main__ - INFO - ➕ Nouveau(elle) show: Secret Invasion (2023)
+2026-05-18 08:00:25,403 - __main__ - INFO - ➕ Nouveau(elle) show: American Born Chinese (2023)
+2026-05-18 08:00:25,696 - __main__ - INFO - ➕ Nouveau(elle) show: Ed Sheeran: The Sum of It All (2023)
+2026-05-18 08:00:25,901 - __main__ - INFO - ➕ Nouveau(elle) show: Journey to the Center of the Earth (2023)
+2026-05-18 08:00:26,147 - __main__ - INFO - ➕ Nouveau(elle) show: MPower (2023)
+2026-05-18 08:00:26,394 - __main__ - INFO - ➕ Nouveau(elle) show: Zootopia+ (2022)
+2026-05-18 08:00:26,632 - __main__ - INFO - ➕ Nouveau(elle) show: She-Hulk: Attorney at Law (2022)
+2026-05-18 08:00:26,872 - __main__ - INFO - ➕ Nouveau(elle) show: I Am Groot (2022)
+2026-05-18 08:00:27,090 - __main__ - INFO - ➕ Nouveau(elle) show: Ms. Marvel (2022)
+2026-05-18 08:00:27,316 - __main__ - INFO - ➕ Nouveau(elle) show: All the Same… or Not (2022)
+2026-05-18 08:00:27,563 - __main__ - INFO - ➕ Nouveau(elle) show: Soundtrack #1 (2022)
+2026-05-18 08:00:27,791 - __main__ - INFO - ➕ Nouveau(elle) show: Loki (2021)
+2026-05-18 08:00:28,011 - __main__ - INFO - ➕ Nouveau(elle) show: Star Wars: The Bad Batch (2021)
+2026-05-18 08:00:28,242 - __main__ - INFO - ➕ Nouveau(elle) show: Secrets of the Whales (2021)
+2026-05-18 08:00:28,459 - __main__ - INFO - ➕ Nouveau(elle) show: The Falcon and the Winter Soldier (2021)
+2026-05-18 08:00:28,696 - __main__ - INFO - ➕ Nouveau(elle) show: High School Musical: The Musical: The Series (2019)
+2026-05-18 08:00:28,917 - __main__ - INFO - ➕ Nouveau(elle) show: The Mandalorian (2019)
+2026-05-18 08:00:28,917 - __main__ - INFO - 📤 [Disney+] Envoi de 89 notifications...
+2026-05-18 08:00:29,120 - __main__ - INFO - ✅ [Disney+] Batch 1/9 envoyé (10 embeds)
+2026-05-18 08:00:31,342 - __main__ - INFO - ✅ [Disney+] Batch 2/9 envoyé (10 embeds)
+2026-05-18 08:00:33,640 - __main__ - INFO - ✅ [Disney+] Batch 3/9 envoyé (10 embeds)
+2026-05-18 08:00:35,842 - __main__ - INFO - ✅ [Disney+] Batch 4/9 envoyé (10 embeds)
+2026-05-18 08:00:38,064 - __main__ - INFO - ✅ [Disney+] Batch 5/9 envoyé (10 embeds)
+2026-05-18 08:00:40,585 - __main__ - INFO - ✅ [Disney+] Batch 6/9 envoyé (10 embeds)
+2026-05-18 08:00:42,785 - __main__ - INFO - ✅ [Disney+] Batch 7/9 envoyé (10 embeds)
+2026-05-18 08:00:44,986 - __main__ - INFO - ✅ [Disney+] Batch 8/9 envoyé (10 embeds)
+2026-05-18 08:00:47,180 - __main__ - INFO - ✅ [Disney+] Batch 9/9 envoyé (9 embeds)
+2026-05-18 08:00:47,181 - __main__ - INFO - ✅ [Disney+] 89 nouveautés envoyées!
+2026-05-18 08:00:47,194 - __main__ - INFO - ✅ Sauvegardé 429 IDs (mémoire complète)
+2026-05-18 08:00:47,194 - __main__ - INFO - ============================================================
+2026-05-18 08:00:47,195 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-18 08:00:47,195 - __main__ - INFO - ============================================================
+2026-05-18 20:24:18,988 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.24.0.17:5000
+2026-05-18 20:24:19,043 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-18 20:24:19,059 - werkzeug - INFO -  * Restarting with stat
+2026-05-18 20:24:19,957 - werkzeug - WARNING -  * Debugger is active!
+2026-05-18 20:24:19,958 - werkzeug - INFO -  * Debugger PIN: 235-203-151
+2026-05-18 22:35:07,750 - werkzeug - INFO - 172.24.0.11 - - [18/May/2026 22:35:07] "[32mGET / HTTP/1.1[0m" 302 -
+2026-05-18 22:35:08,063 - werkzeug - INFO - 172.24.0.11 - - [18/May/2026 22:35:08] "GET /login HTTP/1.1" 200 -
+2026-05-18 22:35:08,269 - werkzeug - INFO - 172.24.0.11 - - [18/May/2026 22:35:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-18 22:35:12,777 - werkzeug - INFO - 172.24.0.11 - - [18/May/2026 22:35:12] "[32mGET / HTTP/1.1[0m" 302 -
+2026-05-18 22:35:12,838 - werkzeug - INFO - 172.24.0.11 - - [18/May/2026 22:35:12] "GET /login HTTP/1.1" 200 -
+2026-05-19 08:00:03,619 - __main__ - INFO - 🎬 Bouba Discord Netflix + Disney Notifier v4.0
+2026-05-19 08:00:03,663 - __main__ - INFO - 📡 API: mdblist.com (officielle)
+2026-05-19 08:00:03,667 - __main__ - INFO - ✅ Chargé 429 IDs depuis le fichier de mémoire
+2026-05-19 08:00:03,668 - __main__ - INFO - ============================================================
+2026-05-19 08:00:03,668 - __main__ - INFO - 🎬 Démarrage — Netflix + Disney+
+2026-05-19 08:00:03,668 - __main__ - INFO - 📅 Mémoire active : 429 IDs déjà envoyés
+2026-05-19 08:00:03,668 - __main__ - INFO - ============================================================
+2026-05-19 08:00:03,668 - __main__ - INFO - 
+============================================================
+2026-05-19 08:00:03,668 - __main__ - INFO - 🚀 [Netflix] Vérification des nouveautés...
+2026-05-19 08:00:03,668 - __main__ - INFO - ============================================================
+2026-05-19 08:00:03,668 - __main__ - INFO - 📽️ [Netflix] Traitement des films...
+2026-05-19 08:00:03,668 - __main__ - INFO - 🔍 [netflix] Récupération liste movies (thebirdod/new-on-netflix-movies)...
+2026-05-19 08:00:03,963 - __main__ - INFO - 📊 [netflix] 100 items dans la liste movies
+2026-05-19 08:00:04,202 - __main__ - INFO - ➕ Nouveau(elle) movie: Wanda Sykes: Legacy (2026)
+2026-05-19 08:00:04,471 - __main__ - INFO - ➕ Nouveau(elle) movie: Untold UK: Liverpool's​ Miracle​ of​ lstanbul (2026)
+2026-05-19 08:00:04,691 - __main__ - INFO - ➕ Nouveau(elle) movie: Ronda Rousey vs. Gina Carano (2026)
+2026-05-19 08:00:04,916 - __main__ - INFO - ➕ Nouveau(elle) movie: USA 94: Brazil's Return to Glory (2026)
+2026-05-19 08:00:04,916 - __main__ - INFO - 📽️ [Netflix] Traitement des séries...
+2026-05-19 08:00:04,917 - __main__ - INFO - 🔍 [netflix] Récupération liste shows (thebirdod/new-on-netflix-shows)...
+2026-05-19 08:00:05,048 - __main__ - INFO - 📊 [netflix] 100 items dans la liste shows
+2026-05-19 08:00:05,050 - __main__ - INFO - 📤 [Netflix] Envoi de 4 notifications...
+2026-05-19 08:00:05,296 - __main__ - INFO - ✅ [Netflix] Batch 1/1 envoyé (4 embeds)
+2026-05-19 08:00:05,298 - __main__ - INFO - ✅ [Netflix] 4 nouveautés envoyées!
+2026-05-19 08:00:05,299 - __main__ - INFO - 
+============================================================
+2026-05-19 08:00:05,299 - __main__ - INFO - 🚀 [Disney+] Vérification des nouveautés...
+2026-05-19 08:00:05,299 - __main__ - INFO - ============================================================
+2026-05-19 08:00:05,299 - __main__ - INFO - 📽️ [Disney+] Traitement des films...
+2026-05-19 08:00:05,299 - __main__ - INFO - 🔍 [disney] Récupération liste movies (thebirdod/new-on-disney-movies)...
+2026-05-19 08:00:05,443 - __main__ - INFO - 📊 [disney] 100 items dans la liste movies
+2026-05-19 08:00:05,671 - __main__ - INFO - ➕ Nouveau(elle) movie: Meet the Pickles: The Making of "Win or Lose" (2025)
+2026-05-19 08:00:05,884 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of X-Men '97 (2024)
+2026-05-19 08:00:06,133 - __main__ - INFO - ➕ Nouveau(elle) movie: Dashing Through the Snow (2023)
+2026-05-19 08:00:06,332 - __main__ - INFO - ➕ Nouveau(elle) movie: Black Belts (2023)
+2026-05-19 08:00:06,523 - __main__ - INFO - ➕ Nouveau(elle) movie: The Ghost (2023)
+2026-05-19 08:00:06,745 - __main__ - INFO - ➕ Nouveau(elle) movie: Once Upon a Studio (2023)
+2026-05-19 08:00:06,966 - __main__ - INFO - ➕ Nouveau(elle) movie: Peter Pan & Wendy (2023)
+2026-05-19 08:00:07,175 - __main__ - INFO - ➕ Nouveau(elle) movie: Zen - Grogu and Dust Bunnies (2022)
+2026-05-19 08:00:07,394 - __main__ - INFO - ➕ Nouveau(elle) movie: Marvel Studios Assembled: The Making of Ms. Marvel (2022)
+2026-05-19 08:00:07,605 - __main__ - INFO - ➕ Nouveau(elle) movie: Safety (2020)
+2026-05-19 08:00:07,856 - __main__ - INFO - ➕ Nouveau(elle) movie: Lady and the Tramp (2019)
+2026-05-19 08:00:08,054 - __main__ - INFO - ➕ Nouveau(elle) movie: Bao (2018)
+2026-05-19 08:00:08,054 - __main__ - INFO - 📽️ [Disney+] Traitement des séries...
+2026-05-19 08:00:08,054 - __main__ - INFO - 🔍 [disney] Récupération liste shows (thebirdod/new-on-disney-shows)...
+2026-05-19 08:00:08,176 - __main__ - INFO - 📊 [disney] 71 items dans la liste shows
+2026-05-19 08:00:08,394 - __main__ - INFO - ➕ Nouveau(elle) show: Agent P Under C (2026)
+2026-05-19 08:00:08,610 - __main__ - INFO - ➕ Nouveau(elle) show: Playback: Together We Are One (2025)
+2026-05-19 08:00:08,950 - __main__ - INFO - ➕ Nouveau(elle) show: Your Friendly Neighborhood Spider-Man (2025)
+2026-05-19 08:00:09,236 - __main__ - INFO - ➕ Nouveau(elle) show: Ahsoka (2023)
+2026-05-19 08:00:09,453 - __main__ - INFO - ➕ Nouveau(elle) show: Shipwreck Hunters Australia (2022)
+2026-05-19 08:00:09,695 - __main__ - INFO - ➕ Nouveau(elle) show: Baymax! (2022)
+2026-05-19 08:00:09,907 - __main__ - INFO - ➕ Nouveau(elle) show: Obi-Wan Kenobi (2022)
+2026-05-19 08:00:09,907 - __main__ - INFO - 📤 [Disney+] Envoi de 19 notifications...
+2026-05-19 08:00:10,133 - __main__ - INFO - ✅ [Disney+] Batch 1/2 envoyé (10 embeds)
+2026-05-19 08:00:12,379 - __main__ - INFO - ✅ [Disney+] Batch 2/2 envoyé (9 embeds)
+2026-05-19 08:00:12,381 - __main__ - INFO - ✅ [Disney+] 19 nouveautés envoyées!
+2026-05-19 08:00:12,395 - __main__ - INFO - ✅ Sauvegardé 452 IDs (mémoire complète)
+2026-05-19 08:00:12,395 - __main__ - INFO - ============================================================
+2026-05-19 08:00:12,395 - __main__ - INFO - ✨ Traitement terminé!
+2026-05-19 08:00:12,395 - __main__ - INFO - ============================================================
+2026-05-20 01:20:06,844 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:06] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-20 01:20:08,465 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:08] "[32mGET / HTTP/1.1[0m" 302 -
+2026-05-20 01:20:08,671 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:08] "GET /login HTTP/1.1" 200 -
+2026-05-20 01:20:10,595 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:10] "[32mPOST /login HTTP/1.1[0m" 302 -
+2026-05-20 01:20:10,734 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:10] "GET / HTTP/1.1" 200 -
+2026-05-20 01:20:11,022 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:11] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-20 01:20:11,145 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:11] "GET /api/status HTTP/1.1" 200 -
+2026-05-20 01:20:14,134 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:14] "GET /settings HTTP/1.1" 200 -
+2026-05-20 01:20:14,234 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:14] "GET /api/config HTTP/1.1" 200 -
+2026-05-20 01:20:14,235 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:14] "GET /api/config/days_back HTTP/1.1" 200 -
+2026-05-20 01:20:14,240 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:14] "GET /api/cache/stats HTTP/1.1" 200 -
+2026-05-20 01:20:14,255 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:14] "GET /api/config/cron HTTP/1.1" 200 -
+2026-05-20 01:20:20,198 - __main__ - INFO - 🧹 PURGE PARTIELLE par admin — 429 expirés, 23 conservés
+2026-05-20 01:20:20,199 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:20] "POST /api/cache/purge?mode=partial HTTP/1.1" 200 -
+2026-05-20 01:20:20,247 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:20] "GET /api/cache/stats HTTP/1.1" 200 -
+2026-05-20 01:20:29,859 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:29] "GET / HTTP/1.1" 200 -
+2026-05-20 01:20:29,965 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:29] "GET /api/logs?lines=50 HTTP/1.1" 200 -
+2026-05-20 01:20:29,969 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:29] "GET /api/status HTTP/1.1" 200 -
+2026-05-20 01:20:59,949 - werkzeug - INFO - 172.24.0.11 - - [20/May/2026 01:20:59] "GET /api/status HTTP/1.1" 200 -

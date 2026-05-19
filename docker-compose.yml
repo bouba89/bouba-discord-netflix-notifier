@@ -3,7 +3,7 @@ version: '3.9'
 services:
   netflix-notifier:
     build: .
-    image: bouba89/netflix-bot-v3:latest
+    image: bouba_netflix_local:latest
     container_name: bouba_netflix_notifier_v3
     environment:
       - DISCORD_WEBHOOK=${DISCORD_WEBHOOK}

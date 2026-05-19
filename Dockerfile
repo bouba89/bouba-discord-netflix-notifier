@@ -2,7 +2,7 @@ FROM python:3.14-alpine
 
 LABEL maintainer="bouba89"
 LABEL description="Bot Discord Netflix Notifier - Version 3.0 (API mdblist complète)"
-LABEL version="3.0.0"
+LABEL version="4.0.0"
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -28,8 +28,8 @@ COPY requirements.txt .
 RUN pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt
 
-COPY netflix_bot_v3.py netflix_bot.py
-COPY web_interface.py .
+COPY netflix_bot_v4.py .
+COPY web_flask_v4.py web_interface.py
 COPY templates/ templates/
 COPY crontab.txt .
 COPY start.sh .

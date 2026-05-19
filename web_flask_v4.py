@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Netflix Bot v3 - Interface Web Flask avec Authentification
-Interface de monitoring et configuration du bot Netflix (API mdblist)
+Netflix + Disney Bot v4 - Interface Web Flask avec Authentification
 """
 
 from flask import Flask, render_template, jsonify, request, send_file, session, redirect, url_for
@@ -17,20 +16,24 @@ from pathlib import Path
 
 app = Flask(__name__)
 
-# Configuration de sécurité
-app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'netflix-bot-v3-super-secret-key-change-me')
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'streaming-bot-v4-super-secret-key-change-me')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
 # Configuration
-DATA_DIR = "/app/data"
-LOGS_DIR = "/app/logs"
-MEMORY_FILE = f"{DATA_DIR}/sent_ids.json"
-LOG_FILE = f"{LOGS_DIR}/netflix_bot.log"
+DATA_DIR      = "/app/data"
+LOGS_DIR      = "/app/logs"
+MEMORY_FILE   = f"{DATA_DIR}/sent_ids.json"
+LOG_FILE      = f"{LOGS_DIR}/netflix_bot.log"
 CRON_LOG_FILE = f"{LOGS_DIR}/cron.log"
-ENV_FILE = "/app/.env_for_cron"
-USERS_FILE = f"{DATA_DIR}/users.json"
+ENV_FILE      = "/app/.env_for_cron"
+USERS_FILE    = f"{DATA_DIR}/users.json"
 
-# Configurer le logging pour écrire dans le fichier de logs
+# ── Plateformes supportées (pour les stats de mémoire) ──────────────────────
+PLATFORMS = {
+    "netflix": {"label": "Netflix", "emoji": "🎬", "color": "#E50914"},
+    "disney":  {"label": "Disney+", "emoji": "✨", "color": "#113CCF"},
+}
+
 os.makedirs(LOGS_DIR, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
@@ -41,9 +44,7 @@ logging.basicConfig(
     ]
 )
 
-# Créer le fichier users.json s'il n'existe pas
 def init_users_file():
-    """Initialiser le fichier users avec un compte admin par défaut"""
     if not os.path.exists(USERS_FILE):
         default_users = {
             "admin": {
@@ -56,17 +57,14 @@ def init_users_file():
         with open(USERS_FILE, 'w') as f:
             json.dump(default_users, f, indent=2)
         print("⚠️  Compte admin par défaut créé: admin / admin123")
-        print("⚠️  CHANGEZ LE MOT DE PASSE IMMÉDIATEMENT!")
 
-# Initialiser au démarrage
 init_users_file()
 
 # ============================================================================
-# FONCTIONS D'AUTHENTIFICATION
+# AUTH
 # ============================================================================
 
 def login_required(f):
-    """Décorateur pour protéger les routes"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'username' not in session:
@@ -77,7 +75,6 @@ def login_required(f):
     return decorated_function
 
 def get_users():
-    """Récupérer tous les utilisateurs"""
     try:
         with open(USERS_FILE, 'r') as f:
             return json.load(f)
@@ -85,107 +82,88 @@ def get_users():
         return {}
 
 def save_users(users):
-    """Sauvegarder les utilisateurs"""
     with open(USERS_FILE, 'w') as f:
         json.dump(users, f, indent=2)
 
 def verify_user(username, password):
-    """Vérifier les credentials d'un utilisateur"""
     users = get_users()
     if username in users:
         return check_password_hash(users[username]['password'], password)
     return False
 
-# ============================================================================
-# ROUTES D'AUTHENTIFICATION
-# ============================================================================
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Page de connexion"""
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
         remember = request.form.get('remember') == 'on'
-        
         if verify_user(username, password):
             session['username'] = username
             session['role'] = get_users()[username].get('role', 'user')
             if remember:
                 session.permanent = True
-            
             users = get_users()
             users[username]['last_login'] = datetime.now().isoformat()
             save_users(users)
-            
             return redirect(url_for('index'))
-        else:
-            return render_template('login.html', error='Identifiants incorrects')
-    
+        return render_template('login.html', error='Identifiants incorrects')
     if 'username' in session:
         return redirect(url_for('index'))
-    
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    """Déconnexion"""
     session.clear()
     return redirect(url_for('login'))
 
 @app.route('/change-password', methods=['POST'])
 @login_required
 def change_password():
-    """Changer le mot de passe"""
     try:
         current_password = request.json.get('current_password')
-        new_password = request.json.get('new_password')
-        username = session.get('username')
-        
+        new_password     = request.json.get('new_password')
+        username         = session.get('username')
         users = get_users()
-        
         if not check_password_hash(users[username]['password'], current_password):
             return jsonify({'success': False, 'error': 'Mot de passe actuel incorrect'}), 401
-        
         users[username]['password'] = generate_password_hash(new_password)
         users[username]['password_changed_at'] = datetime.now().isoformat()
         save_users(users)
-        
         return jsonify({'success': True, 'message': 'Mot de passe changé avec succès'})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ============================================================================
-# ROUTES PRINCIPALES (PROTÉGÉES)
+# ROUTES PRINCIPALES
 # ============================================================================
 
 @app.route('/')
 @login_required
 def index():
-    """Page d'accueil - Dashboard"""
     return render_template('index.html', username=session.get('username'))
 
 @app.route('/health')
 def health():
-    """Healthcheck endpoint pour Docker (public)"""
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
-        'service': 'netflix-bot-v3-web',
-        'version': '3.0'
+        'service': 'streaming-bot-v4-web',
+        'version': '4.0'
     }), 200
 
 @app.route('/api/status')
 @login_required
 def get_status():
-    """API: Récupérer le statut du bot v3"""
     try:
         try:
             result = subprocess.run(['pgrep', '-f', 'cron'], capture_output=True, timeout=5)
             cron_running = result.returncode == 0
         except:
-            cron_running = os.path.exists('/var/run/crond.pid') or os.path.exists('/var/run/cron.pid')
-        
+            cron_running = (
+                os.path.exists('/var/run/crond.pid') or
+                os.path.exists('/var/run/cron.pid')
+            )
+
         env_vars = {}
         if os.path.exists(ENV_FILE):
             with open(ENV_FILE, 'r') as f:
@@ -196,40 +174,52 @@ def get_status():
                             env_vars[key] = value[:10] + '***' if len(value) > 10 else '***'
                         else:
                             env_vars[key] = value
-        
-        sent_count = 0
+
+        # ── Comptage par plateforme ──────────────────────────────────────────
+        sent_count   = 0
+        by_platform  = {k: 0 for k in PLATFORMS}
+
         if os.path.exists(MEMORY_FILE):
             try:
                 with open(MEMORY_FILE, 'r') as f:
                     sent_ids = json.load(f)
-                    if isinstance(sent_ids, (dict, list)):
-                        sent_count = len(sent_ids)
+                if isinstance(sent_ids, dict):
+                    sent_count = len(sent_ids)
+                    for key in sent_ids:
+                        for pf in PLATFORMS:
+                            if key.startswith(f"{pf}:"):
+                                by_platform[pf] += 1
+                                break
+                        else:
+                            # ancienne clé sans préfixe → comptée comme netflix
+                            by_platform["netflix"] += 1
             except:
-                sent_count = 0
-        
+                pass
+
         last_run = "Jamais"
         if os.path.exists(LOG_FILE):
-            with open(LOG_FILE, 'r') as f:
+            with open(LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.readlines()
-                for line in reversed(lines):
-                    if "✨ Traitement terminé" in line or "🏁 TERMINÉ" in line:
-                        try:
-                            timestamp_str = line.split(' - ')[0]
-                            dt = datetime.strptime(timestamp_str.split(',')[0], '%Y-%m-%d %H:%M:%S')
-                            last_run = dt.strftime('%d/%m/%Y %H:%M:%S')
-                        except:
-                            last_run = timestamp_str
-                        break
-        
+            for line in reversed(lines):
+                if "✨ Traitement terminé" in line:
+                    try:
+                        ts = line.split(' - ')[0]
+                        dt = datetime.strptime(ts.split(',')[0], '%Y-%m-%d %H:%M:%S')
+                        last_run = dt.strftime('%d/%m/%Y %H:%M:%S')
+                    except:
+                        last_run = line.split(' - ')[0]
+                    break
+
         return jsonify({
-            'status': 'running' if cron_running else 'stopped',
+            'status':      'running' if cron_running else 'stopped',
             'cron_active': cron_running,
-            'version': '3.0',
-            'api_source': 'mdblist.com',
+            'version':     '4.0',
+            'api_source':  'mdblist.com',
             'environment': env_vars,
             'statistics': {
-                'total_sent': sent_count,
-                'last_run': last_run
+                'total_sent':   sent_count,
+                'by_platform':  by_platform,
+                'last_run':     last_run,
             }
         })
     except Exception as e:
@@ -238,63 +228,61 @@ def get_status():
 @app.route('/api/stats')
 @login_required
 def get_stats():
-    """API: Récupérer les statistiques détaillées v3"""
     try:
         stats = {
             'total_content': 0,
+            'by_platform':   {k: 0 for k in PLATFORMS},
             'recent_notifications': [],
             'last_run': {
                 'movies_found': 0,
-                'shows_found': 0,
-                'new_sent': 0,
-                'date': 'N/A'
+                'shows_found':  0,
+                'new_sent':     0,
+                'date':         'N/A'
             }
         }
-        
+
         if os.path.exists(MEMORY_FILE):
             try:
                 with open(MEMORY_FILE, 'r') as f:
                     sent_ids = json.load(f)
-                    if isinstance(sent_ids, (dict, list)):
-                        stats['total_content'] = len(sent_ids)
+                if isinstance(sent_ids, dict):
+                    stats['total_content'] = len(sent_ids)
+                    for key in sent_ids:
+                        for pf in PLATFORMS:
+                            if key.startswith(f"{pf}:"):
+                                stats['by_platform'][pf] += 1
+                                break
+                        else:
+                            stats['by_platform']['netflix'] += 1
             except:
-                stats['total_content'] = 0
-        
+                pass
+
         if os.path.exists(LOG_FILE):
             with open(LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.readlines()
-            
+
             for line in reversed(lines[-200:]):
-                if "✅ Trouvé" in line and "movies" in line:
+                # Nouveau format v4 : "➕ Nouveau(elle) movie: Titre (2025)"
+                if "➕ Nouveau" in line and "movie" in line.lower():
+                    stats['last_run']['movies_found'] += 1
+                if "➕ Nouveau" in line and "show" in line.lower():
+                    stats['last_run']['shows_found'] += 1
+                if "nouveautés envoyées" in line:
                     try:
-                        count = int(line.split("✅ Trouvé")[1].split("movies")[0].strip())
-                        stats['last_run']['movies_found'] = count
+                        stats['last_run']['new_sent'] += int(
+                            line.split("✅")[1].split("nouveauté")[0].strip()
+                        )
                     except:
                         pass
-                
-                if "✅ Trouvé" in line and "shows" in line:
-                    try:
-                        count = int(line.split("✅ Trouvé")[1].split("shows")[0].strip())
-                        stats['last_run']['shows_found'] = count
-                    except:
-                        pass
-                
-                if "✅" in line and "notifications envoyées" in line:
-                    try:
-                        count = int(line.split("✅")[1].split("notifications")[0].strip())
-                        stats['last_run']['new_sent'] = count
-                    except:
-                        pass
-                
                 if "✨ Traitement terminé" in line:
                     try:
-                        timestamp_str = line.split(' - ')[0]
-                        dt = datetime.strptime(timestamp_str.split(',')[0], '%Y-%m-%d %H:%M:%S')
+                        ts = line.split(' - ')[0]
+                        dt = datetime.strptime(ts.split(',')[0], '%Y-%m-%d %H:%M:%S')
                         stats['last_run']['date'] = dt.strftime('%d/%m/%Y %H:%M:%S')
                     except:
-                        stats['last_run']['date'] = timestamp_str
+                        stats['last_run']['date'] = line.split(' - ')[0]
                     break
-        
+
         return jsonify(stats)
     except Exception as e:
         import traceback
@@ -303,31 +291,27 @@ def get_stats():
 @app.route('/api/logs')
 @login_required
 def get_logs():
-    """API: Récupérer les logs"""
     try:
         log_type = request.args.get('type', 'debug')
-        lines = int(request.args.get('lines', 100))
-        
+        lines    = int(request.args.get('lines', 100))
         log_file = CRON_LOG_FILE if log_type == 'cron' else LOG_FILE
-        
         if not os.path.exists(log_file):
             return jsonify({'logs': 'Aucun log disponible'})
-        
         with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
             all_lines = f.readlines()
-            last_lines = all_lines[-lines:] if len(all_lines) > lines else all_lines
-            
-        return jsonify({'logs': ''.join(last_lines)})
+        return jsonify({'logs': ''.join(all_lines[-lines:] if len(all_lines) > lines else all_lines)})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# ── Lancement manuel ─────────────────────────────────────────────────────────
 
 @app.route('/api/run', methods=['POST'])
 @login_required
 def run_bot():
-    """API: Exécuter le bot manuellement"""
+    """Exécute netflix_bot_v4.py (Netflix + Disney+) manuellement."""
     try:
         result = subprocess.run(
-            ['python', '/app/netflix_bot.py'],
+            ['python', '/app/netflix_bot_v4.py'],   # ← v4
             capture_output=True,
             text=True,
             timeout=300
@@ -335,47 +319,43 @@ def run_bot():
         return jsonify({
             'success': result.returncode == 0,
             'output': result.stdout,
-            'error': result.stderr
+            'error':  result.stderr
         })
     except subprocess.TimeoutExpired:
         return jsonify({'success': False, 'error': 'Timeout (>5min)'}), 500
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# ── Config ───────────────────────────────────────────────────────────────────
+
 @app.route('/api/config', methods=['GET', 'POST'])
 @login_required
 def config():
-    """API: Voir/Modifier la configuration v3"""
     if request.method == 'GET':
         try:
-            config_data = {}
+            config_data  = {}
             allowed_vars = ['DISCORD_WEBHOOK', 'MDBLIST_API_KEY', 'TMDB_API_KEY', 'DAYS_BACK']
-            
             if os.path.exists(ENV_FILE):
                 with open(ENV_FILE, 'r') as f:
                     for line in f:
                         if '=' in line:
                             key, value = line.strip().split('=', 1)
                             if key in allowed_vars:
-                                if 'KEY' in key or 'WEBHOOK' in key:
-                                    config_data[key] = value[:10] + '***' if len(value) > 10 else '***'
-                                else:
-                                    config_data[key] = value
-            
+                                config_data[key] = (
+                                    value[:10] + '***' if ('KEY' in key or 'WEBHOOK' in key) and len(value) > 10
+                                    else value
+                                )
             return jsonify(config_data)
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
-    elif request.method == 'POST':
-        return jsonify({'error': 'Modification via API non implémentée pour la sécurité'}), 501
+    return jsonify({'error': 'Modification via API non implémentée pour la sécurité'}), 501
 
 @app.route('/api/config/days_back', methods=['GET', 'POST'])
 @login_required
 def config_days_back():
-    """API: Gérer DAYS_BACK"""
     if request.method == 'GET':
         try:
-            days_back = 1
+            days_back = 7
             if os.path.exists(ENV_FILE):
                 with open(ENV_FILE, 'r') as f:
                     for line in f:
@@ -385,155 +365,119 @@ def config_days_back():
             return jsonify({'days_back': days_back})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
-    elif request.method == 'POST':
-        try:
-            new_days = request.json.get('days_back', 1)
-            try:
-                days_int = int(new_days)
-                if not (1 <= days_int <= 30):
-                    return jsonify({'success': False, 'error': 'DAYS_BACK doit être entre 1 et 30'}), 400
-            except:
-                return jsonify({'success': False, 'error': 'Valeur invalide'}), 400
-            
-            env_lines = []
-            if os.path.exists(ENV_FILE):
-                with open(ENV_FILE, 'r') as f:
-                    env_lines = f.readlines()
-            
-            updated = False
-            for i, line in enumerate(env_lines):
-                if line.startswith('DAYS_BACK='):
-                    env_lines[i] = f'DAYS_BACK={days_int}\n'
-                    updated = True
-                    break
-            
-            if not updated:
-                env_lines.append(f'DAYS_BACK={days_int}\n')
-            
-            with open(ENV_FILE, 'w') as f:
-                f.writelines(env_lines)
-            
-            return jsonify({'success': True, 'days_back': days_int})
-        except Exception as e:
-            return jsonify({'success': False, 'error': str(e)}), 500
+
+    try:
+        new_days = int(request.json.get('days_back', 7))
+        if not (1 <= new_days <= 30):
+            return jsonify({'success': False, 'error': 'DAYS_BACK doit être entre 1 et 30'}), 400
+        env_lines = []
+        if os.path.exists(ENV_FILE):
+            with open(ENV_FILE, 'r') as f:
+                env_lines = f.readlines()
+        updated = False
+        for i, line in enumerate(env_lines):
+            if line.startswith('DAYS_BACK='):
+                env_lines[i] = f'DAYS_BACK={new_days}\n'
+                updated = True
+                break
+        if not updated:
+            env_lines.append(f'DAYS_BACK={new_days}\n')
+        with open(ENV_FILE, 'w') as f:
+            f.writelines(env_lines)
+        return jsonify({'success': True, 'days_back': new_days})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ── Reset mémoire complète ────────────────────────────────────────────────────
 
 @app.route('/api/reset', methods=['POST'])
 @login_required
 def reset_memory():
-    """API: Réinitialiser la mémoire (anti-doublons)"""
     logger = logging.getLogger(__name__)
-    
     try:
-        ids_before = 0
+        ids_before     = 0
         titles_deleted = []
-        
         if os.path.exists(MEMORY_FILE):
             try:
                 with open(MEMORY_FILE, 'r') as f:
                     old_data = json.load(f)
-                    if isinstance(old_data, dict):
-                        ids_before = len(old_data)
-                        titles_deleted = [v.get('title', 'Inconnu') for k, v in old_data.items() if isinstance(v, dict)]
+                if isinstance(old_data, dict):
+                    ids_before     = len(old_data)
+                    titles_deleted = [v.get('title', 'Inconnu') for v in old_data.values() if isinstance(v, dict)]
             except:
                 pass
-        
+
         logger.info("=" * 60)
-        logger.info("🔄 RÉINITIALISATION DE LA MÉMOIRE")
+        logger.info(f"🔄 RESET MÉMOIRE par {session.get('username')} — {ids_before} IDs supprimés")
         logger.info("=" * 60)
-        logger.info(f"👤 Utilisateur: {session.get('username', 'inconnu')}")
-        logger.info(f"📊 IDs en mémoire: {ids_before}")
-        
-        if titles_deleted:
-            logger.info(f"🎬 Titres supprimés ({len(titles_deleted)}):")
-            for title in titles_deleted[:20]:
-                logger.info(f"   • {title}")
-            if len(titles_deleted) > 20:
-                logger.info(f"   ... et {len(titles_deleted) - 20} autres")
-        
+
         with open(MEMORY_FILE, 'w') as f:
             json.dump({}, f)
-        
-        logger.info("✅ Mémoire réinitialisée avec succès")
-        logger.info("=" * 60)
-        
+
         return jsonify({
             'success': True,
             'message': f'Mémoire réinitialisée : {ids_before} IDs supprimés',
-            'details': {
-                'ids_deleted': ids_before,
-                'sample_titles': titles_deleted[:5]
-            }
+            'details': {'ids_deleted': ids_before, 'sample_titles': titles_deleted[:5]}
         })
     except Exception as e:
-        logger.error(f"❌ Erreur lors de la réinitialisation: {e}")
+        logger.error(f"❌ Erreur reset: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+# ── Cron ─────────────────────────────────────────────────────────────────────
 
 @app.route('/api/config/cron', methods=['GET', 'POST'])
 @login_required
 def config_cron():
-    """API: Configurer le crontab"""
     if request.method == 'GET':
         try:
             result = subprocess.run(['crontab', '-l'], capture_output=True, text=True, timeout=5)
-            
             if result.returncode == 0:
-                cron_lines = result.stdout.strip().split('\n')
-                for line in cron_lines:
+                for line in result.stdout.strip().split('\n'):
                     if line.strip() and not line.strip().startswith('#'):
-                        keywords = ['netflix', 'run_netflix', '.env_for_cron', 'bot']
-                        if any(keyword in line for keyword in keywords):
+                        if any(k in line for k in ['netflix_bot_v4', 'netflix', 'bot']):
                             parts = line.split()
                             if len(parts) >= 5:
                                 try:
-                                    minute = int(parts[0])
-                                    hour = int(parts[1])
-                                    return jsonify({'hour': hour, 'minute': minute, 'enabled': True})
-                                except (ValueError, IndexError):
+                                    return jsonify({'hour': int(parts[1]), 'minute': int(parts[0]), 'enabled': True})
+                                except:
                                     pass
-            
             return jsonify({'hour': 9, 'minute': 0, 'enabled': False})
         except Exception as e:
             return jsonify({'hour': 9, 'minute': 0, 'enabled': False, 'error': str(e)})
-    
+
     try:
-        data = request.json
-        hour = int(data.get('hour', 9))
+        data   = request.json
+        hour   = int(data.get('hour', 9))
         minute = int(data.get('minute', 0))
-        
-        if hour < 0 or hour > 23:
+        if not (0 <= hour <= 23):
             return jsonify({'success': False, 'error': 'Heure invalide (0-23)'}), 400
-        if minute < 0 or minute > 59:
+        if not (0 <= minute <= 59):
             return jsonify({'success': False, 'error': 'Minute invalide (0-59)'}), 400
-        
-        cron_line = f"{minute} {hour} * * * cd /app && export $(cat /app/.env_for_cron | xargs) && /usr/local/bin/python3 netflix_bot.py >> /app/logs/cron.log 2>&1"
-        
+
+        # ← pointe vers netflix_bot_v4.py
+        cron_line = (
+            f"{minute} {hour} * * * cd /app && "
+            f"export $(cat /app/.env_for_cron | xargs) && "
+            f"/usr/local/bin/python3 netflix_bot_v4.py >> /app/logs/cron.log 2>&1"
+        )
         with open('/tmp/new_crontab', 'w') as f:
             f.write(cron_line + '\n')
-        
         result = subprocess.run(['crontab', '/tmp/new_crontab'], capture_output=True, timeout=5)
-        
+        if os.path.exists('/tmp/new_crontab'):
+            os.remove('/tmp/new_crontab')
         if result.returncode == 0:
-            if os.path.exists('/tmp/new_crontab'):
-                os.remove('/tmp/new_crontab')
             return jsonify({'success': True, 'hour': hour, 'minute': minute})
-        else:
-            return jsonify({'success': False, 'error': 'Erreur lors de la mise à jour du crontab'}), 500
-            
+        return jsonify({'success': False, 'error': 'Erreur mise à jour crontab'}), 500
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ============================================================================
-# ROUTES PURGE DU CACHE  ← ajoutées
-# ============================================================================
+# ── Cache / Purge ─────────────────────────────────────────────────────────────
 
 @app.route('/api/cache/stats')
 @login_required
 def cache_stats():
-    """API: Statistiques du cache (total / récents / expirés)"""
     try:
-        days_back = int(os.getenv("DAYS_BACK", "7"))
-        # Lire DAYS_BACK depuis le fichier env si dispo
+        days_back = 7
         if os.path.exists(ENV_FILE):
             with open(ENV_FILE, 'r') as f:
                 for line in f:
@@ -545,29 +489,37 @@ def cache_stats():
                         break
 
         if not os.path.exists(MEMORY_FILE):
-            return jsonify({'total': 0, 'fresh': 0, 'expired': 0})
+            return jsonify({'total': 0, 'fresh': 0, 'expired': 0, 'by_platform': {k: 0 for k in PLATFORMS}})
 
         with open(MEMORY_FILE, 'r') as f:
             data = json.load(f)
-
         if not isinstance(data, dict):
-            return jsonify({'total': len(data), 'fresh': 0, 'expired': 0})
+            return jsonify({'total': len(data), 'fresh': 0, 'expired': 0, 'by_platform': {}})
 
-        cutoff = datetime.now() - timedelta(days=days_back)
-        fresh, expired = 0, 0
+        cutoff     = datetime.now() - timedelta(days=days_back)
+        fresh      = 0
+        expired    = 0
+        by_platform = {k: 0 for k in PLATFORMS}
 
-        for v in data.values():
+        for key, v in data.items():
+            # comptage par plateforme
+            for pf in PLATFORMS:
+                if key.startswith(f"{pf}:"):
+                    by_platform[pf] += 1
+                    break
+            else:
+                by_platform['netflix'] += 1   # rétrocompat
+
+            # frais vs expiré
             try:
-                sent_at = datetime.fromisoformat(v["sent_at"])
-                if sent_at > cutoff:
+                if datetime.fromisoformat(v["sent_at"]) > cutoff:
                     fresh += 1
                 else:
                     expired += 1
-            except Exception:
+            except:
                 expired += 1
 
-        return jsonify({'total': len(data), 'fresh': fresh, 'expired': expired})
-
+        return jsonify({'total': len(data), 'fresh': fresh, 'expired': expired, 'by_platform': by_platform})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -575,12 +527,11 @@ def cache_stats():
 @app.route('/api/cache/purge', methods=['POST'])
 @login_required
 def cache_purge():
-    """API: Purge partielle (expirés) ou totale du cache"""
     logger = logging.getLogger(__name__)
-    mode = request.args.get('mode', 'partial')  # 'partial' | 'full'
+    mode = request.args.get('mode', 'partial')
 
     try:
-        days_back = int(os.getenv("DAYS_BACK", "7"))
+        days_back = 7
         if os.path.exists(ENV_FILE):
             with open(ENV_FILE, 'r') as f:
                 for line in f:
@@ -591,7 +542,6 @@ def cache_purge():
                             pass
                         break
 
-        # Lire le cache actuel
         data = {}
         if os.path.exists(MEMORY_FILE):
             try:
@@ -599,82 +549,76 @@ def cache_purge():
                     data = json.load(f)
                 if not isinstance(data, dict):
                     data = {}
-            except Exception:
+            except:
                 data = {}
 
         original_count = len(data)
+        os.makedirs(DATA_DIR, exist_ok=True)
 
         if mode == 'full':
-            os.makedirs(DATA_DIR, exist_ok=True)
             with open(MEMORY_FILE, 'w') as f:
                 json.dump({}, f)
-
             logger.info(f"💥 PURGE TOTALE par {session.get('username')} — {original_count} IDs supprimés")
-            return jsonify({
-                'success': True,
-                'message': f'{original_count} entrée(s) supprimée(s). Cache vidé.'
-            })
+            return jsonify({'success': True, 'message': f'{original_count} entrée(s) supprimée(s). Cache vidé.'})
 
-        else:  # partial
-            cutoff = datetime.now() - timedelta(days=days_back)
-            cleaned = {}
-            for k, v in data.items():
-                try:
-                    if datetime.fromisoformat(v["sent_at"]) > cutoff:
-                        cleaned[k] = v
-                except Exception:
-                    pass  # entrée malformée → on la purge
-
-            purged = original_count - len(cleaned)
-            os.makedirs(DATA_DIR, exist_ok=True)
-            with open(MEMORY_FILE, 'w') as f:
-                json.dump(cleaned, f, indent=2)
-
-            logger.info(f"🧹 PURGE PARTIELLE par {session.get('username')} — {purged} expirés supprimés, {len(cleaned)} conservés")
-            return jsonify({
-                'success': True,
-                'message': f'{purged} entrée(s) expirée(s) supprimée(s). {len(cleaned)} conservée(s).'
-            })
+        # partial
+        cutoff  = datetime.now() - timedelta(days=days_back)
+        cleaned = {
+            k: v for k, v in data.items()
+            if (lambda: (
+                datetime.fromisoformat(v.get("sent_at", "")) > cutoff
+                if isinstance(v, dict) and v.get("sent_at") else False
+            ))()
+        }
+        purged = original_count - len(cleaned)
+        with open(MEMORY_FILE, 'w') as f:
+            json.dump(cleaned, f, indent=2)
+        logger.info(f"🧹 PURGE PARTIELLE par {session.get('username')} — {purged} expirés, {len(cleaned)} conservés")
+        return jsonify({'success': True, 'message': f'{purged} entrée(s) expirée(s) supprimée(s). {len(cleaned)} conservée(s).'})
 
     except Exception as e:
-        logger.error(f"❌ Erreur purge cache: {e}")
+        logger.error(f"❌ Erreur purge: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ============================================================================
-# DOWNLOAD & PAGES
-# ============================================================================
+# ── Download & Pages ──────────────────────────────────────────────────────────
 
 @app.route('/download/logs/<log_type>')
 @login_required
 def download_logs(log_type):
-    """Télécharger les logs"""
     try:
         if log_type == 'debug':
-            return send_file(LOG_FILE, as_attachment=True, download_name='netflix_bot_v3.log')
+            return send_file(LOG_FILE, as_attachment=True, download_name='streaming_bot_v4.log')
         elif log_type == 'cron':
             return send_file(CRON_LOG_FILE, as_attachment=True, download_name='cron.log')
-        else:
-            return "Type de log inconnu", 404
+        return "Type de log inconnu", 404
     except Exception as e:
         return str(e), 500
 
 @app.route('/settings')
 @login_required
 def settings():
-    """Page de configuration"""
     return render_template('settings.html', username=session.get('username'))
+
+# ── API : liste des plateformes (pour le frontend) ────────────────────────────
+
+@app.route('/api/platforms')
+@login_required
+def get_platforms():
+    """Retourne la liste des plateformes configurées (utile pour le dashboard)."""
+    return jsonify(PLATFORMS)
+
+# ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
     os.makedirs('templates', exist_ok=True)
     os.makedirs(DATA_DIR, exist_ok=True)
     os.makedirs(LOGS_DIR, exist_ok=True)
-    
+
     print("=" * 60)
-    print("🎬 Netflix Bot v3.0 - Interface Web")
+    print("🎬 Streaming Bot v4.0 - Netflix + Disney+")
     print("=" * 60)
     print("🌐 Interface: http://localhost:5000")
     print("👤 Login: admin / admin123")
-    print("📡 API: mdblist.com (gratuite)")
     print("⚠️  CHANGEZ LE MOT DE PASSE!")
     print("=" * 60)
     app.run(host='0.0.0.0', port=5000, debug=True)

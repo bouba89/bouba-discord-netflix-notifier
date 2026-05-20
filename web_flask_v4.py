@@ -311,7 +311,7 @@ def run_bot():
     """Exécute netflix_bot_v4.py (Netflix + Disney+) manuellement."""
     try:
         result = subprocess.run(
-            ['python', '/app/netflix_bot_v4.py'],   # ← v4
+            ['python3', '/app/netflix_bot_v4.py'],
             capture_output=True,
             text=True,
             timeout=300

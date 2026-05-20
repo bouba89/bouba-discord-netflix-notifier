@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-🎬 Bouba Discord Netflix Notifier - Version 3.2 (Fix mémoire + Fix rate limit Discord)
-Bot Discord pour notifier des nouvelles sorties Netflix
+🎬 Bouba Discord Netflix Notifier - Version 4.1 (+ filtre année MIN_YEAR)
+Bot Discord pour notifier des nouvelles sorties Netflix & Disney+
 Utilise l'API officielle mdblist.com avec tous les endpoints
 """
 
@@ -36,7 +36,10 @@ DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
 MDBLIST_API_KEY = os.getenv("MDBLIST_API_KEY", "")
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 COUNTRIES = os.getenv("COUNTRIES", "FR").split(",")
-DAYS_BACK = int(os.getenv("DAYS_BACK", "7"))  # Jours à vérifier en arrière
+DAYS_BACK = int(os.getenv("DAYS_BACK", "7"))
+
+# ✅ NOUVEAU : année minimale — tout contenu plus ancien est ignoré
+MIN_YEAR = int(os.getenv("MIN_YEAR", "2025"))
 
 # URLs de base
 MDBLIST_API_BASE = "https://api.mdblist.com"
@@ -50,7 +53,7 @@ TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 PLATFORM_LISTS = {
     "netflix": {
         "label":  "Netflix",
-        "color":  0xE50914,          # rouge Netflix
+        "color":  0xE50914,
         "emoji":  "🎬",
         "logo":   "https://cdn.icon-icons.com/icons2/2699/PNG/512/netflix_official_logo_icon_168085.png",
         "search_url": "https://www.netflix.com/search?q={title}",
@@ -59,21 +62,20 @@ PLATFORM_LISTS = {
             "shows":  {"username": "thebirdod", "listname": "new-on-netflix-shows"},
         },
     },
-"disney": {
+    "disney": {
         "label":  "Disney+",
-        "color":  0x113CCF,          # bleu Disney+
+        "color":  0x113CCF,
         "emoji":  "✨",
         "logo":   "https://cdn.icon-icons.com/icons2/2699/PNG/512/disneyplus_logo_icon_168067.png",
         "search_url": "https://www.disneyplus.com/search/{title}",
         "lists": {
-            # Listes publiques mdblist pour Disney+
-            # (remplace username/listname si tu en as de meilleures)
             "movies": {"username": "thebirdod", "listname": "new-on-disney-movies"},
             "shows":  {"username": "thebirdod", "listname": "new-on-disney-shows"},
         },
     },
-}    
-    
+}
+
+
 class StreamingNotifier:
     """Classe principale pour gérer les notifications Netflix & Disney+"""
 
@@ -106,7 +108,6 @@ class StreamingNotifier:
             logger.error(f"❌ Erreur sauvegarde: {e}")
 
     def is_already_sent(self, item_id, platform):
-        """Clé unique = platform:item_id pour éviter les collisions entre plateformes"""
         return f"{platform}:{item_id}" in self.sent_ids
 
     def mark_as_sent(self, item_id, title, platform):
@@ -115,6 +116,26 @@ class StreamingNotifier:
             "platform": platform,
             "sent_at":  datetime.now().isoformat(),
         }
+
+    # ── Filtre année ──────────────────────────────────────────────────────────
+
+    def is_recent_enough(self, item):
+        """Retourne True si le contenu est sorti en MIN_YEAR ou après."""
+        year = item.get("release_year") or item.get("year")
+        if year:
+            try:
+                return int(year) >= MIN_YEAR
+            except (ValueError, TypeError):
+                pass
+        # Date de sortie complète ex: "2026-03-15"
+        premiered = item.get("premiered") or item.get("release_date", "")
+        if premiered and len(premiered) >= 4:
+            try:
+                return int(premiered[:4]) >= MIN_YEAR
+            except (ValueError, TypeError):
+                pass
+        # Année inconnue → on laisse passer par prudence
+        return True
 
     # ── TMDB ─────────────────────────────────────────────────────────────────
 
@@ -134,7 +155,6 @@ class StreamingNotifier:
     # ── mdblist ───────────────────────────────────────────────────────────────
 
     def get_list_items(self, username, listname, media_type, platform):
-        """Récupère TOUTE une liste mdblist (films ou séries) pour une plateforme donnée."""
         url = f"https://mdblist.com/lists/{username}/{listname}/json"
         logger.info(f"🔍 [{platform}] Récupération liste {media_type}s ({username}/{listname})...")
         try:
@@ -167,13 +187,12 @@ class StreamingNotifier:
     # ── Embed Discord ─────────────────────────────────────────────────────────
 
     def create_discord_embed(self, item, platform_key):
-        """Crée un embed Discord coloré selon la plateforme (Netflix ou Disney+)."""
-        pf       = PLATFORM_LISTS[platform_key]
-        title    = item.get("title", "Titre inconnu")
-        year     = item.get("release_year", "N/A")
-        imdb_id  = item.get("imdb_id", "")
-        tmdb_id  = item.get("id") or item.get("tmdb_id")
-        mtype    = item.get("mediatype", "movie")
+        pf      = PLATFORM_LISTS[platform_key]
+        title   = item.get("title", "Titre inconnu")
+        year    = item.get("release_year", "N/A")
+        imdb_id = item.get("imdb_id", "")
+        tmdb_id = item.get("id") or item.get("tmdb_id")
+        mtype   = item.get("mediatype", "movie")
 
         embed = {
             "title":     f"{pf['emoji']} {title} ({year})",
@@ -182,7 +201,6 @@ class StreamingNotifier:
             "footer":    {"text": pf["label"]},
         }
 
-        # Synopsis français en priorité
         description = None
         if TMDB_API_KEY and tmdb_id:
             description = self.get_french_overview(tmdb_id, mtype)
@@ -191,13 +209,11 @@ class StreamingNotifier:
         if description:
             embed["description"] = description[:297] + "..." if len(description) > 300 else description
 
-        # Poster
         if item.get("poster"):
             embed["image"] = {"url": item["poster"]}
 
         fields = []
 
-        # Notes
         ratings = item.get("ratings", [])
         if ratings:
             rating_text = [
@@ -207,7 +223,6 @@ class StreamingNotifier:
             if rating_text:
                 fields.append({"name": "⭐ Notes", "value": "\n".join(rating_text), "inline": True})
 
-        # Genres
         genres = item.get("genres", [])
         if genres:
             names = [
@@ -218,7 +233,6 @@ class StreamingNotifier:
             if genre_text:
                 fields.append({"name": "🎭 Genres", "value": genre_text, "inline": True})
 
-        # Liens
         links = []
         if imdb_id:
             links.append(f"[🎬 IMDb](https://www.imdb.com/title/{imdb_id})")
@@ -285,17 +299,17 @@ class StreamingNotifier:
     # ── Traitement principal ──────────────────────────────────────────────────
 
     def process_platform(self, platform_key):
-        """Traite films + séries pour une plateforme (netflix ou disney)."""
         pf = PLATFORM_LISTS[platform_key]
         logger.info(f"\n{'='*60}")
         logger.info(f"🚀 [{pf['label']}] Vérification des nouveautés...")
+        logger.info(f"📅 Filtre : contenus >= {MIN_YEAR}")
         logger.info(f"{'='*60}")
 
         all_embeds = []
 
         for media_type, list_info in pf["lists"].items():
-            mtype  = "movie" if media_type == "movies" else "show"
-            label  = "films" if mtype == "movie" else "séries"
+            mtype = "movie" if media_type == "movies" else "show"
+            label = "films" if mtype == "movie" else "séries"
             logger.info(f"📽️ [{pf['label']}] Traitement des {label}...")
 
             items = self.get_list_items(
@@ -305,7 +319,14 @@ class StreamingNotifier:
                 platform_key,
             )
 
+            skipped_old = 0
             for item in items:
+                # ✅ FILTRE ANNÉE
+                if not self.is_recent_enough(item):
+                    skipped_old += 1
+                    logger.debug(f"⏭️ Trop ancien ({item.get('release_year')}): {item.get('title')}")
+                    continue
+
                 item_id = item.get("id") or item.get("tmdb_id")
                 if not item_id:
                     continue
@@ -314,7 +335,6 @@ class StreamingNotifier:
                     logger.debug(f"⏭️ Déjà envoyé: {item.get('title')}")
                     continue
 
-                # Enrichissement via mdblist (optionnel)
                 if MDBLIST_API_KEY:
                     detailed = self.get_media_details(
                         imdb_id=item.get("imdb_id"),
@@ -329,6 +349,9 @@ class StreamingNotifier:
                 self.mark_as_sent(item_id, item.get("title", ""), platform_key)
                 logger.info(f"➕ Nouveau(elle) {mtype}: {item.get('title')} ({item.get('release_year')})")
 
+            if skipped_old:
+                logger.info(f"🚫 [{pf['label']}] {skipped_old} {label} ignorés (année < {MIN_YEAR})")
+
         if all_embeds:
             logger.info(f"📤 [{pf['label']}] Envoi de {len(all_embeds)} notifications...")
             self.send_to_discord(all_embeds, platform_key)
@@ -337,16 +360,15 @@ class StreamingNotifier:
             logger.info(f"✅ [{pf['label']}] Aucune nouvelle sortie à notifier")
 
     def process_all(self):
-        """Traite toutes les plateformes configurées."""
         logger.info("=" * 60)
         logger.info("🎬 Démarrage — Netflix + Disney+")
-        logger.info(f"📅 Mémoire active : {len(self.sent_ids)} IDs déjà envoyés")
+        logger.info(f"📅 Filtre MIN_YEAR : {MIN_YEAR}")
+        logger.info(f"🧠 Mémoire active : {len(self.sent_ids)} IDs déjà envoyés")
         logger.info("=" * 60)
 
         for platform_key in PLATFORM_LISTS:
             self.process_platform(platform_key)
 
-        # Sauvegarde unique à la fin
         self.save_sent_ids()
 
         logger.info("=" * 60)
@@ -355,7 +377,7 @@ class StreamingNotifier:
 
 
 def main():
-    logger.info("🎬 Bouba Discord Netflix + Disney Notifier v4.0")
+    logger.info("🎬 Bouba Discord Netflix + Disney Notifier v4.1")
     logger.info("📡 API: mdblist.com (officielle)")
 
     if not DISCORD_WEBHOOK:

@@ -31,3 +31,4 @@ jobs:
           tags: |
             ghcr.io/bouba89/bouba-discord-netflix-notifier:latest
             ghcr.io/bouba89/bouba-discord-netflix-notifier:${{ github.sha }}
+            ghcr.io/bouba89/bouba-discord-netflix-notifier:${{ github.ref_name }}

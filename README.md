@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![GHCR](https://img.shields.io/badge/GHCR-Available-181717?style=for-the-badge&logo=github&logoColor=white)
-![License](https://img.shields.io/badge/License-Open_Source-green?style=for-the-badge)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 

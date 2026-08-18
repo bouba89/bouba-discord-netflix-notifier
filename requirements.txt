@@ -3,7 +3,7 @@ requests>=2.34.2
 python-dotenv==1.2.2
 werkzeug>=3.1.8
 jaraco.context>=6.1.2
-wheel>=0.47.0
+wheel>=0.48.0
 
 # Flask pour l'interface web
 Flask==3.1.3

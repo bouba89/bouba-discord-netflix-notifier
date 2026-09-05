@@ -87,9 +87,10 @@ echo "⏰ Planification: Quotidien à 8h00"
 echo "=================================================="
 echo ""
 if [ -f /app/web_interface.py ]; then
-    echo "🌐 Démarrage de l'interface web Flask..."
+    echo "🌐 Démarrage de l'interface web Flask (Gunicorn)..."
     cd /app
-    exec python3 web_interface.py
+    exec gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 web_interface:app
+else
 else
     echo "⚠️  Interface web non trouvée"
     tail -f /dev/null

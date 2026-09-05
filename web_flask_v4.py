@@ -609,17 +609,11 @@ def get_platforms():
 
 # ─────────────────────────────────────────────────────────────────────────────
 
-if __name__ == '__main__':
-    os.makedirs('templates', exist_ok=True)
-    os.makedirs(DATA_DIR, exist_ok=True)
-    os.makedirs(LOGS_DIR, exist_ok=True)
+os.makedirs('templates', exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(LOGS_DIR, exist_ok=True)
 
-    print("=" * 60)
-    print("🎬 Streaming Bot v4.0 - Netflix + Disney+")
-    print("=" * 60)
-    print("🌐 Interface: http://localhost:5000")
-    print("👤 Login: admin / admin123")
-    print("⚠️  CHANGEZ LE MOT DE PASSE!")
-    print("=" * 60)
+if __name__ == '__main__':
+    # Dev local uniquement — en conteneur, Gunicorn prend le relais (voir start.sh)
     app.run(host='0.0.0.0', port=5000, debug=False)
     

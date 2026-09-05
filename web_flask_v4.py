@@ -13,6 +13,7 @@ import logging
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
+import requests
 
 app = Flask(__name__)
 
@@ -27,6 +28,10 @@ LOG_FILE      = f"{LOGS_DIR}/netflix_bot.log"
 CRON_LOG_FILE = f"{LOGS_DIR}/cron.log"
 ENV_FILE      = "/app/.env_for_cron"
 USERS_FILE    = f"{DATA_DIR}/users.json"
+
+# ── Turnstile (anti-bot) ──────────────────────────────────────────────────
+TURNSTILE_SITE_KEY = os.environ.get('TURNSTILE_SITE_KEY', '')
+TURNSTILE_SECRET_KEY = os.environ.get('TURNSTILE_SECRET_KEY', '')
 
 # ── Plateformes supportées (pour les stats de mémoire) ──────────────────────
 PLATFORMS = {

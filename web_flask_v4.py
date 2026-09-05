@@ -96,6 +96,25 @@ def verify_user(username, password):
         return check_password_hash(users[username]['password'], password)
     return False
 
+def verify_turnstile(token, remote_ip=None):
+    """Vérifie le token Cloudflare Turnstile auprès de l'API de Cloudflare."""
+    if not TURNSTILE_SECRET_KEY:
+        # Pas de clé configurée → on laisse passer (utile en dev local)
+        return True
+    try:
+        resp = requests.post(
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+            data={
+                'secret': TURNSTILE_SECRET_KEY,
+                'response': token,
+                'remoteip': remote_ip
+            },
+            timeout=5
+        )
+        return resp.json().get('success', False)
+    except Exception:
+        return False
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -119,7 +138,7 @@ def login():
     if 'username' in session:
         return redirect(url_for('index'))
     return render_template('login.html', turnstile_site_key=TURNSTILE_SITE_KEY)
-            
+
 
 @app.route('/logout')
 def logout():
@@ -626,4 +645,3 @@ os.makedirs(LOGS_DIR, exist_ok=True)
 if __name__ == '__main__':
     # Dev local uniquement — en conteneur, Gunicorn prend le relais (voir start.sh)
     app.run(host='0.0.0.0', port=5000, debug=False)
-    

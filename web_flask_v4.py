@@ -621,4 +621,5 @@ if __name__ == '__main__':
     print("👤 Login: admin / admin123")
     print("⚠️  CHANGEZ LE MOT DE PASSE!")
     print("=" * 60)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)
+    

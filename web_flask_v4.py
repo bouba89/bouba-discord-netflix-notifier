@@ -99,6 +99,10 @@ def verify_user(username, password):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        turnstile_token = request.form.get('cf-turnstile-response', '')
+        if not verify_turnstile(turnstile_token, request.remote_addr):
+            return render_template('login.html', error='Vérification anti-robot échouée, réessaie', turnstile_site_key=TURNSTILE_SITE_KEY)
+
         username = request.form.get('username')
         password = request.form.get('password')
         remember = request.form.get('remember') == 'on'
@@ -111,10 +115,11 @@ def login():
             users[username]['last_login'] = datetime.now().isoformat()
             save_users(users)
             return redirect(url_for('index'))
-        return render_template('login.html', error='Identifiants incorrects')
+        return render_template('login.html', error='Identifiants incorrects', turnstile_site_key=TURNSTILE_SITE_KEY)
     if 'username' in session:
         return redirect(url_for('index'))
-    return render_template('login.html')
+    return render_template('login.html', turnstile_site_key=TURNSTILE_SITE_KEY)
+            
 
 @app.route('/logout')
 def logout():

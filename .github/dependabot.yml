@@ -1,22 +1,49 @@
 version: 2
 updates:
-  # Dépendances Python
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+      time: "06:00"
+      timezone: "Europe/Paris"
     open-pull-requests-limit: 10
+    rebase-strategy: "auto"
+    groups:
+      pip-validated-batch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
-  # Image Docker de base (ton Dockerfile)
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
+      interval: "daily"
+      time: "06:05"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 10
+    rebase-strategy: "auto"
+    groups:
+      docker-validated-batch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
-  # Actions GitHub utilisées dans tes workflows
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
+      interval: "daily"
+      time: "06:10"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 10
+    rebase-strategy: "auto"
+    groups:
+      actions-validated-batch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

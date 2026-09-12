@@ -559,7 +559,27 @@
                 La purge des expirés suffit dans la plupart des cas.
             </div>
         </div>
-        
+        <!-- Configuration Webhook Discord -->
+<div class="card">
+    <h2>💬 Salon Discord (Webhook)</h2>
+
+    <div class="form-group">
+        <label for="discord_webhook">URL du webhook Discord</label>
+        <input type="text" id="discord_webhook" class="form-control"
+               placeholder="https://discord.com/api/webhooks/…">
+    </div>
+
+    <div class="info-box">
+        ℹ️ Pour changer de salon : dans Discord, <strong>Paramètres du salon → Intégrations → Webhooks</strong>,
+        crée un webhook pointant vers le nouveau salon, puis colle son URL ici. Prend effet immédiatement,
+        sans redémarrer le container.
+    </div>
+
+    <div style="display:flex; gap:12px; margin-top:20px;">
+        <button class="btn btn-primary" onclick="saveWebhook()">💾 Sauvegarder</button>
+        <button class="btn btn-secondary" onclick="testWebhook()">📨 Tester</button>
+    </div>
+</div>
         <!-- Configuration actuelle -->
         <div class="card">
             <h2>📋 Configuration actuelle</h2>
@@ -585,9 +605,9 @@
             </div>
             
             <div class="info-box">
-                ℹ️ Pour modifier le webhook ou les clés API, éditez le fichier <code>.env</code> et redémarrez le container.
-            </div>
-        </div>
+    ℹ️ Le webhook se modifie ci-dessus, sans redémarrage. Pour les clés API (mdblist/TMDB),
+    édite le fichier <code>.env</code> et redémarre le container.
+</div>
         
         <!-- Changement de mot de passe -->
         <div class="card">
@@ -641,6 +661,7 @@
         window.onload = function() {
             loadConfig();
             loadDaysBack();
+            loadWebhookStatus();
             loadCronConfig();
             loadCacheStats();
         };
@@ -871,7 +892,52 @@
                 showAlert('Erreur: ' + error.message, 'error');
             }
         }
-        
+         async function loadWebhookStatus() {
+    try {
+        const response = await fetch('/api/config/discord_webhook');
+        const data = await response.json();
+        document.getElementById('discord_webhook').placeholder =
+            data.configured ? `Actuel : ${data.masked}` : 'https://discord.com/api/webhooks/…';
+    } catch (error) {
+        console.error('Erreur chargement webhook:', error);
+    }
+}
+async function saveWebhook() {
+    const webhook = document.getElementById('discord_webhook').value.trim();
+    if (!webhook) { showAlert('Colle une URL de webhook avant de sauvegarder', 'error'); return; }
+    try {
+        const response = await fetch('/api/config/discord_webhook', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ discord_webhook: webhook })
+        });
+        const data = await response.json();
+        if (data.success) {
+            showAlert('Webhook mis à jour — le prochain envoi ira sur le nouveau salon', 'success');
+            document.getElementById('discord_webhook').value = '';
+            loadWebhookStatus();
+            document.getElementById('webhook-value').textContent = data.masked;
+        } else {
+            showAlert('Erreur: ' + data.error, 'error');
+        }
+    } catch (error) {
+        showAlert('Erreur: ' + error.message, 'error');
+    }
+}
+
+async function testWebhook() {
+    try {
+        const response = await fetch('/api/config/discord_webhook/test', { method: 'POST' });
+        const data = await response.json();
+        if (data.success) {
+            showAlert('Message de test envoyé — vérifie le salon Discord', 'success');
+        } else {
+            showAlert('Erreur: ' + data.error, 'error');
+        }
+    } catch (error) {
+        showAlert('Erreur: ' + error.message, 'error');
+    }
+} 
         document.getElementById('password-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const currentPassword  = document.getElementById('current_password').value;

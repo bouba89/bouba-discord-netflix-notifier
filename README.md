@@ -29,6 +29,21 @@
 
 ---
 
+## 🌐 Configuration via l'interface web
+
+Depuis la version X.X, tu peux configurer le webhook Discord directement depuis l'interface web Flask, sans éditer le fichier `.env` :
+
+1. Accède à l'interface via `http://<ton-ip>:<port>/`
+2. Renseigne l'URL de ton webhook Discord dans le champ prévu
+3. Clique sur "Enregistrer" / "Sauvegarder"
+
+⚠️ Le champ attend une URL au format :
+`https://discord.com/api/webhooks/<id>/<token>`
+
+La valeur est stockée dans [préciser où : .env, fichier de config, base de données...] et écrase la variable `DISCORD_WEBHOOK` si elle est définie.
+
+
+
 ## 🐳 Installation via GHCR (recommandé)
 
 ### Prérequis

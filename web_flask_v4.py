@@ -27,6 +27,7 @@ MEMORY_FILE   = f"{DATA_DIR}/sent_ids.json"
 LOG_FILE      = f"{LOGS_DIR}/netflix_bot.log"
 CRON_LOG_FILE = f"{LOGS_DIR}/cron.log"
 ENV_FILE      = "/app/.env_for_cron"
+USERS_FILE    = f"{DATA_DIR}/users.json"
 import re
 DISCORD_WEBHOOK_RE = re.compile(r'^https://(discord|discordapp)\.com/api/webhooks/\d+/[\w-]+$')
 

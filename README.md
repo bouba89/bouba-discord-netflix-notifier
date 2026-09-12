@@ -2,7 +2,7 @@
 
 ![Stars](https://img.shields.io/github/stars/bouba89/bouba-discord-netflix-notifier?style=social)
 ![Forks](https://img.shields.io/github/forks/bouba89/bouba-discord-netflix-notifier?style=social)
-![Version](https://img.shields.io/badge/version-4.0-blue.svg?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-4.1.1-blue.svg?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![GHCR](https://img.shields.io/badge/GHCR-Available-181717?style=for-the-badge&logo=github&logoColor=white)
@@ -31,7 +31,7 @@
 
 ## 🌐 Configuration via l'interface web
 
-Depuis la version X.X, tu peux configurer le webhook Discord directement depuis l'interface web Flask, sans éditer le fichier `.env` :
+Depuis la version 4.1.1, on peux configurer le webhook Discord directement depuis l'interface web Flask, sans éditer le fichier `.env` :
 
 1. Accède à l'interface via `http://<ton-ip>:<port>/`
 2. Renseigne l'URL de ton webhook Discord dans le champ prévu

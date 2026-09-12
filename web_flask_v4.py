@@ -27,7 +27,45 @@ MEMORY_FILE   = f"{DATA_DIR}/sent_ids.json"
 LOG_FILE      = f"{LOGS_DIR}/netflix_bot.log"
 CRON_LOG_FILE = f"{LOGS_DIR}/cron.log"
 ENV_FILE      = "/app/.env_for_cron"
-USERS_FILE    = f"{DATA_DIR}/users.json"
+import re
+DISCORD_WEBHOOK_RE = re.compile(r'^https://(discord|discordapp)\.com/api/webhooks/\d+/[\w-]+$')
+
+def get_env_var(key, default=None):
+    if os.path.exists(ENV_FILE):
+        with open(ENV_FILE, 'r') as f:
+            for line in f:
+                if line.startswith(f'{key}='):
+                    return line.split('=', 1)[1].strip()
+    return default
+
+def write_env_var(key, value):
+    lines = []
+    if os.path.exists(ENV_FILE):
+        with open(ENV_FILE, 'r') as f:
+            lines = f.readlines()
+    updated = False
+    for i, line in enumerate(lines):
+        if line.startswith(f'{key}='):
+            lines[i] = f'{key}={value}\n'
+            updated = True
+            break
+    if not updated:
+        lines.append(f'{key}={value}\n')
+    with open(ENV_FILE, 'w') as f:
+        f.writelines(lines)
+
+def build_bot_env():
+    """Env pour lancer netflix_bot_v4.py avec les valeurs à jour de
+    .env_for_cron (webhook, days_back...), pas celles figées au démarrage."""
+    env = os.environ.copy()
+    if os.path.exists(ENV_FILE):
+        with open(ENV_FILE, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line and '=' in line and not line.startswith('#'):
+                    k, v = line.split('=', 1)
+                    env[k] = v
+    return env
 
 # ── Turnstile (anti-bot) ──────────────────────────────────────────────────
 TURNSTILE_SITE_KEY = os.environ.get('TURNSTILE_SITE_KEY', '')
@@ -343,12 +381,13 @@ def run_bot():
             ['python3', '/app/netflix_bot_v4.py'],
             capture_output=True,
             text=True,
-            timeout=300
+            timeout=300,
+            env=build_bot_env()  # ← utilise la config à jour, pas celle du démarrage
         )
         return jsonify({
             'success': result.returncode == 0,
             'output': result.stdout,
-            'error':  result.stderr
+            'error': result.stderr
         })
     except subprocess.TimeoutExpired:
         return jsonify({'success': False, 'error': 'Timeout (>5min)'}), 500
@@ -416,6 +455,46 @@ def config_days_back():
         return jsonify({'success': True, 'days_back': new_days})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/config/discord_webhook', methods=['GET', 'POST'])
+@login_required
+def config_discord_webhook():
+    if request.method == 'GET':
+        current = get_env_var('DISCORD_WEBHOOK', '')
+        masked = current[:45] + '***' if len(current) > 45 else ('' if not current else '***')
+        return jsonify({'configured': bool(current), 'masked': masked})
+
+    new_webhook = (request.json or {}).get('discord_webhook', '').strip()
+    if not DISCORD_WEBHOOK_RE.match(new_webhook):
+        return jsonify({
+            'success': False,
+            'error': "URL invalide (attendu : https://discord.com/api/webhooks/ID/TOKEN)"
+        }), 400
+
+    write_env_var('DISCORD_WEBHOOK', new_webhook)
+    logging.getLogger(__name__).info(f"🔧 Webhook Discord modifié par {session.get('username')}")
+    return jsonify({'success': True, 'masked': new_webhook[:45] + '***'})
+
+
+@app.route('/api/config/discord_webhook/test', methods=['POST'])
+@login_required
+def test_discord_webhook():
+    webhook = get_env_var('DISCORD_WEBHOOK', '')
+    if not webhook:
+        return jsonify({'success': False, 'error': 'Aucun webhook configuré'}), 400
+    try:
+        resp = requests.post(webhook, json={
+            'username': 'Netflix Notifier (test)',
+            'content': f"✅ Test de configuration envoyé le {datetime.now().strftime('%d/%m/%Y à %H:%M:%S')} par {session.get('username')}"
+        }, timeout=10)
+        if resp.status_code in (200, 204):
+            return jsonify({'success': True})
+        return jsonify({'success': False, 'error': f'Discord a répondu {resp.status_code}'}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+
 
 # ── Reset mémoire complète ────────────────────────────────────────────────────
 

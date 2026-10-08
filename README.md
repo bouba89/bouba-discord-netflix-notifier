@@ -1,4 +1,4 @@
-# Bouba Discord Netflix Notifier
+# Bouba Discord Netflix Notifier - 4.2.0 - 09/10/2026
 
 ![Stars](https://img.shields.io/github/stars/bouba89/bouba-discord-netflix-notifier?style=social)
 ![Forks](https://img.shields.io/github/forks/bouba89/bouba-discord-netflix-notifier?style=social)

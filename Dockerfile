@@ -1,8 +1,8 @@
 FROM python:3.14-alpine
 
 LABEL maintainer="bouba89"
-LABEL description="Bot Discord Netflix Notifier - Version 3.0 (API mdblist complète)"
-LABEL version="4.0.0"
+LABEL description="Bot Discord : sorties Netflix & Disney+ (kinow.net + TMDB)"
+LABEL version="5.0.0"
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \

@@ -7,9 +7,10 @@ services:
     container_name: bouba_netflix_notifier_v3
     environment:
       - DISCORD_WEBHOOK=${DISCORD_WEBHOOK}
-      - MDBLIST_API_KEY=${MDBLIST_API_KEY:-}
       - TMDB_API_KEY=${TMDB_API_KEY:-}
       - DAYS_BACK=${DAYS_BACK:-1}
+      - KINOW_DAYS_AHEAD=${KINOW_DAYS_AHEAD:-1}
+      - COUNTRY=${COUNTRY:-fr}
       - TZ=Europe/Paris
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:-netflix-bot-v3-change-me-in-production}
     

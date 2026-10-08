@@ -6,6 +6,7 @@ Utilise l'API officielle mdblist.com avec tous les endpoints
 """
 
 import os
+import re
 import json
 import logging
 import time
@@ -40,6 +41,16 @@ DAYS_BACK = int(os.getenv("DAYS_BACK", "7"))
 
 # ✅ NOUVEAU : année minimale — tout contenu plus ancien est ignoré
 MIN_YEAR = int(os.getenv("MIN_YEAR", "2025"))
+
+# ✅ NOUVEAU : calendrier Kinow (sorties Netflix à venir, avec dates)
+KINOW_ENABLED = os.getenv("KINOW_ENABLED", "true").lower() in ("1", "true", "yes")
+KINOW_DAYS_AHEAD = int(os.getenv("KINOW_DAYS_AHEAD", "1"))   # 1 = sorties de demain
+KINOW_URL = "https://kinow.net/sorties-streaming"
+MOIS_FR = {
+    "janvier": 1, "février": 2, "mars": 3, "avril": 4, "mai": 5, "juin": 6,
+    "juillet": 7, "août": 8, "septembre": 9, "octobre": 10,
+    "novembre": 11, "décembre": 12,
+}
 
 # URLs de base
 MDBLIST_API_BASE = "https://api.mdblist.com"
@@ -152,6 +163,143 @@ class StreamingNotifier:
             logger.debug(f"❌ Synopsis français: {e}")
             return None
 
+    def get_tmdb_details(self, tmdb_id, media_type):
+        """Détails TMDB (FR) utilisés pour les sorties Kinow : affiche, synopsis, genres, note."""
+        if not TMDB_API_KEY or not tmdb_id:
+            return {}
+        try:
+            tmdb_type = "tv" if media_type == "show" else "movie"
+            resp = requests.get(
+                f"{TMDB_BASE_URL}/{tmdb_type}/{tmdb_id}",
+                params={"api_key": TMDB_API_KEY, "language": "fr-FR"},
+                timeout=10,
+            )
+            resp.raise_for_status()
+            d = resp.json()
+            out = {
+                "description": d.get("overview") or "",
+                "genres": [g.get("name") for g in d.get("genres", []) if g.get("name")],
+                "release_year": (d.get("release_date") or d.get("first_air_date") or "")[:4] or None,
+            }
+            if d.get("poster_path"):
+                out["poster"] = TMDB_IMAGE_BASE + d["poster_path"]
+            if d.get("vote_average"):
+                out["ratings"] = [{"source": "tmdb", "score": round(d["vote_average"] * 10)}]
+            return out
+        except Exception as e:
+            logger.debug(f"❌ Détails TMDB {tmdb_id}: {e}")
+            return {}
+
+    # ── Kinow (calendrier des sorties) ────────────────────────────────────────
+
+    @staticmethod
+    def parse_kinow_date(texte, today):
+        """'vendredi 9 octobre' -> date ; 'Date à confirmer' -> None"""
+        m = re.search(r"(\d{1,2})\s+([a-zéûè]+)", texte.lower())
+        if not m or m.group(2) not in MOIS_FR:
+            return None
+        jour, mois = int(m.group(1)), MOIS_FR[m.group(2)]
+        annee = today.year
+        if mois < today.month - 6:
+            annee += 1
+        try:
+            return today.replace(year=annee, month=mois, day=jour)
+        except ValueError:
+            return None
+
+    def get_kinow_releases(self, service="netflix", country="fr"):
+        try:
+            from bs4 import BeautifulSoup
+        except ImportError:
+            logger.error("❌ beautifulsoup4 manquant (pip install beautifulsoup4)")
+            return []
+
+        logger.info("🔍 [Kinow] Récupération du calendrier des sorties...")
+        try:
+            resp = requests.get(
+                KINOW_URL,
+                params={"country": country, "service": service},
+                headers={"User-Agent": "Mozilla/5.0 (compatible; BoubaNetflixNotifier/4.2)"},
+                timeout=20,
+            )
+            resp.raise_for_status()
+        except Exception as e:
+            logger.error(f"❌ [Kinow] Erreur de récupération: {e}")
+            return []
+
+        soup = BeautifulSoup(resp.text, "html.parser")
+        today = datetime.now().date()
+        releases = []
+
+        for h2 in soup.find_all("h2"):
+            release_date = self.parse_kinow_date(h2.get_text(strip=True), today)
+            for el in h2.find_all_next():
+                if el.name == "h2":
+                    break
+                if el.name != "a":
+                    continue
+                m = re.search(r"/(film|serie)/(\d+)", el.get("href", ""))
+                if not m:
+                    continue
+                releases.append({
+                    "title":        el.get_text(strip=True),
+                    "mediatype":    "movie" if m.group(1) == "film" else "show",
+                    "id":           int(m.group(2)),          # ID TMDB
+                    "release_date": release_date,             # None = à confirmer
+                    "kinow_url":    "https://kinow.net" + el["href"] if el["href"].startswith("/") else el["href"],
+                })
+
+        logger.info(f"📊 [Kinow] {len(releases)} sorties dans le calendrier")
+        return releases
+
+    @staticmethod
+    def format_date_fr(d):
+        jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+        mois = {v: k for k, v in MOIS_FR.items()}
+        return f"{jours[d.weekday()]} {d.day} {mois[d.month]}"
+
+    def process_kinow(self):
+        """Poste les sorties Netflix des KINOW_DAYS_AHEAD prochains jours (dédoublonnées)."""
+        pf = PLATFORM_LISTS["netflix"]
+        today = datetime.now().date()
+        limit = today + timedelta(days=KINOW_DAYS_AHEAD)
+
+        logger.info(f"\n{'='*60}")
+        logger.info(f"📆 [Kinow] Sorties Netflix du {today:%d/%m} au {limit:%d/%m}")
+        logger.info(f"{'='*60}")
+
+        embeds = []
+        for item in self.get_kinow_releases():
+            rd = item["release_date"]
+            if rd is None or not (today <= rd <= limit):
+                continue
+
+            # clé distincte de la mémoire MDBList pour ne pas mélanger les deux sources
+            memory_id = f"kinow-{item['mediatype']}-{item['id']}-{rd.isoformat()}"
+            if self.is_already_sent(memory_id, "netflix"):
+                continue
+
+            kinow_title = item["title"]  # garde "…, saison 2"
+            item.update(self.get_tmdb_details(item["id"], item["mediatype"]))
+
+            if MDBLIST_API_KEY:
+                detailed = self.get_media_details(tmdb_id=item["id"], media_type=item["mediatype"])
+                if detailed:
+                    for k, v in detailed.items():     # ne pas écraser ce que TMDB a déjà fourni
+                        item.setdefault(k, v)
+
+            item["title"] = kinow_title
+            item["kinow_date"] = self.format_date_fr(rd)
+            embeds.append(self.create_discord_embed(item, "netflix"))
+            self.mark_as_sent(memory_id, kinow_title, "netflix")
+            logger.info(f"➕ [Kinow] {kinow_title} ({rd:%d/%m})")
+
+        if embeds:
+            self.send_to_discord(embeds, "netflix")
+            logger.info(f"✅ [Kinow] {len(embeds)} sorties envoyées!")
+        else:
+            logger.info("✅ [Kinow] Aucune nouvelle sortie à notifier")
+
     # ── mdblist ───────────────────────────────────────────────────────────────
 
     def get_list_items(self, username, listname, media_type, platform):
@@ -213,6 +361,10 @@ class StreamingNotifier:
             embed["image"] = {"url": item["poster"]}
 
         fields = []
+
+        if item.get("kinow_date"):
+            embed["footer"] = {"text": f"{pf['label']} • Prochainement"}
+            fields.append({"name": "📅 Sortie", "value": item["kinow_date"].capitalize(), "inline": True})
 
         ratings = item.get("ratings", [])
         if ratings:
@@ -368,6 +520,9 @@ class StreamingNotifier:
 
         for platform_key in PLATFORM_LISTS:
             self.process_platform(platform_key)
+
+        if KINOW_ENABLED:
+            self.process_kinow()
 
         self.save_sent_ids()
 

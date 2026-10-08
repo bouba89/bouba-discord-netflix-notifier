@@ -2,7 +2,7 @@
 
 ![Stars](https://img.shields.io/github/stars/bouba89/bouba-discord-netflix-notifier?style=social)
 ![Forks](https://img.shields.io/github/forks/bouba89/bouba-discord-netflix-notifier?style=social)
-![Version](https://img.shields.io/badge/version-4.1.1-blue.svg?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-5.0.0-blue.svg?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![GHCR](https://img.shields.io/badge/GHCR-Available-181717?style=for-the-badge&logo=github&logoColor=white)
@@ -12,7 +12,9 @@
 
 ## 🚀 À propos
 
-**Bouba Discord Netflix Notifier** est un bot Discord automatisé qui surveille et notifie les **nouvelles sorties Netflix** directement dans ton serveur Discord.
+**Bouba Discord Netflix Notifier** est un bot Discord automatisé qui annonce les **prochaines sorties Netflix et Disney+** (France) directement dans ton serveur Discord, avec affiche, synopsis en français, notes et liens.
+
+Les sorties et leurs dates viennent du calendrier de [kinow.net](https://kinow.net/sorties-streaming) ; TMDB fournit l'affiche, le synopsis, les genres et la note. Le bot annonce chaque sortie la veille de sa date, une seule fois.
 
 ---
 
@@ -50,9 +52,8 @@ La valeur est stockée dans [préciser où : .env, fichier de config, base de do
 
 - 🐳 Docker (≥ 20.10)
 - 🐙 Docker Compose (≥ 2.0)
-- (Optionnel) Clés API :
-  - MDBList (recommandé, gratuit)
-  - TMDB (pour synopsis en français)
+- Un webhook Discord
+- Une clé API TMDB (gratuite, \`API Key\` de 32 caractères) pour l'affiche et le synopsis en français
 
 ### Étapes rapides
 
@@ -77,9 +78,10 @@ docker compose up -d
 | Variable            | Description             | Requis        |
 | ------------------- | ----------------------- | ------------- |
 | \`DISCORD_WEBHOOK\`   | Webhook Discord         | ✅             |
-| \`MDBLIST_API_KEY\`   | Clé MDBList API         | ⚠️ recommandé |
 | \`TMDB_API_KEY\`      | Clé TMDB API            | ⚠️ recommandé |
-| \`DAYS_BACK\`         | Jours à vérifier        | ❌             |
+| \`KINOW_DAYS_AHEAD\`  | Annonce les sorties jusqu'à J+N (défaut : 1 = demain) | ❌ |
+| \`COUNTRY\`           | Pays du calendrier (défaut : \`fr\`) | ❌ |
+| \`DAYS_BACK\`         | Âge (jours) au-delà duquel une entrée de la mémoire est considérée expirée par l'interface web | ❌ |
 | \`FLASK_SECRET_KEY\`  | Clé secrète Flask       | ❌             |
 
 ---
@@ -164,6 +166,7 @@ bouba-discord-netflix-notifier/
 ├── requirements.txt
 ├── start.sh
 ├── netflix_bot_v4.py
+├── kinow_source.py
 ├── web_flask_v4.py
 ├── crontab.txt
 ├── README.md

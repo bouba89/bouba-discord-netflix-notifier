@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-🎬 Bouba Discord Netflix Notifier - Version 4.1 (+ filtre année MIN_YEAR)
-Bot Discord pour notifier des nouvelles sorties Netflix & Disney+
-Utilise l'API officielle mdblist.com avec tous les endpoints
+🎬 Bouba Discord Netflix Notifier - Version 5.0
+Bot Discord qui annonce les prochaines sorties Netflix & Disney+ (France)
+Source : calendrier kinow.net, enrichi via TMDB (affiche, synopsis FR, genres, notes)
 """
 
 import os
@@ -13,6 +13,7 @@ import time
 import requests
 from datetime import datetime, timedelta
 from pathlib import Path
+from urllib.parse import quote
 
 # Configuration du logging
 LOG_DIR = Path("/app/logs")
@@ -34,16 +35,10 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # Variables d'environnement
 DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
-MDBLIST_API_KEY = os.getenv("MDBLIST_API_KEY", "")
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
-COUNTRIES = os.getenv("COUNTRIES", "FR").split(",")
-DAYS_BACK = int(os.getenv("DAYS_BACK", "7"))
+COUNTRY = os.getenv("COUNTRY", "fr").lower()
 
-# ✅ NOUVEAU : année minimale — tout contenu plus ancien est ignoré
-MIN_YEAR = int(os.getenv("MIN_YEAR", "2025"))
-
-# ✅ NOUVEAU : calendrier Kinow (sorties Netflix à venir, avec dates)
-KINOW_ENABLED = os.getenv("KINOW_ENABLED", "true").lower() in ("1", "true", "yes")
+# Calendrier Kinow (sorties à venir, avec dates)
 KINOW_DAYS_AHEAD = int(os.getenv("KINOW_DAYS_AHEAD", "1"))   # 1 = sorties de demain
 KINOW_URL = "https://kinow.net/sorties-streaming"
 MOIS_FR = {
@@ -53,36 +48,29 @@ MOIS_FR = {
 }
 
 # URLs de base
-MDBLIST_API_BASE = "https://api.mdblist.com"
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 
 # ─────────────────────────────────────────────
-# Listes mdblist par plateforme
+# Plateformes (service = valeur du paramètre ?service= de Kinow)
 # ─────────────────────────────────────────────
-PLATFORM_LISTS = {
+PLATFORMS = {
     "netflix": {
+        "service": "netflix",
         "label":  "Netflix",
         "color":  0xE50914,
         "emoji":  "🎬",
         "logo":   "https://cdn.icon-icons.com/icons2/2699/PNG/512/netflix_official_logo_icon_168085.png",
         "search_url": "https://www.netflix.com/search?q={title}",
-        "lists": {
-            "movies": {"username": "thebirdod", "listname": "new-on-netflix-movies"},
-            "shows":  {"username": "thebirdod", "listname": "new-on-netflix-shows"},
-        },
     },
     "disney": {
+        "service": "disney",
         "label":  "Disney+",
         "color":  0x113CCF,
         "emoji":  "✨",
         "logo":   "https://cdn.icon-icons.com/icons2/2699/PNG/512/disneyplus_logo_icon_168067.png",
         "search_url": "https://www.disneyplus.com/search/{title}",
-        "lists": {
-            "movies": {"username": "thebirdod", "listname": "new-on-disney-movies"},
-            "shows":  {"username": "thebirdod", "listname": "new-on-disney-shows"},
-        },
     },
 }
 
@@ -92,9 +80,6 @@ class StreamingNotifier:
 
     def __init__(self):
         self.sent_ids = self.load_sent_ids()
-        self.api_headers = {}
-        if MDBLIST_API_KEY:
-            self.api_headers = {"apikey": MDBLIST_API_KEY}
 
     # ── Mémoire ──────────────────────────────────────────────────────────────
 
@@ -128,40 +113,7 @@ class StreamingNotifier:
             "sent_at":  datetime.now().isoformat(),
         }
 
-    # ── Filtre année ──────────────────────────────────────────────────────────
-
-    def is_recent_enough(self, item):
-        """Retourne True si le contenu est sorti en MIN_YEAR ou après."""
-        year = item.get("release_year") or item.get("year")
-        if year:
-            try:
-                return int(year) >= MIN_YEAR
-            except (ValueError, TypeError):
-                pass
-        # Date de sortie complète ex: "2026-03-15"
-        premiered = item.get("premiered") or item.get("release_date", "")
-        if premiered and len(premiered) >= 4:
-            try:
-                return int(premiered[:4]) >= MIN_YEAR
-            except (ValueError, TypeError):
-                pass
-        # Année inconnue → on laisse passer par prudence
-        return True
-
     # ── TMDB ─────────────────────────────────────────────────────────────────
-
-    def get_french_overview(self, tmdb_id, media_type):
-        if not TMDB_API_KEY or not tmdb_id:
-            return None
-        try:
-            tmdb_type = "tv" if media_type == "show" else "movie"
-            url = f"{TMDB_BASE_URL}/{tmdb_type}/{tmdb_id}"
-            resp = requests.get(url, params={"api_key": TMDB_API_KEY, "language": "fr-FR"}, timeout=10)
-            resp.raise_for_status()
-            return resp.json().get("overview") or None
-        except Exception as e:
-            logger.debug(f"❌ Synopsis français: {e}")
-            return None
 
     def get_tmdb_details(self, tmdb_id, media_type):
         """Détails TMDB (FR) utilisés pour les sorties Kinow : affiche, synopsis, genres, note."""
@@ -171,7 +123,7 @@ class StreamingNotifier:
             tmdb_type = "tv" if media_type == "show" else "movie"
             resp = requests.get(
                 f"{TMDB_BASE_URL}/{tmdb_type}/{tmdb_id}",
-                params={"api_key": TMDB_API_KEY, "language": "fr-FR"},
+                params={"api_key": TMDB_API_KEY, "language": "fr-FR", "append_to_response": "external_ids"},
                 timeout=10,
             )
             resp.raise_for_status()
@@ -181,6 +133,9 @@ class StreamingNotifier:
                 "genres": [g.get("name") for g in d.get("genres", []) if g.get("name")],
                 "release_year": (d.get("release_date") or d.get("first_air_date") or "")[:4] or None,
             }
+            imdb_id = d.get("imdb_id") or (d.get("external_ids") or {}).get("imdb_id")
+            if imdb_id:
+                out["imdb_id"] = imdb_id
             if d.get("poster_path"):
                 out["poster"] = TMDB_IMAGE_BASE + d["poster_path"]
             if d.get("vote_average"):
@@ -219,7 +174,7 @@ class StreamingNotifier:
             resp = requests.get(
                 KINOW_URL,
                 params={"country": country, "service": service},
-                headers={"User-Agent": "Mozilla/5.0 (compatible; BoubaNetflixNotifier/4.2)"},
+                headers={"User-Agent": "Mozilla/5.0 (compatible; BoubaNetflixNotifier/5.0)"},
                 timeout=20,
             )
             resp.raise_for_status()
@@ -258,84 +213,46 @@ class StreamingNotifier:
         mois = {v: k for k, v in MOIS_FR.items()}
         return f"{jours[d.weekday()]} {d.day} {mois[d.month]}"
 
-    def process_kinow(self):
-        """Poste les sorties Netflix des KINOW_DAYS_AHEAD prochains jours (dédoublonnées)."""
-        pf = PLATFORM_LISTS["netflix"]
+    def process_platform(self, platform_key):
+        """Annonce les sorties de la plateforme dans les KINOW_DAYS_AHEAD prochains jours."""
+        pf = PLATFORMS[platform_key]
         today = datetime.now().date()
         limit = today + timedelta(days=KINOW_DAYS_AHEAD)
 
         logger.info(f"\n{'='*60}")
-        logger.info(f"📆 [Kinow] Sorties Netflix du {today:%d/%m} au {limit:%d/%m}")
+        logger.info(f"🚀 [{pf['label']}] Sorties du {today:%d/%m} au {limit:%d/%m}")
         logger.info(f"{'='*60}")
 
         embeds = []
-        for item in self.get_kinow_releases():
+        for item in self.get_kinow_releases(pf["service"], COUNTRY):
             rd = item["release_date"]
             if rd is None or not (today <= rd <= limit):
                 continue
 
-            # clé distincte de la mémoire MDBList pour ne pas mélanger les deux sources
-            memory_id = f"kinow-{item['mediatype']}-{item['id']}-{rd.isoformat()}"
-            if self.is_already_sent(memory_id, "netflix"):
+            # une même sortie n'est annoncée qu'une fois (date comprise : une nouvelle saison = nouvelle annonce)
+            memory_id = f"{item['mediatype']}-{item['id']}-{rd.isoformat()}"
+            if self.is_already_sent(memory_id, platform_key):
                 continue
 
             kinow_title = item["title"]  # garde "…, saison 2"
             item.update(self.get_tmdb_details(item["id"], item["mediatype"]))
-
-            if MDBLIST_API_KEY:
-                detailed = self.get_media_details(tmdb_id=item["id"], media_type=item["mediatype"])
-                if detailed:
-                    for k, v in detailed.items():     # ne pas écraser ce que TMDB a déjà fourni
-                        item.setdefault(k, v)
-
             item["title"] = kinow_title
             item["kinow_date"] = self.format_date_fr(rd)
-            embeds.append(self.create_discord_embed(item, "netflix"))
-            self.mark_as_sent(memory_id, kinow_title, "netflix")
-            logger.info(f"➕ [Kinow] {kinow_title} ({rd:%d/%m})")
+
+            embeds.append(self.create_discord_embed(item, platform_key))
+            self.mark_as_sent(memory_id, kinow_title, platform_key)
+            logger.info(f"➕ [{pf['label']}] {kinow_title} ({rd:%d/%m})")
 
         if embeds:
-            self.send_to_discord(embeds, "netflix")
-            logger.info(f"✅ [Kinow] {len(embeds)} sorties envoyées!")
+            self.send_to_discord(embeds, platform_key)
+            logger.info(f"✅ [{pf['label']}] {len(embeds)} sorties envoyées!")
         else:
-            logger.info("✅ [Kinow] Aucune nouvelle sortie à notifier")
-
-    # ── mdblist ───────────────────────────────────────────────────────────────
-
-    def get_list_items(self, username, listname, media_type, platform):
-        url = f"https://mdblist.com/lists/{username}/{listname}/json"
-        logger.info(f"🔍 [{platform}] Récupération liste {media_type}s ({username}/{listname})...")
-        try:
-            resp = requests.get(url, timeout=30)
-            resp.raise_for_status()
-            items = resp.json()
-            if not isinstance(items, list):
-                logger.error(f"❌ Format inattendu: {type(items)}")
-                return []
-            logger.info(f"📊 [{platform}] {len(items)} items dans la liste {media_type}s")
-            return items
-        except Exception as e:
-            logger.error(f"❌ [{platform}] Erreur API liste {media_type}s: {e}")
-            return []
-
-    def get_media_details(self, imdb_id=None, tmdb_id=None, media_type="movie"):
-        if not MDBLIST_API_KEY or (not imdb_id and not tmdb_id):
-            return None
-        try:
-            provider = "imdb" if imdb_id else "tmdb"
-            mid      = imdb_id if imdb_id else tmdb_id
-            url      = f"{MDBLIST_API_BASE}/{provider}/{media_type}/{mid}"
-            resp = requests.get(url, params={"apikey": MDBLIST_API_KEY, "append_to_response": "keyword,review"}, timeout=10)
-            resp.raise_for_status()
-            return resp.json()
-        except Exception as e:
-            logger.debug(f"Erreur détails media: {e}")
-            return None
+            logger.info(f"✅ [{pf['label']}] Aucune nouvelle sortie à notifier")
 
     # ── Embed Discord ─────────────────────────────────────────────────────────
 
     def create_discord_embed(self, item, platform_key):
-        pf      = PLATFORM_LISTS[platform_key]
+        pf      = PLATFORMS[platform_key]
         title   = item.get("title", "Titre inconnu")
         year    = item.get("release_year", "N/A")
         imdb_id = item.get("imdb_id", "")
@@ -349,11 +266,7 @@ class StreamingNotifier:
             "footer":    {"text": pf["label"]},
         }
 
-        description = None
-        if TMDB_API_KEY and tmdb_id:
-            description = self.get_french_overview(tmdb_id, mtype)
-        if not description:
-            description = item.get("description", "")
+        description = item.get("description", "")
         if description:
             embed["description"] = description[:297] + "..." if len(description) > 300 else description
 
@@ -391,7 +304,8 @@ class StreamingNotifier:
         if tmdb_id:
             tmdb_type = "tv" if mtype == "show" else "movie"
             links.append(f"[📊 TMDB](https://www.themoviedb.org/{tmdb_type}/{tmdb_id})")
-        search_url = pf["search_url"].format(title=title.replace(" ", "%20"))
+        search_title = re.sub(r",?\s*saison\s+\d+\s*$", "", title, flags=re.I)  # "X, saison 2" -> "X"
+        search_url = pf["search_url"].format(title=quote(search_title))
         links.append(f"[{'🍿' if platform_key == 'netflix' else '🏰'} {pf['label']}]({search_url})")
 
         if links:
@@ -411,7 +325,7 @@ class StreamingNotifier:
         if not embeds:
             return True
 
-        pf = PLATFORM_LISTS[platform_key]
+        pf = PLATFORMS[platform_key]
         total_batches = (len(embeds) + 9) // 10
 
         for i in range(0, len(embeds), 10):
@@ -448,81 +362,15 @@ class StreamingNotifier:
 
         return True
 
-    # ── Traitement principal ──────────────────────────────────────────────────
-
-    def process_platform(self, platform_key):
-        pf = PLATFORM_LISTS[platform_key]
-        logger.info(f"\n{'='*60}")
-        logger.info(f"🚀 [{pf['label']}] Vérification des nouveautés...")
-        logger.info(f"📅 Filtre : contenus >= {MIN_YEAR}")
-        logger.info(f"{'='*60}")
-
-        all_embeds = []
-
-        for media_type, list_info in pf["lists"].items():
-            mtype = "movie" if media_type == "movies" else "show"
-            label = "films" if mtype == "movie" else "séries"
-            logger.info(f"📽️ [{pf['label']}] Traitement des {label}...")
-
-            items = self.get_list_items(
-                list_info["username"],
-                list_info["listname"],
-                mtype,
-                platform_key,
-            )
-
-            skipped_old = 0
-            for item in items:
-                # ✅ FILTRE ANNÉE
-                if not self.is_recent_enough(item):
-                    skipped_old += 1
-                    logger.debug(f"⏭️ Trop ancien ({item.get('release_year')}): {item.get('title')}")
-                    continue
-
-                item_id = item.get("id") or item.get("tmdb_id")
-                if not item_id:
-                    continue
-
-                if self.is_already_sent(item_id, platform_key):
-                    logger.debug(f"⏭️ Déjà envoyé: {item.get('title')}")
-                    continue
-
-                if MDBLIST_API_KEY:
-                    detailed = self.get_media_details(
-                        imdb_id=item.get("imdb_id"),
-                        tmdb_id=item_id,
-                        media_type=mtype,
-                    )
-                    if detailed:
-                        item.update(detailed)
-
-                embed = self.create_discord_embed(item, platform_key)
-                all_embeds.append(embed)
-                self.mark_as_sent(item_id, item.get("title", ""), platform_key)
-                logger.info(f"➕ Nouveau(elle) {mtype}: {item.get('title')} ({item.get('release_year')})")
-
-            if skipped_old:
-                logger.info(f"🚫 [{pf['label']}] {skipped_old} {label} ignorés (année < {MIN_YEAR})")
-
-        if all_embeds:
-            logger.info(f"📤 [{pf['label']}] Envoi de {len(all_embeds)} notifications...")
-            self.send_to_discord(all_embeds, platform_key)
-            logger.info(f"✅ [{pf['label']}] {len(all_embeds)} nouveautés envoyées!")
-        else:
-            logger.info(f"✅ [{pf['label']}] Aucune nouvelle sortie à notifier")
-
     def process_all(self):
         logger.info("=" * 60)
         logger.info("🎬 Démarrage — Netflix + Disney+")
-        logger.info(f"📅 Filtre MIN_YEAR : {MIN_YEAR}")
+        logger.info(f"📆 Annonce des sorties à J+{KINOW_DAYS_AHEAD} maximum")
         logger.info(f"🧠 Mémoire active : {len(self.sent_ids)} IDs déjà envoyés")
         logger.info("=" * 60)
 
-        for platform_key in PLATFORM_LISTS:
+        for platform_key in PLATFORMS:
             self.process_platform(platform_key)
-
-        if KINOW_ENABLED:
-            self.process_kinow()
 
         self.save_sent_ids()
 
@@ -532,16 +380,14 @@ class StreamingNotifier:
 
 
 def main():
-    logger.info("🎬 Bouba Discord Netflix + Disney Notifier v4.1")
-    logger.info("📡 API: mdblist.com (officielle)")
+    logger.info("🎬 Bouba Discord Netflix + Disney Notifier v5.0")
+    logger.info("📡 Source: kinow.net + TMDB")
 
     if not DISCORD_WEBHOOK:
         logger.error("❌ DISCORD_WEBHOOK n'est pas configuré!")
         return 1
-    if not MDBLIST_API_KEY:
-        logger.warning("⚠️ MDBLIST_API_KEY non configuré (fonctionnalités limitées)")
     if not TMDB_API_KEY:
-        logger.info("ℹ️ TMDB_API_KEY non configuré (optionnel)")
+        logger.warning("⚠️ TMDB_API_KEY non configuré : pas d'affiche ni de synopsis")
 
     try:
         notifier = StreamingNotifier()

@@ -15,6 +15,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import quote
 
+import kinow_source
+
 # Configuration du logging
 LOG_DIR = Path("/app/logs")
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -40,13 +42,6 @@ COUNTRY = os.getenv("COUNTRY", "fr").lower()
 
 # Calendrier Kinow (sorties à venir, avec dates)
 KINOW_DAYS_AHEAD = int(os.getenv("KINOW_DAYS_AHEAD", "1"))   # 1 = sorties de demain
-KINOW_URL = "https://kinow.net/sorties-streaming"
-MOIS_FR = {
-    "janvier": 1, "février": 2, "mars": 3, "avril": 4, "mai": 5, "juin": 6,
-    "juillet": 7, "août": 8, "septembre": 9, "octobre": 10,
-    "novembre": 11, "décembre": 12,
-}
-
 # URLs de base
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
@@ -145,74 +140,6 @@ class StreamingNotifier:
             logger.debug(f"❌ Détails TMDB {tmdb_id}: {e}")
             return {}
 
-    # ── Kinow (calendrier des sorties) ────────────────────────────────────────
-
-    @staticmethod
-    def parse_kinow_date(texte, today):
-        """'vendredi 9 octobre' -> date ; 'Date à confirmer' -> None"""
-        m = re.search(r"(\d{1,2})\s+([a-zéûè]+)", texte.lower())
-        if not m or m.group(2) not in MOIS_FR:
-            return None
-        jour, mois = int(m.group(1)), MOIS_FR[m.group(2)]
-        annee = today.year
-        if mois < today.month - 6:
-            annee += 1
-        try:
-            return today.replace(year=annee, month=mois, day=jour)
-        except ValueError:
-            return None
-
-    def get_kinow_releases(self, service="netflix", country="fr"):
-        try:
-            from bs4 import BeautifulSoup
-        except ImportError:
-            logger.error("❌ beautifulsoup4 manquant (pip install beautifulsoup4)")
-            return []
-
-        logger.info("🔍 [Kinow] Récupération du calendrier des sorties...")
-        try:
-            resp = requests.get(
-                KINOW_URL,
-                params={"country": country, "service": service},
-                headers={"User-Agent": "Mozilla/5.0 (compatible; BoubaNetflixNotifier/5.0)"},
-                timeout=20,
-            )
-            resp.raise_for_status()
-        except Exception as e:
-            logger.error(f"❌ [Kinow] Erreur de récupération: {e}")
-            return []
-
-        soup = BeautifulSoup(resp.text, "html.parser")
-        today = datetime.now().date()
-        releases = []
-
-        for h2 in soup.find_all("h2"):
-            release_date = self.parse_kinow_date(h2.get_text(strip=True), today)
-            for el in h2.find_all_next():
-                if el.name == "h2":
-                    break
-                if el.name != "a":
-                    continue
-                m = re.search(r"/(film|serie)/(\d+)", el.get("href", ""))
-                if not m:
-                    continue
-                releases.append({
-                    "title":        el.get_text(strip=True),
-                    "mediatype":    "movie" if m.group(1) == "film" else "show",
-                    "id":           int(m.group(2)),          # ID TMDB
-                    "release_date": release_date,             # None = à confirmer
-                    "kinow_url":    "https://kinow.net" + el["href"] if el["href"].startswith("/") else el["href"],
-                })
-
-        logger.info(f"📊 [Kinow] {len(releases)} sorties dans le calendrier")
-        return releases
-
-    @staticmethod
-    def format_date_fr(d):
-        jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-        mois = {v: k for k, v in MOIS_FR.items()}
-        return f"{jours[d.weekday()]} {d.day} {mois[d.month]}"
-
     def process_platform(self, platform_key):
         """Annonce les sorties de la plateforme dans les KINOW_DAYS_AHEAD prochains jours."""
         pf = PLATFORMS[platform_key]
@@ -224,7 +151,7 @@ class StreamingNotifier:
         logger.info(f"{'='*60}")
 
         embeds = []
-        for item in self.get_kinow_releases(pf["service"], COUNTRY):
+        for item in kinow_source.get_releases(pf["service"], COUNTRY, today):
             rd = item["release_date"]
             if rd is None or not (today <= rd <= limit):
                 continue
@@ -237,7 +164,7 @@ class StreamingNotifier:
             kinow_title = item["title"]  # garde "…, saison 2"
             item.update(self.get_tmdb_details(item["id"], item["mediatype"]))
             item["title"] = kinow_title
-            item["kinow_date"] = self.format_date_fr(rd)
+            item["kinow_date"] = kinow_source.format_date_fr(rd)
 
             embeds.append(self.create_discord_embed(item, platform_key))
             self.mark_as_sent(memory_id, kinow_title, platform_key)

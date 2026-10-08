@@ -29,6 +29,7 @@ RUN pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt
 
 COPY netflix_bot_v4.py .
+COPY kinow_source.py .
 COPY web_flask_v4.py web_interface.py
 COPY templates/ templates/
 COPY crontab.txt .

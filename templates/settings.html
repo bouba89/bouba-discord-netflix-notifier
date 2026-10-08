@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paramètres - Netflix Bot v3</title>
+    <title>Paramètres - Netflix Bot v5</title>
     <style>
         * {
             margin: 0;
@@ -479,26 +479,26 @@
             </div>
         </div>
         
-        <!-- Configuration DAYS_BACK -->
+        <!-- Configuration KINOW_DAYS_AHEAD -->
         <div class="card">
-            <h2>📅 Période de vérification</h2>
+            <h2>📅 Annonce à l'avance</h2>
             
             <div class="form-group">
-                <label for="days_back">Nombre de jours à examiner (DAYS_BACK)</label>
+                <label for="days_back">Annoncer les sorties jusqu'à J+N (KINOW_DAYS_AHEAD)</label>
                 <div class="slider-container">
-                    <input type="range" id="days_back" class="slider" min="1" max="30" value="1">
+                    <input type="range" id="days_back" class="slider" min="1" max="7" value="1">
                     <div class="value-display">
-                        <span id="days_value">1</span> jour(s)
+                        J+<span id="days_value">1</span>
                     </div>
                 </div>
             </div>
             
             <div class="info-box">
                 ℹ️ <strong>Comment ça marche :</strong><br>
-                • Le bot examine les <strong>N × 10 premiers items</strong> de chaque liste<br>
-                • DAYS_BACK = 1 → 10 items examinés (recommandé pour usage quotidien)<br>
-                • DAYS_BACK = 7 → 70 items examinés (pour usage hebdomadaire)<br>
-                • Plus la valeur est élevée, plus vous risquez de recevoir de notifications
+                • Le bot lit le calendrier de kinow.net (Netflix et Disney+) et annonce les sorties dont la date est <strong>entre aujourd'hui et J+N</strong><br>
+                • 1 → sorties d'aujourd'hui et de demain (recommandé pour un usage quotidien)<br>
+                • 7 → sorties de la semaine à venir<br>
+                • Chaque sortie n'est annoncée qu'une seule fois ; les films et séries « Date à confirmer » sont ignorés tant que Kinow n'a pas de date
             </div>
             
             <button class="btn btn-primary" onclick="saveDaysBack()" style="margin-top: 20px;">
@@ -533,7 +533,7 @@
             <div class="purge-action">
                 <div class="purge-action-info">
                     <p>🧹 Purge des expirés</p>
-                    <span>Supprime uniquement les entrées plus vieilles que DAYS_BACK jours.<br>Les contenus récents restent en mémoire.</span>
+                    <span>Supprime uniquement les entrées plus anciennes que la durée de conservation (DAYS_BACK).<br>Les contenus récents restent en mémoire.</span>
                 </div>
                 <button class="btn btn-warning" id="btn-partial" onclick="openPurgeModal('partial')">
                     <span class="btn-text">Purger les expirés</span>
@@ -590,22 +590,17 @@
             </div>
             
             <div class="config-item">
-                <label>Clé API mdblist</label>
-                <div class="value" id="mdblist-value">Chargement...</div>
-            </div>
-            
-            <div class="config-item">
                 <label>Clé API TMDB</label>
                 <div class="value" id="tmdb-value">Chargement...</div>
             </div>
             
             <div class="config-item">
-                <label>DAYS_BACK</label>
+                <label>Annonce à l'avance (KINOW_DAYS_AHEAD)</label>
                 <div class="value" id="current-days-value">Chargement...</div>
             </div>
             
             <div class="info-box">
-    ℹ️ Le webhook se modifie ci-dessus, sans redémarrage. Pour les clés API (mdblist/TMDB),
+    ℹ️ Le webhook se modifie ci-dessus, sans redémarrage. Pour la clé API TMDB,
     édite le fichier <code>.env</code> et redémarre le container.
 </div>
         
@@ -789,12 +784,12 @@
             if (mode === 'full') {
                 document.getElementById('purge-modal-title').textContent = '💥 Vider tout le cache ?';
                 document.getElementById('purge-modal-desc').textContent =
-                    'Cette action supprime tous les IDs mémorisés. Le prochain run du bot renverra toutes les nouveautés actuellement dans la liste. Cette action est irréversible.';
+                    'Cette action supprime tous les IDs mémorisés. Le prochain run du bot renverra les sorties d'aujourd'hui et de demain, même déjà annoncées. Cette action est irréversible.';
                 document.getElementById('purge-modal-confirm-label').textContent = 'Tout vider';
             } else {
                 document.getElementById('purge-modal-title').textContent = '🧹 Purger les expirés ?';
                 document.getElementById('purge-modal-desc').textContent =
-                    'Les entrées plus vieilles que la période DAYS_BACK seront supprimées. Les contenus récents restent en mémoire.';
+                    'Les entrées plus anciennes que la durée de conservation (DAYS_BACK) seront supprimées. Les contenus récents restent en mémoire.';
                 document.getElementById('purge-modal-confirm-label').textContent = 'Purger';
             }
             document.getElementById('purge-modal-overlay').classList.add('open');
@@ -853,7 +848,6 @@
                 const response = await fetch('/api/config');
                 const data = await response.json();
                 document.getElementById('webhook-value').textContent  = data.DISCORD_WEBHOOK  || 'Non configuré';
-                document.getElementById('mdblist-value').textContent  = data.MDBLIST_API_KEY  || 'Non configuré';
                 document.getElementById('tmdb-value').textContent     = data.TMDB_API_KEY     || 'Non configuré';
             } catch (error) {
                 console.error('Erreur chargement config:', error);
@@ -862,29 +856,29 @@
         
         async function loadDaysBack() {
             try {
-                const response = await fetch('/api/config/days_back');
+                const response = await fetch('/api/config/days_ahead');
                 const data = await response.json();
-                const days = data.days_back || 1;
+                const days = data.days_ahead || 1;
                 document.getElementById('days_back').value = days;
                 document.getElementById('days_value').textContent = days;
-                document.getElementById('current-days-value').textContent = days + ' jour(s)';
+                document.getElementById('current-days-value').textContent = 'J+' + days;
             } catch (error) {
-                console.error('Erreur chargement DAYS_BACK:', error);
+                console.error('Erreur chargement KINOW_DAYS_AHEAD:', error);
             }
         }
         
         async function saveDaysBack() {
             const days = parseInt(document.getElementById('days_back').value);
             try {
-                const response = await fetch('/api/config/days_back', {
+                const response = await fetch('/api/config/days_ahead', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ days_back: days })
+                    body: JSON.stringify({ days_ahead: days })
                 });
                 const data = await response.json();
                 if (data.success) {
-                    showAlert(`DAYS_BACK mis à jour: ${days} jour(s)`, 'success');
-                    document.getElementById('current-days-value').textContent = days + ' jour(s)';
+                    showAlert(`Annonce à l'avance mise à jour : J+${days}`, 'success');
+                    document.getElementById('current-days-value').textContent = 'J+' + days;
                 } else {
                     showAlert('Erreur: ' + data.error, 'error');
                 }

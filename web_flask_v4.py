@@ -281,8 +281,8 @@ def get_status():
         return jsonify({
             'status':      'running' if cron_running else 'stopped',
             'cron_active': cron_running,
-            'version':     '4.0',
-            'api_source':  'mdblist.com',
+            'version':     '5.0',
+            'api_source':  'kinow.net + TMDB',
             'environment': env_vars,
             'statistics': {
                 'total_sent':   sent_count,
@@ -403,7 +403,7 @@ def config():
     if request.method == 'GET':
         try:
             config_data  = {}
-            allowed_vars = ['DISCORD_WEBHOOK', 'MDBLIST_API_KEY', 'TMDB_API_KEY', 'DAYS_BACK']
+            allowed_vars = ['DISCORD_WEBHOOK', 'TMDB_API_KEY', 'KINOW_DAYS_AHEAD', 'DAYS_BACK']
             if os.path.exists(ENV_FILE):
                 with open(ENV_FILE, 'r') as f:
                     for line in f:
@@ -454,6 +454,27 @@ def config_days_back():
         with open(ENV_FILE, 'w') as f:
             f.writelines(env_lines)
         return jsonify({'success': True, 'days_back': new_days})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/config/days_ahead', methods=['GET', 'POST'])
+@login_required
+def config_days_ahead():
+    """KINOW_DAYS_AHEAD : le bot annonce les sorties d'aujourd'hui jusqu'à J+N."""
+    if request.method == 'GET':
+        try:
+            return jsonify({'days_ahead': int(get_env_var('KINOW_DAYS_AHEAD', '1'))})
+        except (TypeError, ValueError):
+            return jsonify({'days_ahead': 1})
+
+    try:
+        new_days = int((request.json or {}).get('days_ahead', 1))
+        if not (1 <= new_days <= 7):
+            return jsonify({'success': False, 'error': 'KINOW_DAYS_AHEAD doit être entre 1 et 7'}), 400
+        write_env_var('KINOW_DAYS_AHEAD', new_days)
+        return jsonify({'success': True, 'days_ahead': new_days})
+    except (TypeError, ValueError):
+        return jsonify({'success': False, 'error': 'Valeur invalide'}), 400
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 

@@ -14,7 +14,7 @@
 
 **Bouba Discord Netflix Notifier** est un bot Discord automatisé qui annonce les **prochaines sorties Netflix et Disney+** (France) directement dans ton serveur Discord, avec affiche, synopsis en français, notes et liens.
 
-Les sorties et leurs dates viennent du calendrier de [kinow.net](https://kinow.net/sorties-streaming) ; TMDB fournit l'affiche, le synopsis, les genres et la note. Le bot annonce chaque sortie la veille de sa date, une seule fois.
+Les sorties et leurs dates viennent du calendrier de [kinow.net](https://kinow.net/sorties-streaming) ; TMDB fournit l'affiche, le synopsis, les genres et la note. Chaque sortie n'est annoncée qu'une seule fois, le jour même (`KINOW_DAYS_AHEAD=0`) ou la veille (`1`, valeur par défaut).
 
 ---
 
@@ -79,7 +79,7 @@ docker compose up -d
 | ------------------- | ----------------------- | ------------- |
 | \`DISCORD_WEBHOOK\`   | Webhook Discord         | ✅             |
 | \`TMDB_API_KEY\`      | Clé TMDB API            | ⚠️ recommandé |
-| \`KINOW_DAYS_AHEAD\`  | Annonce les sorties jusqu'à J+N (défaut : 1 = demain) | ❌ |
+| \`KINOW_DAYS_AHEAD\`  | Annonce les sorties jusqu'à J+N : \`0\` = uniquement celles du jour, \`1\` = jusqu'à demain (défaut) | ❌ |
 | \`COUNTRY\`           | Pays du calendrier (défaut : \`fr\`) | ❌ |
 | \`DAYS_BACK\`         | Âge (jours) au-delà duquel une entrée de la mémoire est considérée expirée par l'interface web | ❌ |
 | \`FLASK_SECRET_KEY\`  | Clé secrète Flask       | ❌             |

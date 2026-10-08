@@ -486,7 +486,7 @@
             <div class="form-group">
                 <label for="days_back">Annoncer les sorties jusqu'à J+N (KINOW_DAYS_AHEAD)</label>
                 <div class="slider-container">
-                    <input type="range" id="days_back" class="slider" min="1" max="7" value="1">
+                    <input type="range" id="days_back" class="slider" min="0" max="7" value="1">
                     <div class="value-display">
                         J+<span id="days_value">1</span>
                     </div>
@@ -495,8 +495,9 @@
             
             <div class="info-box">
                 ℹ️ <strong>Comment ça marche :</strong><br>
-                • Le bot lit le calendrier de kinow.net (Netflix et Disney+) et annonce les sorties dont la date est <strong>entre aujourd'hui et J+N</strong><br>
-                • 1 → sorties d'aujourd'hui et de demain (recommandé pour un usage quotidien)<br>
+                • Le bot lit le calendrier de kinow.net (Netflix et Disney+) et annonce les sorties dont la date est <strong>entre aujourd'hui et J+N</strong> (J+0 = aujourd'hui seulement)<br>
+                • 0 → uniquement les sorties du jour (le 9 le bot annonce celles du 9, le 10 celles du 10…)<br>
+                • 1 → sorties d'aujourd'hui et de demain, annoncées la veille<br>
                 • 7 → sorties de la semaine à venir<br>
                 • Chaque sortie n'est annoncée qu'une seule fois ; les films et séries « Date à confirmer » sont ignorés tant que Kinow n'a pas de date
             </div>
@@ -858,7 +859,7 @@
             try {
                 const response = await fetch('/api/config/days_ahead');
                 const data = await response.json();
-                const days = data.days_ahead || 1;
+                const days = Number.isInteger(data.days_ahead) ? data.days_ahead : 1;   // 0 est une valeur valide
                 document.getElementById('days_back').value = days;
                 document.getElementById('days_value').textContent = days;
                 document.getElementById('current-days-value').textContent = 'J+' + days;

@@ -41,7 +41,7 @@ TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 COUNTRY = os.getenv("COUNTRY", "fr").lower()
 
 # Calendrier Kinow (sorties à venir, avec dates)
-KINOW_DAYS_AHEAD = int(os.getenv("KINOW_DAYS_AHEAD", "1"))   # 1 = sorties de demain
+KINOW_DAYS_AHEAD = max(0, int(os.getenv("KINOW_DAYS_AHEAD", "1")))   # 0 = jour même, 1 = jusqu'à demain
 # URLs de base
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"

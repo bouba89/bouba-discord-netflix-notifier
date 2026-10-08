@@ -75,6 +75,7 @@ class StreamingNotifier:
 
     def __init__(self):
         self.sent_ids = self.load_sent_ids()
+        self._tmdb_key_error_logged = False
 
     # ── Mémoire ──────────────────────────────────────────────────────────────
 
@@ -136,8 +137,18 @@ class StreamingNotifier:
             if d.get("vote_average"):
                 out["ratings"] = [{"source": "tmdb", "score": round(d["vote_average"] * 10)}]
             return out
+        except requests.exceptions.HTTPError as e:
+            status = e.response.status_code if e.response is not None else None
+            if status == 401:
+                if not self._tmdb_key_error_logged:   # un seul message, pas un par sortie
+                    logger.error("❌ TMDB refuse la clé API (401) : vérifie TMDB_API_KEY "
+                                 "(clé « API Key » de 32 caractères, pas le jeton d'accès en lecture)")
+                    self._tmdb_key_error_logged = True
+            else:
+                logger.warning(f"⚠️ TMDB {media_type} {tmdb_id}: HTTP {status}")
+            return {}
         except Exception as e:
-            logger.debug(f"❌ Détails TMDB {tmdb_id}: {e}")
+            logger.warning(f"⚠️ Détails TMDB {tmdb_id}: {e}")
             return {}
 
     def process_platform(self, platform_key):

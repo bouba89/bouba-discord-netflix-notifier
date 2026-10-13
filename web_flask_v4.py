@@ -68,6 +68,46 @@ def build_bot_env():
                     env[k] = v
     return env
 
+# ── Alertes Discord pour les actions sur la mémoire ──────────────────────
+
+def notify_memory_action(action, removed, kept=None, titles=None, full=False):
+    """Prévient sur Discord qu'une purge/réinitialisation de la mémoire vient d'avoir lieu.
+
+    N'échoue jamais : si Discord est injoignable, l'action déjà faite reste valable
+    et l'incident est simplement journalisé.
+    """
+    log = logging.getLogger(__name__)
+    try:
+        webhook = get_env_var('DISCORD_WEBHOOK', '')
+        if not webhook:
+            return
+        fields = [
+            {'name': 'Action',     'value': action,                               'inline': True},
+            {'name': 'Par',        'value': str(session.get('username', '?')),     'inline': True},
+            {'name': 'Supprimées', 'value': str(removed),                          'inline': True},
+        ]
+        if kept is not None:
+            fields.append({'name': 'Conservées', 'value': str(kept), 'inline': True})
+        if titles:
+            sample = ', '.join(str(t) for t in titles[:5])
+            if len(titles) > 5:
+                sample += f' … (+{len(titles) - 5})'
+            fields.append({'name': 'Exemples', 'value': sample[:1000], 'inline': False})
+        embed = {
+            'title': '💥 Mémoire du bot vidée' if full else '🧹 Mémoire du bot purgée',
+            'color': 0xE74C3C if full else 0xE67E22,
+            'fields': fields,
+            'timestamp': datetime.utcnow().isoformat(),
+        }
+        if full:
+            embed['description'] = ("⚠️ Le bot ne se souvient plus de rien : au prochain passage, "
+                                    "il renverra les sorties du jour déjà annoncées.")
+        resp = requests.post(webhook, json={'username': 'Netflix Notifier ⚙️', 'embeds': [embed]}, timeout=5)
+        if resp.status_code not in (200, 204):
+            log.warning(f"⚠️ Alerte Discord non envoyée (HTTP {resp.status_code})")
+    except Exception as e:
+        log.warning(f"⚠️ Alerte Discord non envoyée : {e}")
+
 # ── Turnstile (anti-bot) ──────────────────────────────────────────────────
 TURNSTILE_SITE_KEY = os.environ.get('TURNSTILE_SITE_KEY', '')
 TURNSTILE_SECRET_KEY = os.environ.get('TURNSTILE_SECRET_KEY', '')
@@ -544,6 +584,9 @@ def reset_memory():
         with open(MEMORY_FILE, 'w') as f:
             json.dump({}, f)
 
+        notify_memory_action('Réinitialiser la mémoire (tableau de bord)', ids_before, kept=0,
+                             titles=titles_deleted, full=True)
+
         return jsonify({
             'success': True,
             'message': f'Mémoire réinitialisée : {ids_before} IDs supprimés',
@@ -686,8 +729,10 @@ def cache_purge():
         os.makedirs(DATA_DIR, exist_ok=True)
 
         if mode == 'full':
+            full_titles = [v.get('title', 'Inconnu') for v in data.values() if isinstance(v, dict)]
             with open(MEMORY_FILE, 'w') as f:
                 json.dump({}, f)
+            notify_memory_action('Vider tout le cache', original_count, kept=0, titles=full_titles, full=True)
             logger.info(f"💥 PURGE TOTALE par {session.get('username')} — {original_count} IDs supprimés")
             return jsonify({'success': True, 'message': f'{original_count} entrée(s) supprimée(s). Cache vidé.'})
 
@@ -701,8 +746,12 @@ def cache_purge():
             ))()
         }
         purged = original_count - len(cleaned)
+        removed_titles = [v.get('title', 'Inconnu') for k, v in data.items()
+                          if k not in cleaned and isinstance(v, dict)]
         with open(MEMORY_FILE, 'w') as f:
             json.dump(cleaned, f, indent=2)
+        if purged:
+            notify_memory_action('Purger les expirés', purged, kept=len(cleaned), titles=removed_titles)
         logger.info(f"🧹 PURGE PARTIELLE par {session.get('username')} — {purged} expirés, {len(cleaned)} conservés")
         return jsonify({'success': True, 'message': f'{purged} entrée(s) expirée(s) supprimée(s). {len(cleaned)} conservée(s).'})
 

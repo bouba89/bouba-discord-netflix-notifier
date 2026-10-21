@@ -1,4 +1,4 @@
-FROM python:3.14-alpine
+FROM python:3.15-alpine
 
 LABEL maintainer="bouba89"
 LABEL description="Bot Discord : sorties Netflix & Disney+ (kinow.net + TMDB)"

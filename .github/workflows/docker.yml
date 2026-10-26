@@ -3,6 +3,9 @@ name: Docker Build & Push to GHCR
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * 1"   # chaque lundi à 04:17 UTC
 
 jobs:
   build-and-push:
@@ -28,6 +31,8 @@ jobs:
         with:
           context: .
           push: true
+          pull: true
+          no-cache: true
           tags: |
             ghcr.io/bouba89/bouba-discord-netflix-notifier:latest
             ghcr.io/bouba89/bouba-discord-netflix-notifier:${{ github.sha }}
